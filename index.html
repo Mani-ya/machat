@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>چت خصوصی</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: Tahoma, sans-serif;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            height: 100vh; display: flex; justify-content: center; align-items: center; padding: 15px;
+        }
+        .chat-container {
+            width: 100%; max-width: 420px; height: 85vh; max-height: 700px;
+            background: #fff; border-radius: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            display: flex; flex-direction: column; overflow: hidden;
+        }
+        .chat-header {
+            background: linear-gradient(135deg, #667eea, #764ba2); color: white;
+            padding: 16px 20px; display: flex; justify-content: space-between; align-items: center;
+        }
+        .chat-header h2 { font-size: 17px; }
+        #status { font-size: 12px; opacity: 0.9; }
+        .messages {
+            flex: 1; padding: 16px; overflow-y: auto; display: flex;
+            flex-direction: column; gap: 10px; background: #f8f9fa;
+        }
+        .message {
+            max-width: 78%; padding: 10px 14px; border-radius: 16px;
+            font-size: 14px; line-height: 1.5; word-wrap: break-word;
+        }
+        .message.self {
+            align-self: flex-end; background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white; border-bottom-left-radius: 4px;
+        }
+        .message.other {
+            align-self: flex-start; background: white; color: #333;
+            border-bottom-right-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+        }
+        .message.system {
+            align-self: center; background: #e9ecef; color: #6c757d;
+            font-size: 12px; padding: 5px 12px; border-radius: 10px;
+        }
+        .input-area {
+            padding: 12px 16px; background: white; border-top: 1px solid #eee;
+            display: flex; gap: 8px;
+        }
+        #messageInput {
+            flex: 1; padding: 12px 16px; border: 1.5px solid #ddd;
+            border-radius: 22px; outline: none; font-family: inherit; font-size: 14px;
+        }
+        #messageInput:focus { border-color: #667eea; }
+        #sendButton {
+            padding: 0 22px; border: none; border-radius: 22px;
+            background: linear-gradient(135deg, #667eea, #764ba2); color: white;
+            font-family: inherit; font-size: 14px; font-weight: 500; cursor: pointer;
+        }
+        #sendButton:hover { opacity: 0.9; }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <header class="chat-header">
+            <h2>چت خصوصی</h2>
+            <span id="status">در انتظار همتا...</span>
+        </header>
+        <main id="messages" class="messages"></main>
+        <footer class="input-area">
+            <input type="text" id="messageInput" placeholder="پیام..." autocomplete="off">
+            <button id="sendButton">ارسال</button>
+        </footer>
+    </div>
+
+    <script type="module">
+        import { joinRoom } from 'https://esm.run/trystero';
+
+        // تنظیمات — نیازی به تغییر ندارید
+        const config = {
+            appId: 'my-private-chat-app-2025-unique-id-12345'
+        };
+
+        // اگر آدرس حاوی ?room=xxx باشد از آن استفاده می‌کند، وگرنه اتاق پیش‌فرض
+        const urlParams = new URLSearchParams(window.location.search);
+        const roomId = urlParams.get('room') || 'default-private-chat-room';
+
+        const room = joinRoom(config, roomId);
+
+        const messagesDiv = document.getElementById('messages');
+        const messageInput = document.getElementById('messageInput');
+        const sendButton = document.getElementById('sendButton');
+        const statusEl = document.getElementById('status');
+
+        room.onPeerJoin = () => {
+            statusEl.textContent = 'متصل ✅';
+            statusEl.style.color = 'green';
+            addSystemMessage('همتا متصل شد');
+            messageInput.focus();
+        };
+
+        room.onPeerLeave = () => {
+            statusEl.textContent = 'در انتظار همتا...';
+            statusEl.style.color = '#888';
+            addSystemMessage('همتا قطع شد');
+        };
+
+        const [sendMessage, getMessage] = room.makeAction('chat');
+
+        getMessage((data) => {
+            addMessage(data.text, 'other');
+        });
+
+        function sendCurrentMessage() {
+            const text = messageInput.value.trim();
+            if (!text) return;
+            sendMessage({ text });
+            addMessage(text, 'self');
+            messageInput.value = '';
+            messageInput.focus();
+        }
+
+        sendButton.addEventListener('click', sendCurrentMessage);
+        messageInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendCurrentMessage();
+        });
+
+        function addMessage(text, type) {
+            const div = document.createElement('div');
+            div.className = `message ${type}`;
+            div.textContent = text;
+            messagesDiv.appendChild(div);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        function addSystemMessage(text) {
+            addMessage(text, 'system');
+        }
+
+        messageInput.focus();
+    </script>
+</body>
+</html>
