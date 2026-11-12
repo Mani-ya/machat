@@ -1,141 +1,193 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>چت خصوصی</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: Tahoma, sans-serif;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            height: 100vh; display: flex; justify-content: center; align-items: center; padding: 15px;
-        }
-        .chat-container {
-            width: 100%; max-width: 420px; height: 85vh; max-height: 700px;
-            background: #fff; border-radius: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.3);
-            display: flex; flex-direction: column; overflow: hidden;
-        }
-        .chat-header {
-            background: linear-gradient(135deg, #667eea, #764ba2); color: white;
-            padding: 16px 20px; display: flex; justify-content: space-between; align-items: center;
-        }
-        .chat-header h2 { font-size: 17px; }
-        #status { font-size: 12px; opacity: 0.9; }
-        .messages {
-            flex: 1; padding: 16px; overflow-y: auto; display: flex;
-            flex-direction: column; gap: 10px; background: #f8f9fa;
-        }
-        .message {
-            max-width: 78%; padding: 10px 14px; border-radius: 16px;
-            font-size: 14px; line-height: 1.5; word-wrap: break-word;
-        }
-        .message.self {
-            align-self: flex-end; background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white; border-bottom-left-radius: 4px;
-        }
-        .message.other {
-            align-self: flex-start; background: white; color: #333;
-            border-bottom-right-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.08);
-        }
-        .message.system {
-            align-self: center; background: #e9ecef; color: #6c757d;
-            font-size: 12px; padding: 5px 12px; border-radius: 10px;
-        }
-        .input-area {
-            padding: 12px 16px; background: white; border-top: 1px solid #eee;
-            display: flex; gap: 8px;
-        }
-        #messageInput {
-            flex: 1; padding: 12px 16px; border: 1.5px solid #ddd;
-            border-radius: 22px; outline: none; font-family: inherit; font-size: 14px;
-        }
-        #messageInput:focus { border-color: #667eea; }
-        #sendButton {
-            padding: 0 22px; border: none; border-radius: 22px;
-            background: linear-gradient(135deg, #667eea, #764ba2); color: white;
-            font-family: inherit; font-size: 14px; font-weight: 500; cursor: pointer;
-        }
-        #sendButton:hover { opacity: 0.9; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>چت خصوصی</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: Tahoma, sans-serif;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    height: 100vh;
+    display: flex; justify-content: center; align-items: center;
+    padding: 15px;
+  }
+  .chat-container {
+    width: 100%; max-width: 480px; height: 85vh; max-height: 720px;
+    background: #fff; border-radius: 20px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+    display: flex; flex-direction: column; overflow: hidden;
+  }
+  .chat-header {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white; padding: 16px 20px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .chat-header h2 { font-size: 17px; }
+  #status { font-size: 12px; opacity: 0.9; }
+  .messages {
+    flex: 1; padding: 16px; overflow-y: auto;
+    display: flex; flex-direction: column; gap: 10px;
+    background: #f8f9fa;
+  }
+  .message {
+    max-width: 78%; padding: 10px 14px; border-radius: 16px;
+    font-size: 14px; line-height: 1.5; word-wrap: break-word;
+  }
+  .message.self {
+    align-self: flex-end;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white; border-bottom-left-radius: 4px;
+  }
+  .message.other {
+    align-self: flex-start; background: white; color: #333;
+    border-bottom-right-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+  }
+  .message.system {
+    align-self: center; background: #e9ecef; color: #6c757d;
+    font-size: 12px; padding: 5px 12px; border-radius: 10px;
+  }
+  .input-area {
+    padding: 12px 16px; background: white; border-top: 1px solid #eee;
+    display: flex; gap: 8px;
+  }
+  #messageInput {
+    flex: 1; padding: 12px 16px; border: 1.5px solid #ddd;
+    border-radius: 22px; outline: none;
+    font-family: inherit; font-size: 14px;
+  }
+  #messageInput:focus { border-color: #667eea; }
+  #sendButton {
+    padding: 0 22px; border: none; border-radius: 22px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white; font-family: inherit; font-size: 14px;
+    font-weight: 500; cursor: pointer;
+  }
+  #sendButton:hover { opacity: 0.9; }
+  #sendButton:disabled { opacity: 0.5; cursor: not-allowed; }
+</style>
 </head>
 <body>
-    <div class="chat-container">
-        <header class="chat-header">
-            <h2>چت خصوصی</h2>
-            <span id="status">در انتظار همتا...</span>
-        </header>
-        <main id="messages" class="messages"></main>
-        <footer class="input-area">
-            <input type="text" id="messageInput" placeholder="پیام..." autocomplete="off">
-            <button id="sendButton">ارسال</button>
-        </footer>
-    </div>
 
-    <script type="module">
-      import { joinRoom } from 'https://esm.run/trystero/mqtt';
-        // تنظیمات — نیازی به تغییر ندارید
-        const config = {
-            appId: 'my-private-chat-app-2025-unique-id-12345'
-        };
+<div class="chat-container">
+  <header class="chat-header">
+    <h2>چت خصوصی</h2>
+    <span id="status">در حال اتصال...</span>
+  </header>
+  <main id="messages" class="messages"></main>
+  <footer class="input-area">
+    <input type="text" id="messageInput" placeholder="پیام..." autocomplete="off" disabled>
+    <button id="sendButton" disabled>ارسال</button>
+  </footer>
+</div>
 
-        // اگر آدرس حاوی ?room=xxx باشد از آن استفاده می‌کند، وگرنه اتاق پیش‌فرض
-        const urlParams = new URLSearchParams(window.location.search);
-        const roomId = urlParams.get('room') || 'default-private-chat-room';
+<script>
+  // ⚠️ این دو خط را از مرحله ۴ کپی کن
+  const SUPABASE_URL = 'https://wspvdrxsdbmpomeuczwt.supabase.co';
+  const SUPABASE_ANON_KEY = 'sb_publishable_SDXc2OU1Sy77WPdnBrxyWw_aT3josm9';
 
-        const room = joinRoom(config, roomId);
+  const params = new URLSearchParams(window.location.search);
+  const ROOM_ID = params.get('room') || 'default-private-room-123';
 
-        const messagesDiv = document.getElementById('messages');
-        const messageInput = document.getElementById('messageInput');
-        const sendButton = document.getElementById('sendButton');
-        const statusEl = document.getElementById('status');
+  let MY_ID = localStorage.getItem('chat_user_id');
+  if (!MY_ID) {
+    MY_ID = 'user-' + Math.random().toString(36).slice(2, 10);
+    localStorage.setItem('chat_user_id', MY_ID);
+  }
 
-        room.onPeerJoin = () => {
-            statusEl.textContent = 'متصل ✅';
-            statusEl.style.color = 'green';
-            addSystemMessage('همتا متصل شد');
-            messageInput.focus();
-        };
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        room.onPeerLeave = () => {
-            statusEl.textContent = 'در انتظار همتا...';
-            statusEl.style.color = '#888';
-            addSystemMessage('همتا قطع شد');
-        };
+  const messagesEl = document.getElementById('messages');
+  const inputEl = document.getElementById('messageInput');
+  const sendBtn = document.getElementById('sendButton');
+  const statusEl = document.getElementById('status');
 
-        const [sendMessage, getMessage] = room.makeAction('chat');
+  const renderedIds = new Set();
 
-        getMessage((data) => {
-            addMessage(data.text, 'other');
-        });
+  function addMessage(msg) {
+    if (renderedIds.has(msg.id)) return;
+    renderedIds.add(msg.id);
+    const div = document.createElement('div');
+    div.className = 'message ' + (msg.sender_id === MY_ID ? 'self' : 'other');
+    div.textContent = msg.content;
+    messagesEl.appendChild(div);
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+  }
 
-        function sendCurrentMessage() {
-            const text = messageInput.value.trim();
-            if (!text) return;
-            sendMessage({ text });
-            addMessage(text, 'self');
-            messageInput.value = '';
-            messageInput.focus();
-        }
+  function addSystemMessage(text) {
+    const div = document.createElement('div');
+    div.className = 'message system';
+    div.textContent = text;
+    messagesEl.appendChild(div);
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+  }
 
-        sendButton.addEventListener('click', sendCurrentMessage);
-        messageInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') sendCurrentMessage();
-        });
+  async function loadPreviousMessages() {
+    const { data, error } = await sb
+      .from('messages').select('*')
+      .eq('room_id', ROOM_ID)
+      .order('created_at', { ascending: true });
+    if (error) { addSystemMessage('خطا در بارگذاری'); return; }
+    if (data.length === 0) addSystemMessage('هنوز پیامی نیست');
+    else data.forEach(addMessage);
+  }
 
-        function addMessage(text, type) {
-            const div = document.createElement('div');
-            div.className = `message ${type}`;
-            div.textContent = text;
-            messagesDiv.appendChild(div);
-            messagesDiv.scrollTop = messagesDiv.scrollHeight;
-        }
+  const channel = sb.channel('room-' + ROOM_ID, {
+    config: { presence: { key: MY_ID } }
+  });
 
-        function addSystemMessage(text) {
-            addMessage(text, 'system');
-        }
+  channel.on('postgres_changes', {
+    event: 'INSERT', schema: 'public', table: 'messages',
+    filter: 'room_id=eq.' + ROOM_ID
+  }, (payload) => addMessage(payload.new));
 
-        messageInput.focus();
-    </script>
+  channel.on('presence', { event: 'sync' }, () => {
+    const state = channel.presenceState();
+    const others = Object.keys(state).filter(k => k !== MY_ID);
+    if (others.length > 0) {
+      statusEl.textContent = 'همتا آنلاین ✅';
+      statusEl.style.color = '#6bcf7f';
+    } else {
+      statusEl.textContent = 'در انتظار همتا...';
+      statusEl.style.color = '#ffd93d';
+    }
+  });
+
+  channel.subscribe(async (status) => {
+    if (status === 'SUBSCRIBED') {
+      await channel.track({ online_at: new Date().toISOString() });
+      inputEl.disabled = false;
+      sendBtn.disabled = false;
+      inputEl.focus();
+    }
+  });
+
+  async function sendMessage() {
+    const text = inputEl.value.trim();
+    if (!text) return;
+    sendBtn.disabled = true;
+    const { data, error } = await sb.from('messages')
+      .insert({ room_id: ROOM_ID, sender_id: MY_ID, content: text })
+      .select().single();
+    if (error) {
+      addSystemMessage('ارسال ناموفق');
+    } else {
+      addMessage(data);
+      inputEl.value = '';
+    }
+    sendBtn.disabled = false;
+    inputEl.focus();
+  }
+
+  sendBtn.addEventListener('click', sendMessage);
+  inputEl.addEventListener('keypress', e => {
+    if (e.key === 'Enter') sendMessage();
+  });
+
+  loadPreviousMessages();
+</script>
+
 </body>
 </html>
