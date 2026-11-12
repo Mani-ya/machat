@@ -767,33 +767,210 @@ async function markAsRead(roomId) {
 }
 
 // ==================== تماس صوتی ====================
-async function initVoicePeer() {
-  try {
-    const { Peer } = await import('https://esm.sh/upeerjs');
-    voicePeer = new Peer(currentUser.id, { securityKey: 'chat-app-signal-2025' });
-    voicePeer.start();
-    voicePeer.on('call', async ({ peerId, call }) => {
-      if (confirm(`${peerId} در حال تماس است. پاسخ؟`)) {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        call.answer(stream);
-        call.on('stream', (remote) => { const a = new Audio(); a.srcObject = remote; a.play(); });
-      }
-    });
-    voicePeer.on('stream', ({ stream }) => { const a = new Audio(); a.srcObject = stream; a.play(); });
-  } catch (e) { console.warn('Voice unavailable:', e); }
-}
-
 async function startVoiceCall() {
-  if (!currentChat || currentChat.type !== 'private') return;
-  if (!voicePeer) { alert('تماس صوتی در دسترس نیست'); return; }
-  if (!onlineUsers.has(currentChat.id)) { alert('طرف مقابل آفلاین است'); return; }
+  if (!currentChat || currentChat.type !== 'private') {
+    alert('تماس صوتی فقط در چت خصوصی ممکن است');
+    return;
+  }
+  if (!onlineUsers.has(currentChat.id)) {
+    alert('طرف مقابل آفلاین است');
+    return;
+  }
+
   try {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    voicePeer.call(currentChat.id, stream);
-    alert('در حال تماس...');
-  } catch (e) { alert('خطا: ' + e.message); }
+    localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  } catch (e) {
+    alert('دسترسی به میکروفون داده نشد: ' + e.message);
+    return;
+  }
+
+  callPeerId = currentChat.id;
+  const roomId = currentChat.roomId;
+
+  // ساخت کانال سیگنالینگ
+  callChannel = sb.channel('call:' + roomId, {
+    config: { broadcast: { self: false } }
+  });
+
+  callChannel.on('broadcast', { event: 'webrtc' }, async ({ payload }) => {
+    await handleSignal(payload);
+  });
+
+  callChannel.subscribe(async (status) => {
+    if (status !== 'SUBSCRIBED') return;
+
+    // ساخت اتصال WebRTC
+    pc = new RTCPeerConnection({
+      iceServers: [
+        { urls: 'stun:stun.l.google.com:19302' },
+        { urls: 'stun:stun1.l.google.com:19302' }
+      ]
+    });
+
+    // ارسال ICE candidates به طرف مقابل
+    pc.onicecandidate = (e) => {
+      if (e.candidate) {
+        callChannel.send({
+          type: 'broadcast',
+          event: 'webrtc',
+          payload: { type: 'ice', candidate: e.candidate }
+        });
+      }
+    };
+
+    // دریافت صدای طرف مقابل
+    pc.ontrack = (e) => {
+      const audio = new Audio();
+      audio.srcObject = e.streams[0];
+      audio.play();
+      window._remoteAudio = audio; // نگه داشتن برای توقف
+    };
+
+    // اضافه کردن میکروفون خودمان
+    localStream.getTracks().forEach(t => pc.addTrack(t, localStream));
+
+    // ساخت Offer
+    const offer = await pc.createOffer();
+    await pc.setLocalDescription(offer);
+
+    // ارسال Offer از طریق Supabase
+    callChannel.send({
+      type: 'broadcast',
+      event: 'webrtc',
+      payload: { type: 'offer', sdp: offer }
+    });
+
+    showCallUI('در حال زنگ زدن...', () => endCall());
+  });
 }
 
+// پردازش سیگنال‌های دریافتی
+async function handleSignal(payload) {
+  if (!pc) {
+    // اگر هنوز pc نساخته‌ایم و Offer گرفتیم، یعنی تماس ورودی است
+    if (payload.type === 'offer') {
+      const accept = confirm('📞 تماس ورودی. پاسخ می‌دهید؟');
+      if (!accept) return;
+
+      try {
+        localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      } catch (e) {
+        alert('دسترسی به میکروفون داده نشد');
+        return;
+      }
+
+      callPeerId = payload.from || null;
+
+      pc = new RTCPeerConnection({
+        iceServers: [
+          { urls: 'stun:stun.l.google.com:19302' },
+          { urls: 'stun:stun1.l.google.com:19302' }
+        ]
+      });
+
+      pc.onicecandidate = (e) => {
+        if (e.candidate) {
+          callChannel.send({
+            type: 'broadcast',
+            event: 'webrtc',
+            payload: { type: 'ice', candidate: e.candidate }
+          });
+        }
+      };
+
+      pc.ontrack = (e) => {
+        const audio = new Audio();
+        audio.srcObject = e.streams[0];
+        audio.play();
+        window._remoteAudio = audio;
+      };
+
+      localStream.getTracks().forEach(t => pc.addTrack(t, localStream));
+
+      await pc.setRemoteDescription(new RTCSessionDescription(payload.sdp));
+      const answer = await pc.createAnswer();
+      await pc.setLocalDescription(answer);
+
+      callChannel.send({
+        type: 'broadcast',
+        event: 'webrtc',
+        payload: { type: 'answer', sdp: answer }
+      });
+
+      showCallUI('در حال مکالمه...', () => endCall());
+    }
+    return;
+  }
+
+  // اگر pc از قبل ساخته شده، سیگنال‌های بعدی را پردازش کن
+  if (payload.type === 'answer') {
+    await pc.setRemoteDescription(new RTCSessionDescription(payload.sdp));
+    updateCallUI('در حال مکالمه...');
+  } else if (payload.type === 'ice') {
+    try {
+      await pc.addIceCandidate(new RTCIceCandidate(payload.candidate));
+    } catch (e) { console.warn('ICE error:', e); }
+  }
+}
+
+// نمایش UI تماس
+function showCallUI(text, onHangup) {
+  if (incomingCallUI) incomingCallUI.remove();
+
+  const ui = document.createElement('div');
+  ui.style.cssText = `
+    position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%);
+    background: var(--surface); border: 1px solid var(--border);
+    padding: 15px 25px; border-radius: 20px;
+    display: flex; align-items: center; gap: 15px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.5); z-index: 9999;
+  `;
+  ui.innerHTML = `
+    <span style="font-size: 24px;">🎤</span>
+    <span id="callStatusText">${text}</span>
+    <button id="hangupBtn" style="background: var(--danger); color: white;
+      border: none; border-radius: 50%; width: 40px; height: 40px;
+      cursor: pointer; font-size: 20px;">✕</button>
+  `;
+  document.body.appendChild(ui);
+  incomingCallUI = ui;
+
+  ui.querySelector('#hangupBtn').onclick = () => {
+    onHangup();
+    ui.remove();
+    incomingCallUI = null;
+  };
+}
+
+function updateCallUI(text) {
+  const el = document.getElementById('callStatusText');
+  if (el) el.textContent = text;
+}
+
+// پایان تماس
+async function endCall() {
+  if (localStream) {
+    localStream.getTracks().forEach(t => t.stop());
+    localStream = null;
+  }
+  if (pc) {
+    pc.close();
+    pc = null;
+  }
+  if (window._remoteAudio) {
+    window._remoteAudio.pause();
+    window._remoteAudio = null;
+  }
+  if (callChannel) {
+    await sb.removeChannel(callChannel);
+    callChannel = null;
+  }
+  if (incomingCallUI) {
+    incomingCallUI.remove();
+    incomingCallUI = null;
+  }
+  callPeerId = null;
+}
 // ==================== موبایل ====================
 function closeChatMobile() {
   document.getElementById('chatMain').classList.remove('open');
