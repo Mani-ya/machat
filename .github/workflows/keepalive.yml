@@ -1,0 +1,20 @@
+name: Keep Supabase Alive
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Supabase Database
+        env:
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          curl -X GET "https://wspvdrxsdbmpomeuczwt.supabase.co/rest/v1/keepalive?select=id" \
+          -H "apikey: $SUPABASE_ANON_KEY" \
+          -H "Authorization: Bearer $SUPABASE_ANON_KEY" \
+          --fail --silent --show-error --retry 5 --retry-delay 15
+          echo "✅ Supabase pinged successfully at $(date)"
