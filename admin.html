@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>پنل ادمین</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: Tahoma, sans-serif; background: #0f1419; color: #e1e8f0; padding: 20px; min-height: 100vh; }
+.container { max-width: 1000px; margin: 0 auto; }
+.login-box { background: #17212b; padding: 40px 30px; border-radius: 16px; max-width: 400px; margin: 80px auto; text-align: center; }
+.login-box input { width: 100%; padding: 14px; margin-bottom: 12px; background: #1c2733; border: 1px solid #2a3542; border-radius: 10px; color: white; font-family: inherit; font-size: 15px; outline: none; }
+.login-box button, .btn { padding: 12px 24px; background: #5288c1; border: none; border-radius: 10px; color: white; font-family: inherit; font-size: 14px; cursor: pointer; transition: 0.2s; }
+.login-box button:hover, .btn:hover { background: #6ba0d3; }
+.btn.danger { background: #e74c3c; }
+.btn.danger:hover { background: #c0392b; }
+.btn.success { background: #10b981; }
+.btn.success:hover { background: #059669; }
+.hidden { display: none !important; }
+h1 { margin-bottom: 20px; font-size: 22px; }
+h2 { margin: 25px 0 15px; font-size: 17px; color: #a0b0c0; }
+.card { background: #17212b; border-radius: 12px; padding: 20px; margin-bottom: 15px; }
+.row { display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+.row input, .row select { flex: 1; min-width: 150px; padding: 10px 14px; background: #1c2733; border: 1px solid #2a3542; border-radius: 8px; color: white; font-family: inherit; font-size: 14px; outline: none; }
+.group-item { background: #1c2733; padding: 14px; border-radius: 10px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+.group-item .name { font-weight: 600; }
+.member-tag { display: inline-block; background: #2a3542; padding: 4px 10px; border-radius: 12px; font-size: 12px; margin: 2px; }
+.member-tag .remove { color: #e74c3c; cursor: pointer; margin-right: 6px; font-weight: bold; }
+.alert { padding: 12px; border-radius: 8px; margin-bottom: 15px; font-size: 14px; }
+.alert.success { background: #064e3b; color: #6ee7b7; }
+.alert.error { background: #7f1d1d; color: #fca5a5; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="login-box" id="loginBox">
+  <h1>🔐 پنل مدیریت</h1>
+  <input type="password" id="pwd" placeholder="رمز عبور" onkeypress="if(event.key==='Enter')login()">
+  <button onclick="login()">ورود</button>
+</div>
+
+<div class="hidden" id="panel">
+  <h1>🛡️ پنل مدیریت</h1>
+  <div id="alertBox"></div>
+
+  <h2>➕ ساخت گروه جدید</h2>
+  <div class="card">
+    <div class="row">
+      <input type="text" id="newGroupId" placeholder="شناسه گروه (انگلیسی)">
+      <input type="text" id="newGroupName" placeholder="نام گروه">
+      <input type="text" id="newGroupEmoji" placeholder="ایموجی (👥)" value="👥" maxlength="2">
+    </div>
+    <button class="btn success" onclick="createGroup()">ساخت گروه</button>
+  </div>
+
+  <h2>👥 گروه‌ها</h2>
+  <div id="groupsList"></div>
+
+  <h2>🗑️ حذف داده‌ها</h2>
+  <div class="card">
+    <div class="row">
+      <button class="btn danger" onclick="clearOffline()">حذف همه پیام‌های آفلاین</button>
+      <button class="btn danger" onclick="clearGroups()">حذف همه پیام‌های گروه</button>
+      <button class="btn danger" onclick="clearStorage()">حذف همه فایل‌های Storage</button>
+    </div>
+  </div>
+</div>
+
+</div>
+<script>
+const SUPABASE_URL = 'YOUR_SUPABASE_URL';
+const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+const ADMIN_PASSWORD = 'admin123456'; // ← این را تغییر دهید
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+function login() {
+  if (document.getElementById('pwd').value === ADMIN_PASSWORD) {
+    document.getElementById('loginBox').classList.add('hidden');
+    document.getElementById('panel').classList.remove('hidden');
+    loadGroups();
+  } else alert('رمز اشتباه');
+}
+
+function showAlert(msg, type) {
+  const box = document.getElementById('alertBox');
+  box.innerHTML = `<div class="alert ${type}">${msg}</div>`;
+  setTimeout(() => box.innerHTML = '', 4000);
+}
+
+async function loadGroups() {
+  const { data: groups } = await sb.from('rooms').select('*').order('created_at');
+  const { data: members } = await sb.from('room_members').select('*');
+  const { data: profiles } = await sb.from('profiles').select('*').order('display_name');
+
+  const list = document.getElementById('groupsList');
+  list.innerHTML = '';
+  if (!groups || groups.length === 0) { list.innerHTML = '<div class="card">هنوز گروهی ساخته نشده</div>'; return; }
+
+  groups.forEach(g => {
+    const gMembers = (members || []).filter(m => m.room_id === g.id);
+    const memberNames = gMembers.map(m => {
+      const p = (profiles || []).find(x => x.id === m.user_id);
+      return `<span class="member-tag">${p ? p.display_name : m.user_id} <span class="remove" onclick="removeMember('${g.id}','${m.user_id}')">×</span></span>`;
+    }).join('') || '<em style="color:#666;">بدون عضو</em>';
+
+    const notMembers = (profiles || []).filter(p => !gMembers.find(m => m.user_id === p.id));
+
+    const el = document.createElement('div');
+    el.className = 'group-item';
+    el.innerHTML = `
+      <div style="flex:1;">
+        <div class="name">${g.avatar_emoji} ${g.name} <span style="color:#666;font-size:12px;">(${g.id})</span></div>
+        <div style="margin-top:8px;">${memberNames}</div>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <select id="add-${g.id}" style="padding:8px;background:#1c2733;border:1px solid #2a3542;border-radius:8px;color:white;">
+          <option value="">افزودن عضو...</option>
+          ${notMembers.map(p => `<option value="${p.id}">${p.display_name} (${p.id})</option>`).join('')}
+        </select>
+        <button class="btn success" onclick="addMember('${g.id}')">افزودن</button>
+        <button class="btn danger" onclick="deleteGroup('${g.id}')">حذف گروه</button>
+      </div>
+    `;
+    list.appendChild(el);
+  });
+}
+
+async function createGroup() {
+  const id = document.getElementById('newGroupId').value.trim().toLowerCase();
+  const name = document.getElementById('newGroupName').value.trim();
+  const emoji = document.getElementById('newGroupEmoji').value.trim() || '👥';
+  if (!id || !name) return showAlert('شناسه و نام الزامی است', 'error');
+  if (!/^[a-z0-9_-]{2,30}$/.test(id)) return showAlert('شناسه فقط حروف انگلیسی، عدد، - و _', 'error');
+
+  const { error } = await sb.from('rooms').insert({ id, name, avatar_emoji: emoji });
+  if (error) return showAlert('خطا: ' + error.message, 'error');
+  showAlert('گروه ساخته شد ✅', 'success');
+  document.getElementById('newGroupId').value = '';
+  document.getElementById('newGroupName').value = '';
+  loadGroups();
+}
+
+async function deleteGroup(id) {
+  if (!confirm('گروه و همه پیام‌هایش حذف شوند؟')) return;
+  await sb.from('group_messages').delete().eq('room_id', id);
+  await sb.from('room_members').delete().eq('room_id', id);
+  await sb.from('rooms').delete().eq('id', id);
+  showAlert('گروه حذف شد', 'success');
+  loadGroups();
+}
+
+async function addMember(groupId) {
+  const sel = document.getElementById('add-' + groupId);
+  const uid = sel.value;
+  if (!uid) return;
+  const { error } = await sb.from('room_members').insert({ room_id: groupId, user_id: uid });
+  if (error) return showAlert('خطا: ' + error.message, 'error');
+  showAlert('عضو اضافه شد ✅', 'success');
+  loadGroups();
+}
+
+async function removeMember(groupId, userId) {
+  if (!confirm('عضو حذف شود؟')) return;
+  await sb.from('room_members').delete().eq('room_id', groupId).eq('user_id', userId);
+  loadGroups();
+}
+
+async function clearOffline() {
+  if (!confirm('همه پیام‌های آفلاین حذف شوند؟')) return;
+  await sb.from('offline_messages').delete().neq('id', 0);
+  showAlert('پیام‌های آفلاین حذف شدند', 'success');
+}
+
+async function clearGroups() {
+  if (!confirm('همه پیام‌های گروه حذف شوند؟')) return;
+  await sb.from('group_messages').delete().neq('id', 0);
+  showAlert('پیام‌های گروه حذف شدند', 'success');
+}
+
+async function clearStorage() {
+  if (!confirm('همه فایل‌های Storage حذف شوند؟')) return;
+  const { data: files } = await sb.storage.from('chat-media').list('', { limit: 1000 });
+  // لیست بازگشتی - برای سادگی همه را نمی‌توانیم پاک کنیم، فقط سطح بالا
+  showAlert('این عملیات نیاز به حذف دستی از داشبورد Supabase دارد (Storage → chat-media)', 'error');
+}
+
+loadGroups();
+</script>
+</body>
+</html>
