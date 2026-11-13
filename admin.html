@@ -2,30 +2,33 @@
 <html lang="fa" dir="rtl">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>پنل ادمین</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: Tahoma, sans-serif; background: #0f1419; color: #e1e8f0; padding: 20px; min-height: 100vh; }
-.container { max-width: 1000px; margin: 0 auto; }
-.login-box { background: #17212b; padding: 40px 30px; border-radius: 16px; max-width: 400px; margin: 80px auto; text-align: center; }
-.login-box input { width: 100%; padding: 14px; margin-bottom: 12px; background: #1c2733; border: 1px solid #2a3542; border-radius: 10px; color: white; font-family: inherit; font-size: 15px; outline: none; }
-.login-box button, .btn { padding: 12px 24px; background: #5288c1; border: none; border-radius: 10px; color: white; font-family: inherit; font-size: 14px; cursor: pointer; transition: 0.2s; }
-.login-box button:hover, .btn:hover { background: #6ba0d3; }
-.btn.danger { background: #e74c3c; } .btn.danger:hover { background: #c0392b; }
-.btn.success { background: #10b981; } .btn.success:hover { background: #059669; }
-.hidden { display: none !important; }
-h1 { margin-bottom: 20px; font-size: 22px; }
-h2 { margin: 25px 0 15px; font-size: 17px; color: #a0b0c0; }
-.card { background: #17212b; border-radius: 12px; padding: 20px; margin-bottom: 15px; }
-.row { display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
-.row input, .row select { flex: 1; min-width: 150px; padding: 10px 14px; background: #1c2733; border: 1px solid #2a3542; border-radius: 8px; color: white; font-family: inherit; font-size: 14px; outline: none; }
-.item { background: #1c2733; padding: 14px; border-radius: 10px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
-.tag { display: inline-block; background: #2a3542; padding: 4px 10px; border-radius: 12px; font-size: 12px; margin: 2px; }
-.tag .remove { color: #e74c3c; cursor: pointer; margin-right: 6px; font-weight: bold; }
-.alert { padding: 12px; border-radius: 8px; margin-bottom: 15px; font-size: 14px; }
-.alert.success { background: #064e3b; color: #6ee7b7; }
-.alert.error { background: #7f1d1d; color: #fca5a5; }
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:Tahoma,sans-serif;background:#0f1419;color:#e1e8f0;padding:16px;min-height:100vh}
+.container{max-width:1000px;margin:0 auto}
+.login-box{background:#17212b;padding:35px 25px;border-radius:16px;max-width:400px;margin:60px auto;text-align:center}
+.login-box input{width:100%;padding:14px;margin-bottom:12px;background:#1c2733;border:1px solid #2a3542;border-radius:10px;color:#fff;font-size:16px;outline:none}
+.login-box button,.btn{padding:11px 20px;background:#5288c1;border:none;border-radius:10px;color:#fff;font-size:14px;cursor:pointer;transition:.2s}
+.login-box button:hover,.btn:hover{background:#6ba0d3}
+.btn.danger{background:#e74c3c}.btn.danger:hover{background:#c0392b}
+.btn.success{background:#10b981}.btn.success:hover{background:#059669}
+.btn.warn{background:#f59e0b}.btn.warn:hover{background:#d97706}
+.hidden{display:none!important}
+h1{margin-bottom:20px;font-size:22px}
+h2{margin:22px 0 12px;font-size:17px;color:#a0b0c0}
+.card{background:#17212b;border-radius:12px;padding:18px;margin-bottom:14px}
+.row{display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+.row input,.row select{flex:1;min-width:140px;padding:10px 14px;background:#1c2733;border:1px solid #2a3542;border-radius:8px;color:#fff;font-size:14px;outline:none}
+.item{background:#1c2733;padding:12px;border-radius:10px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+.tag{display:inline-block;background:#2a3542;padding:4px 10px;border-radius:12px;font-size:12px;margin:2px}
+.tag .remove{color:#e74c3c;cursor:pointer;margin-right:6px;font-weight:bold}
+.alert{padding:12px;border-radius:8px;margin-bottom:12px;font-size:14px}
+.alert.success{background:#064e3b;color:#6ee7b7}
+.alert.error{background:#7f1d1d;color:#fca5a5}
+.avatar-sm{width:36px;height:36px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:bold;color:#fff;font-size:13px;margin-left:8px;background-size:cover;background-position:center;vertical-align:middle}
 </style>
 </head>
 <body>
@@ -42,9 +45,7 @@ h2 { margin: 25px 0 15px; font-size: 17px; color: #a0b0c0; }
   <div id="alertBox"></div>
 
   <h2>👤 مدیریت کاربران</h2>
-  <div class="card">
-    <div id="usersList"></div>
-  </div>
+  <div class="card" id="usersList"></div>
 
   <h2>➕ ساخت گروه جدید</h2>
   <div class="card">
@@ -56,7 +57,7 @@ h2 { margin: 25px 0 15px; font-size: 17px; color: #a0b0c0; }
     <button class="btn success" onclick="createGroup()">ساخت گروه</button>
   </div>
 
-  <h2>👥 گروه‌ها</h2>
+  <h2>👥 همه گروه‌ها</h2>
   <div id="groupsList"></div>
 
   <h2>🗑️ حذف داده‌ها</h2>
@@ -72,7 +73,7 @@ h2 { margin: 25px 0 15px; font-size: 17px; color: #a0b0c0; }
 <script>
 const SUPABASE_URL = 'https://wspvdrxsdbmpomeuczwt.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_SDXc2OU1Sy77WPdnBrxyWw_aT3josm9';
-const ADMIN_PASSWORD = 'mani5955adminforall#$58';
+const ADMIN_PASSWORD = 'admin123456';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 function login() {
@@ -93,32 +94,59 @@ async function loadUsers() {
   const { data } = await sb.from('profiles').select('*').order('display_name');
   const list = document.getElementById('usersList');
   list.innerHTML = '';
-  (data || []).forEach(u => {
+  if (!data || data.length === 0) { list.innerHTML = '<div>کاربری نیست</div>'; return; }
+  data.forEach(u => {
     const div = document.createElement('div');
     div.className = 'item';
+    const avHtml = u.avatar_url
+      ? `<div class="avatar-sm" style="background-image:url('${u.avatar_url}')"></div>`
+      : `<div class="avatar-sm" style="background:#5288c1">${(u.display_name||'?').slice(0,2)}</div>`;
     div.innerHTML = `
-      <div style="flex:1;">
-        <b>${u.display_name}</b> <span style="color:#666;">(@${u.id})</span>
-        <span style="color:${u.is_active ? '#10b981' : '#e74c3c'};margin-right:8px;">
-          ${u.is_active ? '✅ فعال' : '🚫 غیرفعال'}
-        </span>
+      <div style="flex:1;display:flex;align-items:center">
+        ${avHtml}
+        <div style="margin-right:10px">
+          <b>${u.display_name}</b> <span style="color:#666">(@${u.id})</span>
+          <div style="color:${u.is_active?'#10b981':'#e74c3c'};font-size:12px;margin-top:2px">
+            ${u.is_active?'✅ فعال':'🚫 غیرفعال'}
+          </div>
+        </div>
       </div>
-      <button class="btn ${u.is_active ? 'danger' : 'success'}" onclick="toggleUser('${u.id}', ${u.is_active})">
-        ${u.is_active ? 'غیرفعال (حذف)' : 'فعال کردن'}
-      </button>
-    `;
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <button class="btn ${u.is_active?'warn':'success'}" onclick="toggleUser('${u.id}',${u.is_active})">
+          ${u.is_active?'غیرفعال':'فعال کردن'}
+        </button>
+        <button class="btn danger" onclick="hardDeleteUser('${u.id}','${(u.display_name||'').replace(/'/g,"\\'")}')">
+          🗑️ حذف کامل
+        </button>
+      </div>`;
     list.appendChild(div);
   });
 }
 
 async function toggleUser(userId, currentState) {
   const newState = !currentState;
-  const msg = newState ? 'فعال' : 'غیرفعال (حذف)';
+  const msg = newState ? 'فعال' : 'غیرفعال';
   if (!confirm(`کاربر ${userId} ${msg} شود؟`)) return;
   const { error } = await sb.from('profiles').update({ is_active: newState }).eq('id', userId);
   if (error) return showAlert('خطا: ' + error.message, 'error');
   showAlert(`کاربر ${msg} شد`, 'success');
   loadUsers();
+}
+
+async function hardDeleteUser(userId, name) {
+  if (!confirm(`⚠️ کاربر «${name}» به طور کامل حذف شود؟\nتمام پیام‌ها و داده‌هایش پاک می‌شوند!`)) return;
+  if (!confirm('آیا ۱۰۰٪ مطمئن هستید؟ این عمل غیرقابل بازگشت است.')) return;
+  try {
+    await sb.from('offline_messages').delete().eq('sender_id', userId);
+    await sb.from('group_messages').delete().eq('sender_id', userId);
+    await sb.from('room_members').delete().eq('user_id', userId);
+    await sb.from('user_read_status').delete().eq('user_id', userId);
+    await sb.from('profiles').delete().eq('id', userId);
+    showAlert(`کاربر «${name}» حذف شد`, 'success');
+    loadUsers(); loadGroups();
+  } catch (err) {
+    showAlert('خطا: ' + err.message, 'error');
+  }
 }
 
 async function loadGroups() {
@@ -134,18 +162,18 @@ async function loadGroups() {
     const tags = gm.map(m => {
       const p = (profiles || []).find(x => x.id === m.user_id);
       return `<span class="tag">${p ? p.display_name : m.user_id} <span class="remove" onclick="removeMember('${g.id}','${m.user_id}')">×</span></span>`;
-    }).join('') || '<em style="color:#666;">بدون عضو</em>';
+    }).join('') || '<em style="color:#666">بدون عضو</em>';
     const notMembers = (profiles || []).filter(p => !gm.find(m => m.user_id === p.id));
 
     const el = document.createElement('div');
     el.className = 'item';
     el.innerHTML = `
-      <div style="flex:1;">
-        <div><b>${g.avatar_emoji} ${g.name}</b> <span style="color:#666;font-size:12px;">(${g.id})</span></div>
-        <div style="margin-top:8px;">${tags}</div>
+      <div style="flex:1;min-width:200px">
+        <div><b>${g.avatar_emoji} ${g.name}</b> <span style="color:#666;font-size:12px">(${g.id})</span></div>
+        <div style="margin-top:8px">${tags}</div>
       </div>
-      <div style="display:flex;gap:6px;flex-wrap:wrap;">
-        <select id="add-${g.id}" style="padding:8px;background:#1c2733;border:1px solid #2a3542;border-radius:8px;color:white;">
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <select id="add-${g.id}" style="padding:8px;background:#1c2733;border:1px solid #2a3542;border-radius:8px;color:#fff">
           <option value="">افزودن...</option>
           ${notMembers.map(p => `<option value="${p.id}">${p.display_name}</option>`).join('')}
         </select>
@@ -171,7 +199,7 @@ async function createGroup() {
 }
 
 async function deleteGroup(id) {
-  if (!confirm('گروه و پیام‌هایش حذف شوند؟')) return;
+  if (!confirm('گروه و همه پیام‌هایش حذف شوند؟')) return;
   await sb.from('group_messages').delete().eq('room_id', id);
   await sb.from('room_members').delete().eq('room_id', id);
   await sb.from('rooms').delete().eq('id', id);
