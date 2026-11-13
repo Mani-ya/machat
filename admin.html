@@ -43,6 +43,15 @@ h2{margin:22px 0 12px;font-size:17px;color:#a0b0c0}
   <div id="alertBox"></div>
   <h2>👤 مدیریت کاربران</h2>
   <div class="card" id="usersList"></div>
+  <h2>➕ ساخت گروه جدید</h2>
+  <div class="card">
+    <div class="row">
+      <input type="text" id="newGroupId" placeholder="شناسه گروه (مثلاً group-fam)">
+      <input type="text" id="newGroupName" placeholder="نام گروه">
+      <input type="text" id="newGroupEmoji" placeholder="ایموجی" value="👥" maxlength="2">
+    </div>
+    <button class="btn success" onclick="createGroup()">ساخت گروه</button>
+  </div>
   <h2>👥 همه گروه‌ها</h2>
   <div id="groupsList"></div>
   <h2>🚨 گزارش‌های تخلف</h2>
@@ -58,9 +67,9 @@ h2{margin:22px 0 12px;font-size:17px;color:#a0b0c0}
 </div>
 </div>
 <script>
-const SUPABASE_URL='https://wspvdrxsdbmpomeuczwt.supabase.co';
-const SUPABASE_ANON_KEY='sb_publishable_SDXc2OU1Sy77WPdnBrxyWw_aT3josm9';
-const ADMIN_PASSWORD='mani5955adminforall#$58';
+const SUPABASE_URL='YOUR_SUPABASE_URL';
+const SUPABASE_ANON_KEY='YOUR_SUPABASE_ANON_KEY';
+const ADMIN_PASSWORD='admin123456';
 const sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
 
 function login(){
@@ -74,17 +83,18 @@ function login(){
 function showAlert(msg,type){
   const b=document.getElementById('alertBox');
   b.innerHTML=`<div class="alert ${type}">${msg}</div>`;
-  setTimeout(()=>b.innerHTML='',4000);
+  setTimeout(()=>b.innerHTML='',5000);
 }
 
 async function loadUsers(){
-  const {data}=await sb.from('profiles').select('*').order('display_name');
+  const {data,error}=await sb.from('profiles').select('*').order('display_name');
+  if(error){showAlert('خطا در بارگذاری کاربران: '+error.message,'error');return}
   const list=document.getElementById('usersList');list.innerHTML='';
   if(!data||data.length===0){list.innerHTML='<div>کاربری نیست</div>';return}
   data.forEach(u=>{
     const div=document.createElement('div');div.className='item';
     const avHtml=u.avatar_url?`<div class="avatar-sm" style="background-image:url('${u.avatar_url}')"></div>`:`<div class="avatar-sm" style="background:#5288c1">${(u.display_name||'?').slice(0,2)}</div>`;
-    div.innerHTML=`<div style="flex:1;display:flex;align-items:center">${avHtml}<div style="margin-right:10px"><b>${u.display_name}</b> <span style="color:#666">(@${u.id})</span><div style="color:${u.is_active?'#10b981':'#e74c3c'};font-size:12px;margin-top:2px">${u.is_active?'✅ فعال':'🚫 غیرفعال'}</div>${u.bio?`<div style="font-size:11px;color:#888;margin-top:2px">${u.bio.slice(0,50)}</div>`:''}</div></div><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn ${u.is_active?'warn':'success'}" onclick="toggleUser('${u.id}',${u.is_active})">${u.is_active?'غیرفعال':'فعال'}</button><button class="btn danger" onclick="hardDeleteUser('${u.id}','${(u.display_name||'').replace(/'/g,"\\'")}')">🗑️ حذف</button></div>`;
+    div.innerHTML=`<div style="flex:1;display:flex;align-items:center">${avHtml}<div style="margin-right:10px"><b>${u.display_name}</b> <span style="color:#666">(@${u.id})</span><div style="color:${u.is_active?'#10b981':'#e74c3c'};font-size:12px;margin-top:2px">${u.is_active?'✅ فعال':'🚫 غیرفعال'}</div>${u.phone?`<div style="font-size:11px;color:#6ba0d3">📞 ${u.phone}</div>`:''}</div></div><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn ${u.is_active?'warn':'success'}" onclick="toggleUser('${u.id}',${u.is_active})">${u.is_active?'غیرفعال':'فعال'}</button><button class="btn danger" onclick="hardDeleteUser('${u.id}','${(u.display_name||'').replace(/'/g,"\\'")}')">🗑️ حذف</button></div>`;
     list.appendChild(div);
   });
 }
@@ -94,8 +104,7 @@ async function toggleUser(userId,cur){
   if(!confirm(`کاربر ${userId} ${n?'فعال':'غیرفعال'} شود؟`))return;
   const {error}=await sb.from('profiles').update({is_active:n}).eq('id',userId);
   if(error)return showAlert('خطا: '+error.message,'error');
-  showAlert(`کاربر ${n?'فعال':'غیرفعال'} شد`,'success');
-  loadUsers();
+  showAlert(`کاربر ${n?'فعال':'غیرفعال'} شد`,'success');loadUsers();
 }
 
 async function hardDeleteUser(userId,name){
@@ -109,13 +118,13 @@ async function hardDeleteUser(userId,name){
     await sb.from('muted_rooms').delete().eq('user_id',userId);
     await sb.from('reports').delete().eq('reporter_id',userId);
     await sb.from('profiles').delete().eq('id',userId);
-    showAlert(`کاربر «${name}» حذف شد`,'success');
-    loadUsers();loadGroups();
+    showAlert(`کاربر حذف شد`,'success');loadUsers();loadGroups();
   }catch(err){showAlert('خطا: '+err.message,'error')}
 }
 
 async function loadGroups(){
-  const {data:groups}=await sb.from('rooms').select('*').order('created_at');
+  const {data:groups,error:eg}=await sb.from('rooms').select('*').order('created_at');
+  if(eg){showAlert('خطا در بارگذاری گروه‌ها: '+eg.message,'error');return}
   const {data:members}=await sb.from('room_members').select('*');
   const {data:profiles}=await sb.from('profiles').select('*').order('display_name');
   const {data:settings}=await sb.from('room_settings').select('*');
@@ -128,12 +137,37 @@ async function loadGroups(){
     const notMembers=(profiles||[]).filter(p=>!gm.find(m=>m.user_id===p.id));
     const setting=(settings||[]).find(s=>s.room_id===g.id);
     const isMuted=setting?.is_muted;
+    const isLocked=setting?.is_locked;
     const inv=(invites||[]).find(i=>i.room_id===g.id);
     const inviteLink=inv?location.origin+location.pathname.replace('admin.html','index.html')+'?invite='+inv.code:'';
     const creator=(profiles||[]).find(p=>p.id===g.created_by);
     const avHtml=g.avatar_url?`<div class="avatar-sm" style="background-image:url('${g.avatar_url}')"></div>`:`<div class="avatar-sm" style="background:#8b5cf6">${g.avatar_emoji||'👥'}</div>`;
-    const el=document.createElement('div');el.className='item';
-    el.innerHTML=`<div style="flex:1;min-width:200px"><div style="display:flex;align-items:center;gap:8px">${avHtml}<div><b>${g.name}</b> <span style="color:#666;font-size:12px">(${g.id})</span> ${isMuted?'<span style="color:#f59e0b">🔕 بی‌صدا</span>':''}</div></div>${g.bio?`<div style="font-size:11px;color:#888;margin-top:4px;padding-right:44px">${g.bio}</div>`:''}${creator?`<div style="font-size:11px;color:#6ba0d3;margin-top:2px;padding-right:44px">سازنده: ${creator.display_name}</div>`:''}<div style="margin-top:8px">${tags}</div>${inviteLink?`<div style="font-size:11px;color:#6ba0d3;margin-top:6px">🔗 ${inviteLink}</div>`:''}</div><div style="display:flex;gap:6px;flex-wrap:wrap"><select id="add-${g.id}" style="padding:8px;background:#1c2733;border:1px solid #2a3542;border-radius:8px;color:#fff"><option value="">افزودن...</option>${notMembers.map(p=>`<option value="${p.id}">${p.display_name}</option>`).join('')}</select><button class="btn success" onclick="addMember('${g.id}')">افزودن</button><button class="btn ${isMuted?'success':'warn'}" onclick="toggleGroupMute('${g.id}',${isMuted})">${isMuted?'🔔':'🔕'}</button><button class="btn danger" onclick="deleteGroup('${g.id}')">حذف</button></div>`;
+    const el=document.createElement('div');el.className='item';el.style.flexDirection='column';el.style.alignItems='stretch';
+    el.innerHTML=`
+      <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px">
+        <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:200px">
+          ${avHtml}
+          <div>
+            <div><b>${g.name}</b> <span style="color:#666;font-size:12px">(${g.id})</span></div>
+            ${isMuted?'<span style="color:#f59e0b;font-size:11px">🔕 بی‌صدا</span>':''}
+            ${isLocked?'<span style="color:#e74c3c;font-size:11px;margin-right:6px">🔒 قفل</span>':''}
+            ${creator?`<div style="font-size:11px;color:#6ba0d3">سازنده: ${creator.display_name}</div>`:''}
+          </div>
+        </div>
+      </div>
+      ${g.bio?`<div style="font-size:11px;color:#888;margin:6px 0 0 44px">${g.bio}</div>`:''}
+      <div style="margin-top:8px">${tags}</div>
+      ${inviteLink?`<div style="font-size:11px;color:#6ba0d3;margin-top:6px;word-break:break-all">🔗 ${inviteLink}</div>`:''}
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;padding-top:8px;border-top:1px solid #2a3542">
+        <select id="add-${g.id}" style="padding:8px;background:#1c2733;border:1px solid #2a3542;border-radius:8px;color:#fff;flex:1;min-width:140px">
+          <option value="">افزودن عضو...</option>
+          ${notMembers.map(p=>`<option value="${p.id}">${p.display_name}</option>`).join('')}
+        </select>
+        <button class="btn success" onclick="addMember('${g.id}')">افزودن</button>
+        <button class="btn ${isMuted?'success':'warn'}" onclick="toggleGroupMute('${g.id}',${isMuted})">${isMuted?'🔔':'🔕'}</button>
+        <button class="btn ${isLocked?'success':'danger'}" onclick="toggleGroupLock('${g.id}',${isLocked})">${isLocked?'🔓 باز':'🔒 بستن'}</button>
+        <button class="btn danger" onclick="deleteGroup('${g.id}')">🗑️ حذف</button>
+      </div>`;
     list.appendChild(el);
   });
 }
@@ -146,24 +180,57 @@ async function deleteGroup(id){
   await sb.from('room_invites').delete().eq('room_id',id);
   await sb.from('room_settings').delete().eq('room_id',id);
   await sb.from('rooms').delete().eq('id',id);
-  showAlert('گروه حذف شد','success');
-  loadGroups();
+  showAlert('گروه حذف شد','success');loadGroups();
 }
 
 async function toggleGroupMute(gid,cur){
   const {data:ex}=await sb.from('room_settings').select('*').eq('room_id',gid).maybeSingle();
   if(ex)await sb.from('room_settings').update({is_muted:!cur,updated_at:new Date().toISOString()}).eq('room_id',gid);
-  else await sb.from('room_settings').insert({room_id:gid,is_muted:!cur});
-  showAlert(`گروه ${!cur?'بی‌صدا':'فعال'} شد`,'success');
-  loadGroups();
+  else await sb.from('room_settings').insert({room_id:gid,is_muted:!cur,is_locked:false});
+  showAlert(`گروه ${!cur?'بی‌صدا':'فعال'} شد`,'success');loadGroups();
+}
+
+async function toggleGroupLock(gid,cur){
+  const action=cur?'باز':'بسته';
+  if(!confirm(`ارسال پیام در گروه ${action} شود؟`))return;
+  const {data:ex}=await sb.from('room_settings').select('*').eq('room_id',gid).maybeSingle();
+  if(ex)await sb.from('room_settings').update({is_locked:!cur,locked_by:!cur?'admin':null,updated_at:new Date().toISOString()}).eq('room_id',gid);
+  else await sb.from('room_settings').insert({room_id:gid,is_locked:!cur,locked_by:!cur?'admin':null,is_muted:false});
+  showAlert(`ارسال پیام ${!cur?'بسته':'باز'} شد`,'success');loadGroups();
+}
+
+async function createGroup(){
+  const id=document.getElementById('newGroupId').value.trim().toLowerCase();
+  const name=document.getElementById('newGroupName').value.trim();
+  const emoji=document.getElementById('newGroupEmoji').value.trim()||'👥';
+  if(!id||!name){showAlert('شناسه و نام الزامی','error');return}
+  if(!/^[a-z0-9_-]{2,30}$/.test(id)){showAlert('شناسه نامعتبر (فقط a-z، 0-9، - و _)','error');return}
+  try{
+    const {error:e1}=await sb.from('rooms').insert({id,name,avatar_emoji:emoji});
+    if(e1){showAlert('خطا ساخت گروه: '+e1.message,'error');return}
+    const {error:e2}=await sb.from('room_settings').insert({room_id:id,is_muted:false,is_locked:false});
+    if(e2){showAlert('هشدار: گروه ساخته شد ولی تنظیمات ذخیره نشد: '+e2.message,'error')}
+    const code=Math.random().toString(36).slice(2,10);
+    await sb.from('room_invites').insert({code,room_id:id}).catch(()=>{});
+    showAlert('گروه ساخته شد ✅','success');
+    document.getElementById('newGroupId').value='';
+    document.getElementById('newGroupName').value='';
+    loadGroups();
+  }catch(err){showAlert('خطای غیرمنتظره: '+err.message,'error')}
 }
 
 async function addMember(gid){
-  const sel=document.getElementById('add-'+gid);if(!sel.value)return;
-  const {error}=await sb.from('room_members').insert({room_id:gid,user_id:sel.value});
-  if(error)return showAlert('خطا: '+error.message,'error');
-  showAlert('عضو اضافه شد','success');
-  loadGroups();
+  const sel=document.getElementById('add-'+gid);
+  if(!sel||!sel.value){showAlert('یک کاربر انتخاب کنید','error');return}
+  const uid=sel.value;
+  try{
+    const {data:ex}=await sb.from('room_members').select('*').eq('room_id',gid).eq('user_id',uid).maybeSingle();
+    if(ex){showAlert('کاربر قبلاً عضو است','error');return}
+    const {error}=await sb.from('room_members').insert({room_id:gid,user_id:uid});
+    if(error){showAlert('خطا: '+error.message,'error');return}
+    showAlert('عضو اضافه شد ✅','success');
+    loadGroups();
+  }catch(err){showAlert('خطای غیرمنتظره: '+err.message,'error')}
 }
 
 async function removeMember(gid,uid){
@@ -188,13 +255,12 @@ async function loadReports(){
 
 async function resolveReport(id){
   await sb.from('reports').update({status:'resolved'}).eq('id',id);
-  showAlert('گزارش رسیدگی شد','success');
-  loadReports();
+  showAlert('گزارش رسیدگی شد','success');loadReports();
 }
 
-async function clearOffline(){if(!confirm('همه پیام‌های آفلاین حذف شوند؟'))return;await sb.from('offline_messages').delete().neq('id',0);showAlert('حذف شد','success')}
-async function clearGroups(){if(!confirm('همه پیام‌های گروه حذف شوند؟'))return;await sb.from('group_messages').delete().neq('id',0);showAlert('حذف شد','success')}
-async function clearReports(){if(!confirm('همه گزارش‌ها حذف شوند؟'))return;await sb.from('reports').delete().neq('id',0);showAlert('حذف شد','success');loadReports()}
+async function clearOffline(){if(!confirm('حذف؟'))return;await sb.from('offline_messages').delete().neq('id',0);showAlert('حذف شد','success')}
+async function clearGroups(){if(!confirm('حذف؟'))return;await sb.from('group_messages').delete().neq('id',0);showAlert('حذف شد','success')}
+async function clearReports(){if(!confirm('حذف؟'))return;await sb.from('reports').delete().neq('id',0);showAlert('حذف شد','success');loadReports()}
 </script>
 </body>
 </html>
