@@ -21,18 +21,19 @@ input,textarea,button{font-family:inherit;font-size:16px}
 .register-box h1{margin-bottom:8px;font-size:24px}
 .register-box p{color:var(--text-secondary);margin-bottom:20px;font-size:14px}
 .register-box input{width:100%;padding:13px 16px;margin-bottom:12px;background:var(--surface-2);border:1px solid var(--border);border-radius:12px;color:var(--text);font-size:16px;outline:none}
-.register-box input:focus{border-color:var(--accent)}
 .register-box button{width:100%;padding:13px;background:var(--accent);border:none;border-radius:12px;color:#fff;font-size:16px;font-weight:600;cursor:pointer}
 .register-box .hint{font-size:12px;color:var(--text-secondary);margin-bottom:10px}
 .error-msg{color:var(--danger);font-size:13px;margin-top:10px}
 .sidebar{width:340px;background:var(--sidebar);border-left:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0}
-.sidebar-header{padding:12px 14px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border)}
+.sidebar-header{padding:12px 14px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border)}
 .self-avatar{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:bold;color:#fff;font-size:16px;flex-shrink:0;cursor:pointer;background-size:cover;background-position:center;position:relative;border:2px solid var(--accent)}
 .self-info{flex:1;overflow:hidden}
 .self-info .name{font-weight:600;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .self-info .id{font-size:12px;color:var(--text-secondary)}
-.header-btn{background:transparent;border:none;color:var(--text-secondary);font-size:18px;padding:8px;border-radius:50%;cursor:pointer;flex-shrink:0}
+.header-btn{background:transparent;border:none;color:var(--text-secondary);font-size:18px;padding:6px;border-radius:50%;cursor:pointer;flex-shrink:0;width:36px;height:36px;display:flex;align-items:center;justify-content:center}
 .header-btn:hover{background:var(--surface-2);color:var(--text)}
+.header-btn.granted{color:var(--success)}
+.header-btn.denied{color:var(--danger)}
 .search-bar{padding:8px 14px;display:flex;gap:8px}
 .search-bar input{flex:1;padding:10px 16px;background:var(--surface-2);border:none;border-radius:20px;color:var(--text);font-size:14px;outline:none}
 .new-group-btn{background:var(--accent);border:none;border-radius:50%;width:40px;height:40px;color:#fff;font-size:22px;cursor:pointer;flex-shrink:0}
@@ -54,6 +55,8 @@ input,textarea,button{font-family:inherit;font-size:16px}
 .chat-empty{flex:1;display:flex;align-items:center;justify-content:center;color:var(--text-secondary);font-size:15px;flex-direction:column;gap:15px;padding:30px;text-align:center}
 .chat-header{padding:10px 16px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
 .chat-header .back-btn{display:none;background:transparent;border:none;color:var(--text);font-size:22px;cursor:pointer;padding:4px 8px}
+.chat-header-clickable{display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-width:0}
+.chat-header-clickable:hover{opacity:.85}
 .chat-header-avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:bold;color:#fff;background-size:cover;background-position:center;flex-shrink:0}
 .chat-header-info{flex:1;min-width:0}
 .chat-header-name{font-weight:600;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -76,6 +79,7 @@ input,textarea,button{font-family:inherit;font-size:16px}
 .message .pin-badge{background:var(--warning);color:#fff;font-size:9px;padding:1px 6px;border-radius:8px;margin-bottom:4px;display:inline-block}
 .message .deleted{font-style:italic;opacity:.6}
 .message.pinned{border:1px solid var(--warning)}
+.message .text-content{margin-top:4px}
 .reactions{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
 .reaction{background:var(--surface-2);padding:2px 8px;border-radius:12px;font-size:12px;cursor:pointer;user-select:none;display:inline-flex;align-items:center;gap:3px}
 .reaction.mine{background:var(--accent);color:#fff}
@@ -92,8 +96,11 @@ input,textarea,button{font-family:inherit;font-size:16px}
 .reply-preview-bar .close{background:transparent;border:none;color:var(--text-secondary);cursor:pointer;font-size:18px}
 .pin-bar{display:none;padding:8px 16px;background:var(--warning);color:#000;font-size:12px;align-items:center;justify-content:space-between}
 .pin-bar .close{background:transparent;border:none;color:#000;cursor:pointer;font-size:16px}
-.input-area{padding:10px 12px;background:var(--surface);border-top:1px solid var(--border);display:flex;align-items:center;gap:6px;padding-bottom:max(10px,env(safe-area-inset-bottom))}
-.input-area input[type="text"]{flex:1;padding:11px 16px;background:var(--surface-2);border:none;border-radius:22px;color:var(--text);font-size:15px;outline:none;min-width:0}
+.locked-bar{display:none;padding:10px 16px;background:var(--danger);color:#fff;font-size:13px;text-align:center}
+.locked-bar.visible{display:block}
+.input-area{padding:10px 12px;background:var(--surface);border-top:1px solid var(--border);display:flex;align-items:center;gap:6px;padding-bottom:max(10px,env(safe-area-inset-bottom));position:relative}
+.input-area input[type="text"]{flex:1;padding:11px 16px;background:var(--surface-2);border:none;border-radius:22px;color:var(--text);font-size:15px;outline:none;min-width:0;transition:flex .15s}
+.input-area.typing .icon-btn:not(.send){display:none}
 .icon-btn{width:42px;height:42px;border-radius:50%;background:transparent;border:none;color:var(--text-secondary);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .icon-btn:hover{background:var(--surface-2);color:var(--text)}
 .icon-btn.send{background:var(--accent);color:#fff}
@@ -114,9 +121,8 @@ input,textarea,button{font-family:inherit;font-size:16px}
 .modal-avatar{width:90px;height:90px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:bold;color:#fff;margin:0 auto 16px;background-size:cover;background-position:center;position:relative;border:3px solid var(--accent)}
 .modal-avatar.clickable{cursor:pointer}
 .modal-avatar.clickable::after{content:'📷';position:absolute;bottom:0;right:0;background:var(--accent);border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:14px;border:2px solid var(--surface)}
-.avatar-actions{display:flex;gap:8px;justify-content:center;margin-bottom:16px}
+.avatar-actions{display:flex;gap:8px;justify-content:center;margin-bottom:16px;flex-wrap:wrap}
 .avatar-actions button{background:var(--surface-2);border:none;padding:8px 16px;border-radius:20px;color:var(--text);cursor:pointer;font-size:13px}
-.avatar-actions button:hover{background:var(--border)}
 .avatar-actions button.danger{color:var(--danger)}
 .modal h2{margin-bottom:16px;text-align:center}
 .modal .modal-id{color:var(--text-secondary);font-size:14px;margin-bottom:6px;text-align:center}
@@ -125,10 +131,17 @@ input,textarea,button{font-family:inherit;font-size:16px}
 .modal .field{width:100%;padding:12px 14px;background:var(--surface-2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:15px;outline:none;margin-bottom:12px;font-family:inherit}
 .modal .field:focus{border-color:var(--accent)}
 .modal .label{font-size:12px;color:var(--text-secondary);margin-bottom:4px;margin-top:6px;display:block}
-.modal .member-list{max-height:250px;overflow-y:auto;border:1px solid var(--border);border-radius:10px;padding:8px;margin-bottom:14px}
+.modal .member-list{max-height:220px;overflow-y:auto;border:1px solid var(--border);border-radius:10px;padding:8px;margin-bottom:14px}
 .modal .member-item{display:flex;align-items:center;gap:10px;padding:8px;border-radius:8px;cursor:pointer}
 .modal .member-item:hover{background:var(--surface-2)}
 .modal .member-item input[type="checkbox"]{width:18px;height:18px;cursor:pointer}
+.modal .members-display{display:flex;flex-direction:column;gap:4px;margin:8px 0;max-height:180px;overflow-y:auto}
+.modal .member-row{display:flex;align-items:center;gap:10px;padding:6px 8px;border-radius:8px;background:var(--surface-2)}
+.modal .member-row .m-av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:bold;color:#fff;font-size:12px;background-size:cover;background-position:center;flex-shrink:0}
+.modal .member-row .m-info{flex:1;min-width:0}
+.modal .member-row .m-name{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.modal .member-row .m-id{font-size:11px;color:var(--text-secondary)}
+.modal .member-row .m-badge{font-size:10px;padding:2px 6px;border-radius:8px;background:var(--accent);color:#fff}
 .modal button.primary{width:100%;padding:13px;background:var(--accent);border:none;border-radius:12px;color:#fff;font-size:15px;font-weight:600;cursor:pointer;margin-top:8px}
 .modal button.primary:hover{background:var(--accent-hover)}
 .modal button.danger{background:var(--danger)}
@@ -157,10 +170,6 @@ input,textarea,button{font-family:inherit;font-size:16px}
 .search-overlay .results{flex:1;overflow-y:auto;padding:10px}
 .search-result{padding:10px;border-radius:8px;cursor:pointer;margin-bottom:4px}
 .search-result:hover{background:var(--surface-2)}
-.notif-btn{position:fixed;bottom:20px;right:20px;background:var(--accent);color:#fff;border:none;border-radius:50%;width:50px;height:50px;font-size:22px;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.4);z-index:9000;display:flex;align-items:center;justify-content:center}
-.notif-btn:hover{background:var(--accent-hover)}
-.notif-btn.denied{background:var(--danger)}
-.notif-btn.granted{background:var(--success)}
 @media(max-width:700px){
   .sidebar{width:100%;position:fixed;inset:0;z-index:10}
   .chat-main{position:fixed;inset:0;z-index:20;display:none}
@@ -195,6 +204,7 @@ input,textarea,button{font-family:inherit;font-size:16px}
       <div class="name" id="selfName">...</div>
       <div class="id" id="selfId">...</div>
     </div>
+    <button class="header-btn" id="notifBtn" onclick="toggleNotifications()" title="اعلان">🔕</button>
     <button class="header-btn" onclick="toggleTheme()" title="تم">🌓</button>
   </div>
   <div class="search-bar">
@@ -212,10 +222,12 @@ input,textarea,button{font-family:inherit;font-size:16px}
   <div class="hidden" id="chatView" style="display:none;flex-direction:column;height:100%">
     <div class="chat-header">
       <button class="back-btn" onclick="closeChatMobile()">→</button>
-      <div class="chat-header-avatar" id="chatAvatar"></div>
-      <div class="chat-header-info">
-        <div class="chat-header-name" id="chatName">...</div>
-        <div class="chat-header-status" id="chatStatus">...</div>
+      <div class="chat-header-clickable" onclick="openChatProfile()">
+        <div class="chat-header-avatar" id="chatAvatar"></div>
+        <div class="chat-header-info">
+          <div class="chat-header-name" id="chatName">...</div>
+          <div class="chat-header-status" id="chatStatus">...</div>
+        </div>
       </div>
       <div class="chat-header-actions">
         <button class="icon-btn" onclick="openSearch()" title="جستجو">🔍</button>
@@ -227,6 +239,7 @@ input,textarea,button{font-family:inherit;font-size:16px}
       <button class="close" onclick="hidePinBar()">×</button>
     </div>
     <div class="messages-area" id="messagesArea"></div>
+    <div class="locked-bar" id="lockedBar">🔒 ارسال پیام توسط ادمین بسته شده است</div>
     <div class="reply-preview-bar" id="replyPreviewBar">
       <span id="replyPreviewText"></span>
       <button class="close" onclick="cancelReply()">×</button>
@@ -234,7 +247,7 @@ input,textarea,button{font-family:inherit;font-size:16px}
     <div class="recording-bar" id="recordingBar">
       <span class="rec-dot"></span>
       <span id="recTime">0:00</span>
-      <span style="flex:1">در حال ضبط...</span>
+      <span style="flex:1">در حال ضبط... (متن هم می‌توانی بنویسی)</span>
       <button onclick="cancelRecording()">لغو</button>
       <button onclick="stopRecording()">ارسال</button>
     </div>
@@ -275,7 +288,7 @@ let globalPresence=null,allProfiles=[],userGroups=[],unreadCounts={},mutedRooms=
 let replyTarget=null,mediaRecorder=null,recordedChunks=[],recTimer=null,recordStartTime=null;
 let pinnedMessage=null,editTarget=null,notificationsEnabled=false,stickerLoaded=false;
 let currentTheme=localStorage.getItem('customTheme')?JSON.parse(localStorage.getItem('customTheme')):null;
-let groupAvatarTarget=null;
+let groupAvatarTarget=null,currentGroupMembers=[],currentGroupLocked=false;
 
 const $=id=>document.getElementById(id);
 function hashCode(s){let h=0;for(let i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))|0;return Math.abs(h)}
@@ -337,8 +350,14 @@ async function init(){
   sb.channel('profiles-watch').on('postgres_changes',{event:'*',schema:'public',table:'profiles'},()=>loadProfiles()).subscribe();
   sb.channel('offline-watch').on('postgres_changes',{event:'INSERT',schema:'public',table:'offline_messages'},()=>{computeUnread().then(refreshContactList)}).subscribe();
   sb.channel('rooms-watch').on('postgres_changes',{event:'*',schema:'public',table:'rooms'},()=>loadGroups()).subscribe();
+  sb.channel('settings-watch').on('postgres_changes',{event:'*',schema:'public',table:'room_settings'},()=>{
+    if(currentChat&&currentChat.type==='group')checkGroupLock();
+  }).subscribe();
 
   $('messageInput').addEventListener('keypress',e=>{if(e.key==='Enter')sendMessage()});
+  $('messageInput').addEventListener('input',()=>{
+    $('inputArea').classList.toggle('typing',$('messageInput').value.trim().length>0);
+  });
   $('fileInput').addEventListener('change',e=>{const f=e.target.files[0];if(f)uploadMedia(f);e.target.value=''});
   $('bgInput').addEventListener('change',e=>{const f=e.target.files[0];if(f)uploadBackground(f);e.target.value=''});
   $('avatarInput').addEventListener('change',e=>{const f=e.target.files[0];if(f)uploadAvatar(f);e.target.value=''});
@@ -346,13 +365,9 @@ async function init(){
   $('searchInput').addEventListener('input',refreshContactList);
 
   if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
-
-  setTimeout(initNotifications,500);
-
-  const joinParam=new URLSearchParams(location.search).get('join');
+  updateNotifButton();
+  const joinParam=new URLSearchParams(location.search).get('join')||new URLSearchParams(location.search).get('invite');
   if(joinParam)setTimeout(()=>handleJoin(joinParam),1000);
-  const invParam=new URLSearchParams(location.search).get('invite');
-  if(invParam)setTimeout(()=>handleJoin(invParam),1000);
 }
 
 function renderSelf(){
@@ -376,7 +391,7 @@ async function uploadAvatar(file){
   await sb.from('profiles').update({avatar_url:u.publicUrl}).eq('id',currentUser.id);
   currentUser.avatar_url=u.publicUrl;
   renderSelf();refreshContactList();
-  document.querySelector('.modal-overlay')?.remove();
+  document.querySelectorAll('.modal-overlay').forEach(m=>m.remove());
   showMyProfile();
 }
 
@@ -389,11 +404,12 @@ async function removeAvatar(){
   await sb.from('profiles').update({avatar_url:null}).eq('id',currentUser.id);
   currentUser.avatar_url=null;
   renderSelf();refreshContactList();
-  document.querySelector('.modal-overlay')?.remove();
+  document.querySelectorAll('.modal-overlay').forEach(m=>m.remove());
   showMyProfile();
 }
 
 function showMyProfile(){
+  document.querySelectorAll('.modal-overlay').forEach(m=>m.remove());
   const ov=document.createElement('div');ov.className='modal-overlay';
   ov.onclick=e=>{if(e.target===ov)ov.remove()};
   const avHtml=currentUser.avatar_url?`<div class="modal-avatar clickable" style="background-image:url('${currentUser.avatar_url}')" onclick="document.getElementById('avatarInput').click()"></div>`:`<div class="modal-avatar clickable" style="background:${colorFor(currentUser.id)}" onclick="document.getElementById('avatarInput').click()">${initials(currentUser.display_name)}</div>`;
@@ -409,6 +425,8 @@ function showMyProfile(){
     <div class="modal-id">@${esc(currentUser.id)}</div>
     <label class="label">نام نمایشی</label>
     <input type="text" class="field" id="editName" value="${esc(currentUser.display_name)}" maxlength="30">
+    <label class="label">شماره تلفن</label>
+    <input type="tel" class="field" id="editPhone" value="${esc(currentUser.phone||'')}" placeholder="09xxxxxxxxx" maxlength="15">
     <label class="label">بیوگرافی</label>
     <textarea class="field" id="editBio" placeholder="درباره من..." rows="2" maxlength="150">${esc(currentUser.bio||'')}</textarea>
     <label class="label">ایموجی وضعیت</label>
@@ -423,24 +441,26 @@ function showMyProfile(){
 
 async function saveProfile(){
   const name=$('editName').value.trim();
+  const phone=$('editPhone').value.trim();
   const bio=$('editBio').value.trim();
   const status=$('editStatus').value.trim()||'😊';
   if(!name){alert('نام خالی');return}
-  const {error}=await sb.from('profiles').update({display_name:name,bio,status_emoji:status}).eq('id',currentUser.id);
+  const {error}=await sb.from('profiles').update({display_name:name,phone:phone||null,bio,status_emoji:status}).eq('id',currentUser.id);
   if(error){alert('خطا: '+error.message);return}
-  currentUser.display_name=name;currentUser.bio=bio;currentUser.status_emoji=status;
+  currentUser.display_name=name;currentUser.phone=phone||null;currentUser.bio=bio;currentUser.status_emoji=status;
   $('selfName').textContent=name;
-  document.querySelector('.modal-overlay')?.remove();
+  document.querySelectorAll('.modal-overlay').forEach(m=>m.remove());
   refreshContactList();
 }
 
 function showAutoReplySettings(){
+  document.querySelectorAll('.modal-overlay').forEach(m=>m.remove());
   const ov=document.createElement('div');ov.className='modal-overlay';
   ov.onclick=e=>{if(e.target===ov)ov.remove()};
   ov.innerHTML=`<div class="modal">
     <button class="close-btn" onclick="this.parentElement.parentElement.remove()">×</button>
     <h2>💬 پاسخ خودکار</h2>
-    <p style="font-size:13px;color:var(--text-secondary);margin-bottom:12px">وقتی آفلاین هستید، این پیام به‌طور خودکار برای مخاطبین ارسال می‌شود.</p>
+    <p style="font-size:13px;color:var(--text-secondary);margin-bottom:12px">وقتی آفلاین هستید، این پیام خودکار ارسال می‌شود.</p>
     <textarea class="field" id="autoReplyText" rows="3" placeholder="مثلاً: من الان آفلاین هستم...">${esc(currentUser.auto_reply||'')}</textarea>
     <button class="primary" onclick="saveAutoReply()">ذخیره</button>
     <button class="primary danger" onclick="clearAutoReply()" style="margin-top:8px">حذف پاسخ خودکار</button>
@@ -452,14 +472,14 @@ async function saveAutoReply(){
   const text=$('autoReplyText').value.trim();
   await sb.from('profiles').update({auto_reply:text||null}).eq('id',currentUser.id);
   currentUser.auto_reply=text||null;
-  document.querySelector('.modal-overlay')?.remove();
+  document.querySelectorAll('.modal-overlay').forEach(m=>m.remove());
   alert('✅ ذخیره شد');
 }
 
 async function clearAutoReply(){
   await sb.from('profiles').update({auto_reply:null}).eq('id',currentUser.id);
   currentUser.auto_reply=null;
-  document.querySelector('.modal-overlay')?.remove();
+  document.querySelectorAll('.modal-overlay').forEach(m=>m.remove());
 }
 
 function showThemeSelector(btn){
@@ -499,7 +519,7 @@ function openCustomTheme(){
 function applyCustomTheme(){
   const t={bg:$('ctBg').value,sidebar:$('ctSidebar').value,accent:$('ctAccent').value,msgSelf:$('ctMsg').value};
   currentTheme=t;localStorage.setItem('customTheme',JSON.stringify(t));
-  applyThemeToRoot(t);document.querySelector('.modal-overlay')?.remove();
+  applyThemeToRoot(t);document.querySelectorAll('.modal-overlay').forEach(m=>m.remove());
 }
 
 function applyThemeToRoot(t){
@@ -511,7 +531,7 @@ function applyThemeToRoot(t){
 function resetCustomTheme(){
   currentTheme=null;localStorage.removeItem('customTheme');
   ['--bg','--sidebar','--surface','--accent','--msg-self'].forEach(v=>document.documentElement.style.removeProperty(v));
-  document.querySelector('.modal-overlay')?.remove();
+  document.querySelectorAll('.modal-overlay').forEach(m=>m.remove());
 }
 
 async function loadProfiles(){
@@ -578,13 +598,19 @@ function buildItem({type,id,name,emoji,online,unread,avatarUrl,avatarId,muted,st
   if(unread>0&&!muted)meta.innerHTML=`<div class="unread-badge">${unread>99?'99+':unread}</div>`;
   el.appendChild(av);el.appendChild(info);el.appendChild(meta);
   el.onclick=()=>{type==='private'?openPrivateChat(id):openGroup(id)};
-  el.oncontextmenu=e=>{e.preventDefault();if(type==='private')showProfile(id)};
   return el;
+}
+
+function openChatProfile(){
+  if(!currentChat)return;
+  if(currentChat.type==='private')showProfile(currentChat.id);
+  else showGroupProfile();
 }
 
 function showProfile(userId){
   const p=allProfiles.find(x=>x.id===userId);if(!p)return;
   const o=onlineUsers.has(p.id);
+  document.querySelectorAll('.modal-overlay').forEach(m=>m.remove());
   const ov=document.createElement('div');ov.className='modal-overlay';
   ov.onclick=e=>{if(e.target===ov)ov.remove()};
   const avHtml=p.avatar_url?`<div class="modal-avatar" style="background-image:url('${p.avatar_url}')"></div>`:`<div class="modal-avatar" style="background:${colorFor(p.id)}">${initials(p.display_name)}</div>`;
@@ -593,6 +619,7 @@ function showProfile(userId){
     ${avHtml}
     <h2>${p.status_emoji||''} ${esc(p.display_name)}</h2>
     <div class="modal-id">@${esc(p.id)}</div>
+    ${p.phone?`<div style="text-align:center;font-size:13px;color:var(--accent);margin-bottom:8px">📞 ${esc(p.phone)}</div>`:''}
     ${p.bio?`<div style="text-align:center;font-size:13px;color:var(--text-secondary);margin-bottom:12px;padding:0 16px">${esc(p.bio)}</div>`:''}
     <div class="modal-status ${o?'':'offline'}">${o?'🟢 آنلاین':lastSeenText(p.last_seen)}</div>
     <button class="primary" onclick="this.parentElement.parentElement.remove();openPrivateChat('${p.id}')">شروع گفتگو</button>
@@ -600,11 +627,130 @@ function showProfile(userId){
   document.body.appendChild(ov);
 }
 
+async function showGroupProfile(){
+  if(!currentChat||currentChat.type!=='group')return;
+  const g=currentChat.group;
+  const {data:members}=await sb.from('room_members').select('*').eq('room_id',currentChat.id);
+  const {data:profiles}=await sb.from('profiles').select('*');
+  const {data:settings}=await sb.from('room_settings').select('*').eq('room_id',currentChat.id).maybeSingle();
+  currentGroupMembers=(members||[]).map(m=>{
+    const p=(profiles||[]).find(x=>x.id===m.user_id);
+    return p?{...p,is_creator:g.created_by===p.id}:null;
+  }).filter(Boolean);
+  currentGroupLocked=settings?.is_locked||false;
+
+  document.querySelectorAll('.modal-overlay').forEach(m=>m.remove());
+  const ov=document.createElement('div');ov.className='modal-overlay';
+  ov.onclick=e=>{if(e.target===ov)ov.remove()};
+  const avHtml=g.avatar_url?`<div class="modal-avatar clickable" style="background-image:url('${g.avatar_url}')" onclick="triggerGroupAvatarUpload('${g.id}')"></div>`:`<div class="modal-avatar clickable" style="background:#8b5cf6" onclick="triggerGroupAvatarUpload('${g.id}')">${g.avatar_emoji||'👥'}</div>`;
+  const membersHtml=currentGroupMembers.map(m=>{
+    const av=m.avatar_url?`<div class="m-av" style="background-image:url('${m.avatar_url}')"></div>`:`<div class="m-av" style="background:${colorFor(m.id)}">${initials(m.display_name)}</div>`;
+    return `<div class="member-row">${av}<div class="m-info"><div class="m-name">${esc(m.display_name)}</div><div class="m-id">@${esc(m.id)}</div></div>${m.is_creator?'<span class="m-badge">سازنده</span>':''}${onlineUsers.has(m.id)?'<span style="color:var(--success);font-size:11px">🟢</span>':''}</div>`;
+  }).join('');
+  ov.innerHTML=`<div class="modal">
+    <button class="close-btn" onclick="this.parentElement.parentElement.remove()">×</button>
+    ${avHtml}
+    <h2>${g.avatar_emoji||'👥'} ${esc(g.name)}</h2>
+    ${g.bio?`<div style="text-align:center;font-size:13px;color:var(--text-secondary);margin-bottom:8px;padding:0 16px">${esc(g.bio)}</div>`:''}
+    <div class="modal-status">${currentGroupMembers.length} عضو</div>
+    <label class="label" style="text-align:right">ویرایش نام گروه</label>
+    <input type="text" class="field" id="gpName" value="${esc(g.name)}" maxlength="40">
+    <label class="label" style="text-align:right">ویرایش بیو</label>
+    <textarea class="field" id="gpBio" rows="2" maxlength="150">${esc(g.bio||'')}</textarea>
+    <label class="label" style="text-align:right">ایموجی گروه</label>
+    <input type="text" class="field" id="gpEmoji" value="${esc(g.avatar_emoji||'👥')}" maxlength="2">
+    <button class="primary" onclick="saveGroupInfoFromProfile()">💾 ذخیره تغییرات گروه</button>
+    ${g.avatar_url?`<button class="primary danger" onclick="removeGroupAvatar('${g.id}')" style="margin-top:8px">🗑️ حذف عکس گروه</button>`:''}
+    <h3 style="margin:16px 0 8px;font-size:15px;text-align:right">👥 اعضا (${currentGroupMembers.length})</h3>
+    <div class="members-display">${membersHtml||'<div style="color:var(--text-secondary);text-align:center;padding:10px">عضوی نیست</div>'}</div>
+    ${g.created_by===currentUser.id?`<button class="primary danger" onclick="deleteGroupByCreator()" style="margin-top:12px">🗑️ حذف گروه</button>`:''}
+  </div>`;
+  document.body.appendChild(ov);
+}
+
+async function saveGroupInfoFromProfile(){
+  const name=$('gpName').value.trim();
+  const bio=$('gpBio').value.trim();
+  const emoji=$('gpEmoji').value.trim()||'👥';
+  if(!name){alert('نام خالی');return}
+  const {error}=await sb.from('rooms').update({name,bio:bio||null,avatar_emoji:emoji}).eq('id',currentChat.id);
+  if(error){alert('خطا: '+error.message);return}
+  await loadGroups();
+  currentChat.name=name;currentChat.group.name=name;currentChat.group.bio=bio;currentChat.group.avatar_emoji=emoji;
+  $('chatName').textContent=name;
+  document.querySelectorAll('.modal-overlay').forEach(m=>m.remove());
+  showGroupProfile();
+}
+
+async function deleteGroupByCreator(){
+  if(!confirm('گروه و همه پیام‌هایش حذف شوند؟'))return;
+  await sb.from('group_messages').delete().eq('room_id',currentChat.id);
+  await sb.from('room_members').delete().eq('room_id',currentChat.id);
+  await sb.from('muted_rooms').delete().eq('room_id',currentChat.id);
+  await sb.from('room_invites').delete().eq('room_id',currentChat.id);
+  await sb.from('room_settings').delete().eq('room_id',currentChat.id);
+  await sb.from('rooms').delete().eq('id',currentChat.id);
+  document.querySelectorAll('.modal-overlay').forEach(m=>m.remove());
+  closeChatMobile();
+  await loadGroups();
+}
+
+function triggerGroupAvatarUpload(groupId){
+  groupAvatarTarget=groupId;
+  $('groupAvatarInput').click();
+}
+
+async function uploadGroupAvatar(groupId,file){
+  if(!file.type.startsWith('image/')){alert('فقط عکس');return}
+  if(file.size>5*1024*1024){alert('حداکثر ۵MB');return}
+  const path=`groups/${groupId}.${file.name.split('.').pop()}`;
+  const {error}=await sb.storage.from('chat-media').upload(path,file,{upsert:true});
+  if(error){alert('خطا: '+error.message);return}
+  const {data:u}=sb.storage.from('chat-media').getPublicUrl(path);
+  await sb.from('rooms').update({avatar_url:u.publicUrl}).eq('id',groupId);
+  await loadGroups();
+  if(currentChat&&currentChat.id===groupId){
+    currentChat.group.avatar_url=u.publicUrl;
+    $('chatAvatar').style.backgroundImage=`url('${u.publicUrl}')`;
+    $('chatAvatar').textContent='';
+  }
+  document.querySelectorAll('.modal-overlay').forEach(m=>m.remove());
+  showGroupProfile();
+}
+
+async function removeGroupAvatar(groupId){
+  if(!confirm('عکس گروه حذف شود؟'))return;
+  const {data:g}=await sb.from('rooms').select('avatar_url').eq('id',groupId).maybeSingle();
+  if(g&&g.avatar_url){
+    const path=g.avatar_url.split('/chat-media/')[1];
+    if(path)await sb.storage.from('chat-media').remove([path]).catch(()=>{});
+  }
+  await sb.from('rooms').update({avatar_url:null}).eq('id',groupId);
+  await loadGroups();
+  if(currentChat&&currentChat.id===groupId){
+    currentChat.group.avatar_url=null;
+    $('chatAvatar').style.backgroundImage='';
+    $('chatAvatar').textContent=currentChat.group.avatar_emoji||'👥';
+  }
+  document.querySelectorAll('.modal-overlay').forEach(m=>m.remove());
+  showGroupProfile();
+}
+
+async function checkGroupLock(){
+  if(!currentChat||currentChat.type!=='group')return;
+  const {data}=await sb.from('room_settings').select('is_locked').eq('room_id',currentChat.id).maybeSingle();
+  currentGroupLocked=data?.is_locked||false;
+  $('lockedBar').classList.toggle('visible',currentGroupLocked);
+  $('messageInput').disabled=currentGroupLocked;
+  $('sendBtn').disabled=currentGroupLocked;
+}
+
 async function openPrivateChat(otherId){
   const p=allProfiles.find(x=>x.id===otherId);if(!p)return;
   if(currentChannel){await sb.removeChannel(currentChannel);currentChannel=null}
   currentChat={type:'private',id:otherId,roomId:privateRoomId(currentUser.id,otherId),name:p.display_name,muted:mutedRooms.has(privateRoomId(currentUser.id,otherId))};
   hidePinBar();
+  $('lockedBar').classList.remove('visible');
   showChatView(p.display_name,onlineUsers.has(otherId)?'🟢 آنلاین':lastSeenText(p.last_seen),p.avatar_url,colorFor(p.id));
   $('messagesArea').innerHTML='';
   $('chatMain').classList.add('open');
@@ -657,6 +803,7 @@ async function openGroup(rid){
   const cached=cacheGet(rid);
   cached.forEach(m=>renderMessage(m,rid));
   await markAsRead(rid);
+  await checkGroupLock();
   const {data}=await sb.from('group_messages').select('*').eq('room_id',rid).order('created_at').limit(200);
   const seen=new Set(cached.map(m=>String(m.id)));
   (data||[]).forEach(m=>{if(!seen.has(String(m.id))){renderMessage(m,rid);cacheAppend(rid,m)}});
@@ -679,7 +826,8 @@ async function openGroup(rid){
   });
   currentChannel.subscribe(s=>{
     if(s==='SUBSCRIBED'){
-      $('messageInput').disabled=false;$('sendBtn').disabled=false;
+      $('messageInput').disabled=currentGroupLocked;
+      $('sendBtn').disabled=currentGroupLocked;
       $('messageInput').focus();
     }
   });
@@ -699,6 +847,8 @@ function showChatView(name,status,avatarUrl,bgColor,emoji){
   else{av.style.background=bgColor||'var(--accent)';av.textContent=emoji||initials(name)}
   $('messageInput').disabled=true;$('sendBtn').disabled=true;
   $('stickerPanel').classList.remove('visible');
+  $('messageInput').value='';
+  $('inputArea').classList.remove('typing');
 }
 
 function updateChatHeaderStatus(){
@@ -735,14 +885,7 @@ function renderMessage(msg,rid){
     const r=cacheGet(rid).find(m=>String(m.id)===String(msg.reply_to_id));
     if(r)html+=`<div class="reply-block">↩️ ${esc(r.sender_name)}: ${esc((r.content||'').slice(0,50))}</div>`;
   }
-  if(msg.content){
-    if(msg.content.startsWith('[[STICKER]]'))html+=`<div class="sticker-msg">${msg.content.replace('[[STICKER]]','')}</div>`;
-    else html+=`<div>${esc(msg.content)}</div>`;
-  }
-  if(msg.media_type==='location'&&msg.media_lat&&msg.media_lng){
-    const lat=msg.media_lat,lng=msg.media_lng;
-    html+=`<div class="location-msg"><iframe src="https://www.openstreetmap.org/export/embed.html?bbox=${lng-0.005},${lat-0.005},${lng+0.005},${lat+0.005}&marker=${lat},${lng}" loading="lazy"></iframe><a href="https://www.openstreetmap.org/?mlat=${lat}&mlon=${lng}#map=16/${lat}/${lng}" target="_blank">🗺️ مشاهده در نقشه</a></div>`;
-  }
+  // media اول (ویس/عکس/ویدیو)
   if(msg.media_url){
     const mt=msg.media_type||'';
     if(mt.startsWith('audio/')){
@@ -755,6 +898,15 @@ function renderMessage(msg,rid){
     } else {
       html+=`<a class="file-link" href="${msg.media_url}" target="_blank">📎 دانلود فایل</a>`;
     }
+  }
+  if(msg.media_type==='location'&&msg.media_lat&&msg.media_lng){
+    const lat=msg.media_lat,lng=msg.media_lng;
+    html+=`<div class="location-msg"><iframe src="https://www.openstreetmap.org/export/embed.html?bbox=${lng-0.005},${lat-0.005},${lng+0.005},${lat+0.005}&marker=${lat},${lng}" loading="lazy"></iframe><a href="https://www.openstreetmap.org/?mlat=${lat}&mlon=${lng}#map=16/${lat}/${lng}" target="_blank">🗺️ مشاهده در نقشه</a></div>`;
+  }
+  // متن پیام — زیر مدیا نمایش داده می‌شود (مخصوصاً برای ویس)
+  if(msg.content){
+    if(msg.content.startsWith('[[STICKER]]'))html+=`<div class="sticker-msg">${msg.content.replace('[[STICKER]]','')}</div>`;
+    else html+=`<div class="text-content">${esc(msg.content)}</div>`;
   }
   html+=renderReactions(msg.reactions,currentUser.id,msg.id);
   html+=`<div class="meta"><span>${fmtTime(msg.created_at)}</span><button class="more-btn" onclick="showMsgMenu(event,'${msg.id}','${msg.sender_id}')">⋯</button></div>`;
@@ -814,7 +966,7 @@ function setReply(mid){
   $('replyPreviewBar').style.display='flex';
   $('replyPreviewText').textContent=`↩️ ${m.sender_name}: ${(m.content||'').slice(0,40)}...`;
 }
-function cancelReply(){replyTarget=null;editTarget=null;$('replyPreviewBar').style.display='none';$('messageInput').value=''}
+function cancelReply(){replyTarget=null;editTarget=null;$('replyPreviewBar').style.display='none'}
 
 function editMessage(mid){
   const m=cacheGet(currentChat.roomId).find(x=>String(x.id)===String(mid));
@@ -824,6 +976,7 @@ function editMessage(mid){
   $('replyPreviewBar').style.display='flex';
   $('replyPreviewText').textContent='✏️ حالت ویرایش';
   $('messageInput').focus();
+  $('inputArea').classList.toggle('typing',$('messageInput').value.trim().length>0);
 }
 
 async function deleteForAll(mid){
@@ -863,12 +1016,14 @@ async function sendMessage(){
     else if(currentChat.type==='group'&&String(editTarget.id).match(/^\d+$/))await sb.from('group_messages').update({content:text}).eq('id',editTarget.id);
     cacheUpdate(currentChat.roomId,editTarget.id,{content:text});
     input.value='';editTarget=null;$('replyPreviewBar').style.display='none';
+    $('inputArea').classList.remove('typing');
     $('messagesArea').innerHTML='';cacheGet(currentChat.roomId).forEach(m=>renderMessage(m,currentChat.roomId));
     return;
   }
+  if(currentChat.type==='group'&&currentGroupLocked){alert('ارسال پیام در این گروه توسط ادمین بسته شده');return}
   const {data:me}=await sb.from('profiles').select('is_active').eq('id',currentUser.id).maybeSingle();
   if(!me||!me.is_active){alert('حساب غیرفعال');return}
-  input.value='';
+  input.value='';$('inputArea').classList.remove('typing');
   const msg={sender_id:currentUser.id,sender_name:currentUser.display_name,content:text,created_at:new Date().toISOString()};
   if(currentChat.type==='private')await sendPrivateMessage(msg);
   else await sendGroupMessage(msg);
@@ -883,16 +1038,11 @@ async function sendPrivateMessage(msg){
   } else {
     const {data,error}=await sb.from('offline_messages').insert({room_id:currentChat.roomId,sender_id:msg.sender_id,sender_name:msg.sender_name,content:msg.content,media_url:msg.media_url,media_type:msg.media_type,media_duration:msg.media_duration,media_lat:msg.media_lat,media_lng:msg.media_lng}).select().single();
     if(!error&&data){const d={...msg,id:'sent-'+data.id};renderMessage(d,currentChat.roomId);cacheAppend(currentChat.roomId,d)}
-    if(!error&&currentUser.auto_reply)setTimeout(()=>sendAutoReply(currentChat.roomId),2000);
   }
 }
 
-async function sendAutoReply(roomId){
-  const autoMsg={sender_id:currentUser.id,sender_name:currentUser.display_name,content:'🤖 '+currentUser.auto_reply,created_at:new Date().toISOString()};
-  await sb.from('offline_messages').insert({room_id:roomId,sender_id:currentUser.id,sender_name:currentUser.display_name,content:autoMsg.content});
-}
-
 async function sendGroupMessage(msg){
+  if(currentGroupLocked){alert('ارسال پیام بسته است');return}
   const p={room_id:currentChat.roomId,sender_id:msg.sender_id,sender_name:msg.sender_name,content:msg.content,media_url:msg.media_url,media_type:msg.media_type,media_duration:msg.media_duration,media_lat:msg.media_lat,media_lng:msg.media_lng};
   if(replyTarget)p.reply_to_id=replyTarget.id;
   const {data,error}=await sb.from('group_messages').insert(p).select().single();
@@ -910,7 +1060,8 @@ function showEmojiPicker(){
 
 function insertEmoji(e){
   const input=$('messageInput');input.value+=e;
-  document.querySelector('.modal-overlay')?.remove();
+  $('inputArea').classList.toggle('typing',input.value.trim().length>0);
+  document.querySelectorAll('.modal-overlay').forEach(m=>m.remove());
   input.focus();
 }
 
@@ -922,6 +1073,7 @@ function showStickerPanel(){
 
 async function sendSticker(sticker){
   if(!currentChat)return;
+  if(currentChat.type==='group'&&currentGroupLocked){alert('ارسال بسته است');return}
   $('stickerPanel').classList.remove('visible');
   const msg={sender_id:currentUser.id,sender_name:currentUser.display_name,content:`[[STICKER]]${sticker}`,created_at:new Date().toISOString()};
   if(currentChat.type==='private')await sendPrivateMessage(msg);
@@ -930,6 +1082,7 @@ async function sendSticker(sticker){
 
 async function sendLocation(){
   if(!currentChat)return;
+  if(currentChat.type==='group'&&currentGroupLocked){alert('ارسال بسته است');return}
   if(!navigator.geolocation){alert('پشتیبانی نمی‌شود');return}
   if(!confirm('موقعیت ارسال شود؟'))return;
   try{
@@ -943,6 +1096,7 @@ async function sendLocation(){
 async function uploadMedia(file){
   if(!currentChat)return;
   if(currentChat.type==='private'&&!onlineUsers.has(currentChat.id)){alert('طرف آفلاین است');return}
+  if(currentChat.type==='group'&&currentGroupLocked){alert('ارسال بسته است');return}
   if(file.size>50*1024*1024){alert('حداکثر ۵۰MB');return}
   const path=`${currentUser.id}/${Date.now()}-${Math.random().toString(36).slice(2)}.${file.name.split('.').pop()}`;
   const {error}=await sb.storage.from('chat-media').upload(path,file,{cacheControl:'3600',upsert:false});
@@ -955,6 +1109,7 @@ async function uploadMedia(file){
 
 async function startRecording(){
   if(!currentChat)return;
+  if(currentChat.type==='group'&&currentGroupLocked){alert('ارسال بسته است');return}
   try{
     const stream=await navigator.mediaDevices.getUserMedia({audio:true});
     mediaRecorder=new MediaRecorder(stream);recordedChunks=[];
@@ -984,16 +1139,19 @@ function cancelRecording(){
 }
 
 async function sendVoiceBlob(blob,duration){
+  const text=$('messageInput').value.trim();
+  $('messageInput').value='';$('inputArea').classList.remove('typing');
   const path=`${currentUser.id}/voice-${Date.now()}.webm`;
   const {error}=await sb.storage.from('chat-media').upload(path,blob,{cacheControl:'3600',upsert:false});
   if(error){alert('خطا: '+error.message);return}
   const {data:u}=sb.storage.from('chat-media').getPublicUrl(path);
-  const msg={sender_id:currentUser.id,sender_name:currentUser.display_name,content:'',media_url:u.publicUrl,media_type:'audio/webm',media_duration:duration,created_at:new Date().toISOString()};
+  const msg={sender_id:currentUser.id,sender_name:currentUser.display_name,content:text||'',media_url:u.publicUrl,media_type:'audio/webm',media_duration:duration,created_at:new Date().toISOString()};
   if(currentChat.type==='private')await sendPrivateMessage(msg);
   else await sendGroupMessage(msg);
 }
 
 function showCreateGroup(){
+  document.querySelectorAll('.modal-overlay').forEach(m=>m.remove());
   const ov=document.createElement('div');ov.className='modal-overlay';
   ov.onclick=e=>{if(e.target===ov)ov.remove()};
   const membersHtml=allProfiles.map(p=>`<label class="member-item"><input type="checkbox" value="${p.id}"><span>${esc(p.display_name)} <small style="color:var(--text-secondary)">@${p.id}</small></span></label>`).join('')||'<div style="padding:10px;color:var(--text-secondary)">مخاطبی نیست</div>';
@@ -1023,10 +1181,10 @@ async function createUserGroup(btn){
   if(e1){alert('خطا: '+e1.message);btn.disabled=false;btn.textContent='ساخت گروه';return}
   const members=[currentUser.id,...checked].map(uid=>({room_id:roomId,user_id:uid}));
   await sb.from('room_members').insert(members);
-  await sb.from('room_settings').insert({room_id:roomId,is_muted:false});
+  await sb.from('room_settings').insert({room_id:roomId,is_muted:false,is_locked:false});
   const code=Math.random().toString(36).slice(2,10);
   await sb.from('room_invites').insert({code,room_id:roomId,created_by:currentUser.id});
-  document.querySelector('.modal-overlay').remove();
+  document.querySelectorAll('.modal-overlay').forEach(m=>m.remove());
   await loadGroups();openGroup(roomId);
 }
 
@@ -1048,10 +1206,8 @@ function showChatSettings(){
   let extra='';
   if(currentChat.type==='group'){
     const isMuted=mutedRooms.has(currentChat.id);
-    const isCreator=currentChat.created_by===currentUser.id;
     extra=`<button class="primary" onclick="toggleMuteGroup()" style="background:${isMuted?'var(--success)':'var(--warning)'}">${isMuted?'🔔 از حالت بی‌صدا خارج کن':'🔕 بی‌صدا کن'}</button>
     <button class="primary" onclick="generateInviteLink()" style="margin-top:8px">🔗 لینک دعوت</button>
-    ${isCreator?`<button class="primary" onclick="showEditGroup()" style="margin-top:8px;background:var(--surface-2);color:var(--text)">✏️ ویرایش گروه</button>`:''}
     <button class="primary danger" onclick="leaveGroup()" style="margin-top:8px">🚪 خروج از گروه</button>`;
   }
   ov.innerHTML=`<div class="modal"><button class="close-btn" onclick="this.parentElement.parentElement.remove()">×</button>
@@ -1062,81 +1218,11 @@ function showChatSettings(){
   document.body.appendChild(ov);
 }
 
-function showEditGroup(){
-  document.querySelectorAll('.modal-overlay').forEach(m=>m.remove());
-  const g=currentChat.group;
-  const ov=document.createElement('div');ov.className='modal-overlay';
-  ov.onclick=e=>{if(e.target===ov)ov.remove()};
-  const avHtml=g.avatar_url?`<div class="modal-avatar clickable" style="background-image:url('${g.avatar_url}')" onclick="triggerGroupAvatarUpload('${g.id}')"></div>`:`<div class="modal-avatar clickable" style="background:#8b5cf6" onclick="triggerGroupAvatarUpload('${g.id}')">${g.avatar_emoji||'👥'}</div>`;
-  const removeBtn=g.avatar_url?`<button class="danger" onclick="removeGroupAvatar('${g.id}')">🗑️ حذف عکس</button>`:'';
-  ov.innerHTML=`<div class="modal">
-    <button class="close-btn" onclick="this.parentElement.parentElement.remove()">×</button>
-    ${avHtml}
-    <div class="avatar-actions">
-      <button onclick="triggerGroupAvatarUpload('${g.id}')">📷 تغییر عکس</button>
-      ${removeBtn}
-    </div>
-    <h2>ویرایش گروه</h2>
-    <label class="label">نام گروه</label>
-    <input type="text" class="field" id="editGroupName" value="${esc(g.name)}" maxlength="40">
-    <label class="label">توضیحات</label>
-    <textarea class="field" id="editGroupBio" rows="2" maxlength="150">${esc(g.bio||'')}</textarea>
-    <label class="label">ایموجی</label>
-    <input type="text" class="field" id="editGroupEmoji" value="${esc(g.avatar_emoji||'👥')}" maxlength="2">
-    <button class="primary" onclick="saveGroupInfo()">💾 ذخیره</button>
-  </div>`;
-  document.body.appendChild(ov);
-}
-
-function triggerGroupAvatarUpload(groupId){
-  groupAvatarTarget=groupId;
-  $('groupAvatarInput').click();
-}
-
-async function uploadGroupAvatar(groupId,file){
-  if(!file.type.startsWith('image/')){alert('فقط عکس');return}
-  if(file.size>5*1024*1024){alert('حداکثر ۵MB');return}
-  const path=`groups/${groupId}.${file.name.split('.').pop()}`;
-  const {error}=await sb.storage.from('chat-media').upload(path,file,{upsert:true});
-  if(error){alert('خطا: '+error.message);return}
-  const {data:u}=sb.storage.from('chat-media').getPublicUrl(path);
-  await sb.from('rooms').update({avatar_url:u.publicUrl}).eq('id',groupId);
-  await loadGroups();
-  if(currentChat&&currentChat.id===groupId){currentChat.group.avatar_url=u.publicUrl;$('chatAvatar').style.backgroundImage=`url('${u.publicUrl}')`;$('chatAvatar').textContent=''}
-  document.querySelector('.modal-overlay')?.remove();
-  showEditGroup();
-}
-
-async function removeGroupAvatar(groupId){
-  if(!confirm('عکس گروه حذف شود؟'))return;
-  const {data:g}=await sb.from('rooms').select('avatar_url').eq('id',groupId).maybeSingle();
-  if(g&&g.avatar_url){
-    const path=g.avatar_url.split('/chat-media/')[1];
-    if(path)await sb.storage.from('chat-media').remove([path]).catch(()=>{});
-  }
-  await sb.from('rooms').update({avatar_url:null}).eq('id',groupId);
-  await loadGroups();
-  if(currentChat&&currentChat.id===groupId){currentChat.group.avatar_url=null;$('chatAvatar').style.backgroundImage='';$('chatAvatar').textContent=currentChat.group.avatar_emoji||'👥'}
-  document.querySelector('.modal-overlay')?.remove();
-  showEditGroup();
-}
-
-async function saveGroupInfo(){
-  const name=$('editGroupName').value.trim();
-  const bio=$('editGroupBio').value.trim();
-  const emoji=$('editGroupEmoji').value.trim()||'👥';
-  if(!name){alert('نام خالی');return}
-  await sb.from('rooms').update({name,bio:bio||null,avatar_emoji:emoji}).eq('id',currentChat.id);
-  await loadGroups();
-  if(currentChat){currentChat.name=name;currentChat.group.name=name;$('chatName').textContent=name}
-  document.querySelector('.modal-overlay')?.remove();
-}
-
 async function toggleMuteGroup(){
   const rid=currentChat.id;
   if(mutedRooms.has(rid)){await sb.from('muted_rooms').delete().eq('user_id',currentUser.id).eq('room_id',rid);mutedRooms.delete(rid)}
   else{await sb.from('muted_rooms').insert({user_id:currentUser.id,room_id:rid});mutedRooms.add(rid)}
-  document.querySelector('.modal-overlay')?.remove();
+  document.querySelectorAll('.modal-overlay').forEach(m=>m.remove());
   refreshContactList();
 }
 
@@ -1153,7 +1239,7 @@ async function generateInviteLink(){
 async function leaveGroup(){
   if(!confirm('از گروه خارج شوید؟'))return;
   await sb.from('room_members').delete().eq('room_id',currentChat.id).eq('user_id',currentUser.id);
-  document.querySelector('.modal-overlay')?.remove();
+  document.querySelectorAll('.modal-overlay').forEach(m=>m.remove());
   closeChatMobile();
   await loadGroups();
 }
@@ -1162,7 +1248,7 @@ function deleteChatCache(){
   if(!confirm('همه پیام‌های این چت از حافظه پاک شوند؟'))return;
   localStorage.removeItem('cache_'+currentChat.roomId);
   $('messagesArea').innerHTML='';
-  document.querySelector('.modal-overlay')?.remove();
+  document.querySelectorAll('.modal-overlay').forEach(m=>m.remove());
 }
 
 function applyBackground(url){
@@ -1206,6 +1292,7 @@ function doChatSearch(){
 function reportMessage(msgId){
   const msg=cacheGet(currentChat.roomId).find(m=>String(m.id)===String(msgId));
   if(!msg)return;
+  document.querySelectorAll('.modal-overlay').forEach(m=>m.remove());
   const ov=document.createElement('div');ov.className='modal-overlay';
   ov.onclick=e=>{if(e.target===ov)ov.remove()};
   ov.innerHTML=`<div class="modal">
@@ -1232,28 +1319,24 @@ async function submitReport(msgId,reportedId){
   const msg=cacheGet(currentChat.roomId).find(m=>String(m.id)===String(msgId));
   const {error}=await sb.from('reports').insert({reporter_id:currentUser.id,reported_user_id:reportedId,room_id:currentChat.roomId,message_id:String(msgId),message_content:msg?msg.content:'',reason:reason+(desc?': '+desc:'')});
   if(error){alert('خطا: '+error.message);return}
-  document.querySelector('.modal-overlay')?.remove();
+  document.querySelectorAll('.modal-overlay').forEach(m=>m.remove());
   alert('✅ گزارش ثبت شد');
-}
-
-async function initNotifications(){
-  if(!('Notification' in window))return;
-  const btn=document.createElement('button');
-  btn.className='notif-btn';btn.id='notifBtn';btn.innerHTML='🔔';btn.title='فعال‌سازی اعلان';
-  document.body.appendChild(btn);
-  updateNotifButton();
-  btn.onclick=async()=>{
-    if(Notification.permission==='granted'){notificationsEnabled=!notificationsEnabled;updateNotifButton()}
-    else if(Notification.permission==='denied'){alert('اعلان‌ها مسدود است')}
-    else{const perm=await Notification.requestPermission();if(perm==='granted'){notificationsEnabled=true;updateNotifButton();new Notification('✅ اعلان فعال شد')}}
-  };
 }
 
 function updateNotifButton(){
   const btn=$('notifBtn');if(!btn)return;
-  if(Notification.permission==='denied'){btn.className='notif-btn denied';btn.innerHTML='🔕'}
-  else if(Notification.permission==='granted'&&notificationsEnabled){btn.className='notif-btn granted';btn.innerHTML='🔔'}
-  else{btn.className='notif-btn';btn.innerHTML='🔕'}
+  btn.classList.remove('granted','denied');
+  if(!('Notification' in window)){btn.textContent='🔕';btn.title='پشتیبانی نمی‌شود';return}
+  if(Notification.permission==='denied'){btn.textContent='🔕';btn.classList.add('denied');btn.title='اعلان مسدود است'}
+  else if(Notification.permission==='granted'&&notificationsEnabled){btn.textContent='🔔';btn.classList.add('granted');btn.title='اعلان فعال (کلیک=خاموش)'}
+  else{btn.textContent='🔕';btn.title='اعلان خاموش (کلیک=روشن)'}
+}
+
+async function toggleNotifications(){
+  if(!('Notification' in window)){alert('مرورگر پشتیبانی نمی‌کند');return}
+  if(Notification.permission==='granted'){notificationsEnabled=!notificationsEnabled;updateNotifButton()}
+  else if(Notification.permission==='denied'){alert('اعلان‌ها مسدود است. از تنظیمات مرورگر اجازه بده.')}
+  else{const perm=await Notification.requestPermission();if(perm==='granted'){notificationsEnabled=true;updateNotifButton();try{new Notification('✅ اعلان‌ها فعال شد')}catch(e){}}}
 }
 
 function showNotification(title,body,onclick){
@@ -1269,6 +1352,9 @@ function closeChatMobile(){
   $('chatMain').classList.remove('open');
   if(currentChannel){sb.removeChannel(currentChannel);currentChannel=null}
   currentChat=null;cancelReply();hidePinBar();
+  $('lockedBar').classList.remove('visible');
+  $('messageInput').value='';
+  $('inputArea').classList.remove('typing');
 }
 
 init();
