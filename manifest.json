@@ -1,7 +1,6 @@
 {
   "name": "چت خصوصی",
   "short_name": "چت",
-  "description": "پیام‌رسان امن و سریع",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#0f1419",
