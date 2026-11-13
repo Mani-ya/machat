@@ -1,0 +1,20 @@
+{
+  "name": "چت خصوصی",
+  "short_name": "چت",
+  "description": "پیام‌رسان امن و سریع",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0f1419",
+  "theme_color": "#5288c1",
+  "orientation": "portrait",
+  "lang": "fa",
+  "dir": "rtl",
+  "icons": [
+    {
+      "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxOTIgMTkyIj48cmVjdCB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgcng9IjQwIiBmaWxsPSIjNTI4OGMxIi8+PHRleHQgeD0iOTYiIHk9IjEyMCIgZm9udC1zaXplPSI5NiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iI2ZmZiI+8J+SrjwvdGV4dD48L3N2Zz4=",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
