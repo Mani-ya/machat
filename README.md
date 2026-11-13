@@ -6,37 +6,10 @@
 **یک پیام‌رسان تحت وب مدرن، امن و کاملاً رایگان**
 **A modern, secure, and 100% free web messenger**
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![Supabase](https://img.shields.io/badge/Supabase-Free-green.svg)](https://supabase.com)
-[![GitHub Pages](https://img.shields.io/badge/Host-GitHub%20Pages-blueviolet.svg)](https://pages.github.com)
-
-[🇮🇷 فارسی](#-فارسی) • [🇬🇧 English](#-english)
 
 </div>
 
 ---
-
-## 📋 فهرست | Table of Contents
-
-- [فارسی](#-فارسی)
-  - [ویژگی‌ها](#-ویژگیها)
-  - [پیش‌نمایش](#-پیشنمایش)
-  - [تکنولوژی](#-تکنولوژی)
-  - [نصب و راه‌اندازی](#-نصب-و-راهاندازی)
-  - [پیکربندی](#-پیکربندی)
-  - [ساختار دیتابیس](#-ساختار-دیتابیس)
-  - [پنل ادمین](#-پنل-ادمین)
-  - [محدودیت‌ها](#-محدودیتها)
-- [English](#-english)
-  - [Features](#-features)
-  - [Preview](#-preview)
-  - [Tech Stack](#-tech-stack)
-  - [Installation](#-installation)
-  - [Configuration](#-configuration)
-  - [Database Schema](#-database-schema)
-  - [Admin Panel](#-admin-panel)
-  - [Limitations](#-limitations)
-
 ---
 
 ## 🇮🇷 فارسی
@@ -101,3 +74,99 @@
 - ✅ **حذف پیام‌های گروه** بعد از ۳۶ ساعت (خودکار)
 - ✅ **حذف پیام‌های آفلاین** بعد از تحویل (خودکار)
 
+
+
+
+
+
+eng
+
+
+🌟 About
+Private Chat is a lightweight, completely free web messenger that runs on GitHub Pages and uses Supabase as its backend. It's designed for small groups (4–15 users) and requires no dedicated server.
+
+Online messages are exchanged directly between users via WebSocket (Broadcast) and never pass through the database. Only messages destined for offline users are stored in the database, delivered when the recipient comes online, and then deleted.
+
+✨ Features
+💬 Messaging
+✅ Private chat with any user (no DB storage when online)
+
+✅ Group chat (auto-delete after 36 hours)
+
+✅ Typing indicator
+
+✅ Online status and Last seen
+
+✅ Reply in groups
+
+✅ Edit message (within 2 hours)
+
+✅ Delete for everyone (within 2 hours)
+
+✅ Reactions with 6 emojis (❤️ 👍 😂 😮 😢 🔥)
+
+✅ Pin messages in groups
+
+✅ Search messages
+
+📎 Sharing
+✅ Send images, videos, files (up to 50MB)
+
+✅ Voice messages with recording
+
+✅ Text + voice together (caption below voice)
+
+✅ Send location with map
+
+✅ Stickers (100+)
+
+👤 Profile
+✅ Profile picture (change & remove)
+
+✅ Display name, bio, phone number, status emoji
+
+✅ Auto-reply (Out of Office)
+
+✅ Custom chat background
+
+👥 Groups
+✅ Create groups (by users and admin)
+
+✅ Group avatar & bio (change & remove)
+
+✅ Member list in group profile
+
+✅ Invite links (?join=... or ?invite=...)
+
+✅ Mute by user and admin
+
+✅ Lock messaging by admin
+
+🎨 Appearance
+✅ 3 built-in themes (dark, light, purple)
+
+✅ Custom theme (any colors)
+
+✅ Fully responsive (mobile, tablet, desktop)
+
+✅ Telegram-like mobile design
+
+🔔 Notifications
+✅ Browser notifications (Push)
+
+✅ Red badge for unread messages
+
+✅ PWA (installable on phone)
+
+🛡️ Security & Admin
+✅ Admin panel
+
+✅ Deactivate user (soft delete)
+
+✅ Hard delete user
+
+✅ Report abuse with admin management
+
+✅ Auto-delete group messages after 36 hours
+
+✅ Auto-delete offline messages after delivery
