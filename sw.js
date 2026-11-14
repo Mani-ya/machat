@@ -1,27 +1,13 @@
-const CACHE = 'chat-v' + Date.now(); // کش جدید در هر بار لود
-
-self.addEventListener('install', e => {
-  self.skipWaiting();
-});
-
-self.addEventListener('activate', e => {
-  e.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
-    ).then(() => self.clients.claim())
-  );
-});
-
+const CACHE = 'chat-v2';
+const ASSETS = ['./', './index.html', './manifest.json'];
+self.addEventListener('install', e => { self.skipWaiting(); e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS).catch(() => {}))); });
+self.addEventListener('activate', e => { e.waitUntil(caches.keys().then(k => Promise.all(k.filter(x => x !== CACHE).map(x => caches.delete(x)))).then(() => self.clients.claim())); });
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
-  // همیشه از شبکه بگیر، اگر شکست خورد از کش
-  e.respondWith(
-    fetch(e.request).then(resp => {
-      if (resp && resp.status === 200 && new URL(e.request.url).origin === location.origin) {
-        const clone = resp.clone();
-        caches.open(CACHE).then(c => c.put(e.request, clone));
-      }
-      return resp;
-    }).catch(() => caches.match(e.request))
-  );
+  e.respondWith(caches.match(e.request).then(r => r || fetch(e.request).then(resp => {
+    if (resp && resp.status === 200 && new URL(e.request.url).origin === location.origin) {
+      const c = resp.clone(); caches.open(CACHE).then(cache => cache.put(e.request, c));
+    }
+    return resp;
+  }).catch(() => caches.match('./index.html'))));
 });
