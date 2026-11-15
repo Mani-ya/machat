@@ -1,266 +1,5453 @@
 <!DOCTYPE html>
-<html lang="fa" dir="rtl">
+<html lang="fa" dir="rtl" data-theme="dark">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>پنل ادمین</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+<meta name="theme-color" content="#17212b">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<title>پنل مدیریت — پیام‌رسان حرفه‌ای</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🛡️%3C/text%3E%3C/svg%3E">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:Tahoma,sans-serif;background:#0f1419;color:#e1e8f0;padding:16px;min-height:100vh}
-.container{max-width:1000px;margin:0 auto}
-.login-box{background:#17212b;padding:35px 25px;border-radius:16px;max-width:400px;margin:60px auto;text-align:center}
-.login-box input{width:100%;padding:14px;margin-bottom:12px;background:#1c2733;border:1px solid #2a3542;border-radius:10px;color:#fff;font-size:16px;outline:none}
-.login-box button,.btn{padding:11px 20px;background:#5288c1;border:none;border-radius:10px;color:#fff;font-size:14px;cursor:pointer}
-.login-box button:hover,.btn:hover{background:#6ba0d3}
-.btn.danger{background:#e74c3c}.btn.danger:hover{background:#c0392b}
-.btn.success{background:#10b981}.btn.success:hover{background:#059669}
-.btn.warn{background:#f59e0b}.btn.warn:hover{background:#d97706}
-.hidden{display:none!important}
-h1{margin-bottom:20px;font-size:22px}
-h2{margin:22px 0 12px;font-size:17px;color:#a0b0c0}
-.card{background:#17212b;border-radius:12px;padding:18px;margin-bottom:14px}
-.row{display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap}
-.row input,.row select{flex:1;min-width:140px;padding:10px 14px;background:#1c2733;border:1px solid #2a3542;border-radius:8px;color:#fff;font-size:14px;outline:none}
-.item{background:#1c2733;padding:12px;border-radius:10px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
-.tag{display:inline-block;background:#2a3542;padding:4px 10px;border-radius:12px;font-size:12px;margin:2px}
-.tag .remove{color:#e74c3c;cursor:pointer;margin-right:6px;font-weight:bold}
-.alert{padding:12px;border-radius:8px;margin-bottom:12px;font-size:14px}
-.alert.success{background:#064e3b;color:#6ee7b7}
-.alert.error{background:#7f1d1d;color:#fca5a5}
-.avatar-sm{width:36px;height:36px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:bold;color:#fff;font-size:13px;margin-left:8px;background-size:cover;background-position:center;vertical-align:middle;flex-shrink:0}
+/* ═══════════════════════════════════════════════════════════════
+   متغیرهای CSS — تم تاریک (پیش‌فرض) و روشن
+   ═══════════════════════════════════════════════════════════════ */
+:root {
+    --bg: #0f1419;
+    --bg-2: #17212b;
+    --surface: #1c2733;
+    --surface-2: #2a3542;
+    --surface-3: #3a4756;
+    --border: #2a3542;
+    --border-2: #3a4756;
+    --text: #e1e8f0;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+    --accent: #5288c1;
+    --accent-hover: #6ba0d3;
+    --accent-light: rgba(82, 136, 193, 0.15);
+    --success: #10b981;
+    --success-hover: #059669;
+    --danger: #ef4444;
+    --danger-hover: #dc2626;
+    --warning: #f59e0b;
+    --warning-hover: #d97706;
+    --info: #3b82f6;
+    --purple: #8b5cf6;
+    --radius-sm: 8px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+    --radius-xl: 18px;
+    --radius-full: 9999px;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
+    --shadow-lg: 0 20px 50px rgba(0,0,0,0.6);
+    --transition: 0.2s ease;
+    --topbar-height: 64px;
+    --tabnav-height: 52px;
+}
+
+[data-theme="light"] {
+    --bg: #f1f5f9;
+    --bg-2: #ffffff;
+    --surface: #ffffff;
+    --surface-2: #f1f5f9;
+    --surface-3: #e2e8f0;
+    --border: #e2e8f0;
+    --border-2: #cbd5e1;
+    --text: #0f172a;
+    --text-secondary: #475569;
+    --text-muted: #64748b;
+    --accent: #3390ec;
+    --accent-hover: #4ba3f0;
+    --accent-light: rgba(51, 144, 236, 0.1);
+    --success: #10b981;
+    --danger: #ef4444;
+    --warning: #f59e0b;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.12);
+    --shadow-lg: 0 20px 50px rgba(0,0,0,0.18);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Reset و تنظیمات پایه
+   ═══════════════════════════════════════════════════════════════ */
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+html {
+    font-size: 16px;
+    -webkit-text-size-adjust: 100%;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, Tahoma, 'Segoe UI', Roboto, 'Iranian Sans', Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    min-height: 100dvh;
+    line-height: 1.6;
+    overflow-x: hidden;
+    transition: background var(--transition), color var(--transition);
+    direction: rtl;
+}
+
+input, textarea, select, button {
+    font-family: inherit;
+    font-size: 15px;
+    outline: none;
+    border: none;
+    color: inherit;
+    background: none;
+}
+
+button {
+    cursor: pointer;
+    transition: all var(--transition);
+    user-select: none;
+}
+
+button:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+a {
+    color: var(--accent);
+    text-decoration: none;
+}
+
+a:hover {
+    color: var(--accent-hover);
+    text-decoration: underline;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+.hidden { display: none !important; }
+.invisible { visibility: hidden !important; }
+.flex { display: flex; }
+.flex-col { display: flex; flex-direction: column; }
+.items-center { align-items: center; }
+.justify-between { justify-content: space-between; }
+.gap-8 { gap: 8px; }
+.gap-12 { gap: 12px; }
+.gap-16 { gap: 16px; }
+.w-full { width: 100%; }
+.text-center { text-align: center; }
+.text-muted { color: var(--text-secondary); }
+.text-sm { font-size: 13px; }
+.text-xs { font-size: 12px; }
+.font-bold { font-weight: 700; }
+.truncate {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ─── Scrollbar ─── */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+    background: var(--surface-2);
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--surface-3); }
+
+::selection {
+    background: var(--accent);
+    color: #fff;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   دکمه‌ها
+   ═══════════════════════════════════════════════════════════════ */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px 18px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    font-weight: 600;
+    min-height: 40px;
+    white-space: nowrap;
+    transition: all var(--transition);
+    line-height: 1.2;
+}
+
+.btn:hover:not(:disabled) {
+    background: var(--accent-hover);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+
+.btn:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.btn-secondary {
+    background: var(--surface-2);
+    color: var(--text);
+}
+
+.btn-secondary:hover:not(:disabled) {
+    background: var(--surface-3);
+}
+
+.btn-success {
+    background: var(--success);
+    color: #fff;
+}
+
+.btn-success:hover:not(:disabled) {
+    background: var(--success-hover);
+}
+
+.btn-danger {
+    background: var(--danger);
+    color: #fff;
+}
+
+.btn-danger:hover:not(:disabled) {
+    background: var(--danger-hover);
+}
+
+.btn-warning {
+    background: var(--warning);
+    color: #fff;
+}
+
+.btn-warning:hover:not(:disabled) {
+    background: var(--warning-hover);
+}
+
+.btn-ghost {
+    background: transparent;
+    color: var(--text-secondary);
+}
+
+.btn-ghost:hover:not(:disabled) {
+    background: var(--surface-2);
+    color: var(--text);
+}
+
+.btn-block { width: 100%; }
+.btn-sm { padding: 7px 12px; font-size: 13px; min-height: 32px; }
+.btn-xs { padding: 4px 8px; font-size: 12px; min-height: 26px; }
+.btn-lg { padding: 14px 26px; font-size: 16px; min-height: 48px; }
+
+.btn-icon {
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--text-secondary);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+}
+
+.btn-icon:hover:not(:disabled) {
+    background: var(--surface-2);
+    color: var(--text);
+    transform: none;
+    box-shadow: none;
+}
+
+.btn.loading {
+    pointer-events: none;
+    position: relative;
+    color: transparent !important;
+}
+
+.btn.loading::after {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+}
+
+.btn-secondary.loading::after {
+    border-color: rgba(225,232,240,0.3);
+    border-top-color: var(--text);
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ورودی‌ها
+   ═══════════════════════════════════════════════════════════════ */
+.input {
+    width: 100%;
+    padding: 11px 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    color: var(--text);
+    font-size: 14px;
+    min-height: 42px;
+    transition: all var(--transition);
+}
+
+.input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-light);
+}
+
+.input::placeholder {
+    color: var(--text-muted);
+}
+
+.input:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+textarea.input {
+    resize: vertical;
+    min-height: 80px;
+    line-height: 1.6;
+}
+
+select.input {
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: left 12px center;
+    padding-left: 34px;
+}
+
+.label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+}
+
+.field-group {
+    margin-bottom: 14px;
+}
+
+.field-group:last-child {
+    margin-bottom: 0;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   صفحه‌های اصلی (setup / login / panel)
+   ═══════════════════════════════════════════════════════════════ */
+.screen {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    overflow-y: auto;
+    background: var(--bg);
+    z-index: 100;
+}
+
+.screen.hidden {
+    display: none !important;
+}
+
+.auth-box {
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    padding: 40px 30px;
+    width: 100%;
+    max-width: 440px;
+    box-shadow: var(--shadow-lg);
+    text-align: center;
+    animation: fadeIn 0.4s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.auth-logo {
+    font-size: 64px;
+    margin-bottom: 12px;
+    display: block;
+    line-height: 1;
+}
+
+.auth-title {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: var(--text);
+}
+
+.auth-subtitle {
+    color: var(--text-secondary);
+    font-size: 14px;
+    margin-bottom: 28px;
+    line-height: 1.7;
+}
+
+.auth-box .input {
+    text-align: center;
+    font-size: 16px;
+    padding: 14px 16px;
+}
+
+.auth-error {
+    color: var(--danger);
+    font-size: 13px;
+    margin-top: 10px;
+    min-height: 20px;
+    line-height: 1.5;
+}
+
+.auth-info {
+    color: var(--text-muted);
+    font-size: 12px;
+    margin-top: 20px;
+    line-height: 1.7;
+}
+
+.auth-info strong {
+    color: var(--text-secondary);
+}
+
+/* ─── نوار قدرت رمز ─── */
+.password-strength {
+    height: 4px;
+    background: var(--surface-2);
+    border-radius: 2px;
+    margin-top: 8px;
+    overflow: hidden;
+    transition: all var(--transition);
+}
+
+.password-strength-bar {
+    height: 100%;
+    width: 0;
+    background: var(--danger);
+    border-radius: 2px;
+    transition: all 0.3s ease;
+}
+
+.password-strength[data-strength="medium"] .password-strength-bar {
+    width: 50%;
+    background: var(--warning);
+}
+
+.password-strength[data-strength="strong"] .password-strength-bar {
+    width: 100%;
+    background: var(--success);
+}
+
+.password-strength-text {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 4px;
+    text-align: right;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   پنل اصلی — Layout
+   ═══════════════════════════════════════════════════════════════ */
+#mainPanel {
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+}
+
+/* ─── Top Bar ─── */
+.topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 20px;
+    background: var(--bg-2);
+    border-bottom: 1px solid var(--border);
+    min-height: var(--topbar-height);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    flex-shrink: 0;
+}
+
+.topbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.topbar-brand .logo {
+    font-size: 26px;
+    line-height: 1;
+}
+
+.topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* ─── Tab Navigation ─── */
+.tabnav {
+    display: flex;
+    gap: 2px;
+    padding: 0 12px;
+    background: var(--bg-2);
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    position: sticky;
+    top: var(--topbar-height);
+    z-index: 40;
+    flex-shrink: 0;
+}
+
+.tabnav::-webkit-scrollbar { display: none; }
+
+.tabnav-btn {
+    padding: 14px 16px;
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
+    border-bottom: 2px solid transparent;
+    transition: all var(--transition);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+    border-radius: 0;
+    min-height: var(--tabnav-height);
+}
+
+.tabnav-btn:hover {
+    color: var(--text);
+    background: var(--surface-2);
+}
+
+.tabnav-btn.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+}
+
+.tabnav-btn .badge-count {
+    background: var(--danger);
+    color: #fff;
+    font-size: 11px;
+    padding: 1px 7px;
+    border-radius: var(--radius-full);
+    min-width: 18px;
+    text-align: center;
+    line-height: 1.5;
+    font-weight: 700;
+}
+
+/* ─── Content ─── */
+.content {
+    flex: 1;
+    padding: 20px;
+    max-width: 1400px;
+    width: 100%;
+    margin: 0 auto;
+    animation: fadeIn 0.3s ease;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   کارت‌ها و بخش‌ها
+   ═══════════════════════════════════════════════════════════════ */
+.card {
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 18px;
+    margin-bottom: 14px;
+    transition: all var(--transition);
+}
+
+.card-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.card-subtitle {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+.section-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    margin: 22px 0 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.section-title:first-child {
+    margin-top: 0;
+}
+
+/* ─── آمار داشبورد ─── */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.stat-card {
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    transition: all var(--transition);
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.stat-icon {
+    font-size: 26px;
+    margin-bottom: 4px;
+    line-height: 1;
+}
+
+.stat-value {
+    font-size: 30px;
+    font-weight: 800;
+    color: var(--accent);
+    line-height: 1.1;
+}
+
+.stat-value.danger { color: var(--danger); }
+.stat-value.success { color: var(--success); }
+.stat-value.warning { color: var(--warning); }
+.stat-value.purple { color: var(--purple); }
+
+.stat-label {
+    font-size: 13px;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   لیست آیتم‌ها (کاربر / گروه / گزارش)
+   ═══════════════════════════════════════════════════════════════ */
+.list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.item {
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: all var(--transition);
+    flex-wrap: wrap;
+}
+
+.item:hover {
+    border-color: var(--border-2);
+}
+
+.item.col {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+}
+
+.item-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 15px;
+    flex-shrink: 0;
+    background-size: cover;
+    background-position: center;
+    overflow: hidden;
+}
+
+.item-avatar.group {
+    background: var(--purple);
+    border-radius: var(--radius-md);
+    font-size: 22px;
+}
+
+.item-info {
+    flex: 1;
+    min-width: 150px;
+    overflow: hidden;
+}
+
+.item-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    line-height: 1.4;
+}
+
+.item-subtitle {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 2px;
+    line-height: 1.5;
+    word-break: break-word;
+}
+
+.item-meta {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 4px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.item-actions {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    flex-shrink: 0;
+    align-items: center;
+}
+
+@media (max-width: 640px) {
+    .item {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .item-actions {
+        justify-content: flex-end;
+    }
+}
+
+/* ─── Badges ─── */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px 8px;
+    font-size: 11px;
+    font-weight: 700;
+    border-radius: var(--radius-full);
+    line-height: 1.5;
+    white-space: nowrap;
+}
+
+.badge-success { background: rgba(16,185,129,0.15); color: var(--success); }
+.badge-danger { background: rgba(239,68,68,0.15); color: var(--danger); }
+.badge-warning { background: rgba(245,158,11,0.15); color: var(--warning); }
+.badge-info { background: rgba(59,130,246,0.15); color: var(--info); }
+.badge-purple { background: rgba(139,92,246,0.15); color: var(--purple); }
+.badge-secondary { background: var(--surface-2); color: var(--text-secondary); }
+
+/* ─── Tag (برای اعضای گروه) ─── */
+.tags {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--surface-2);
+    color: var(--text);
+    padding: 4px 10px;
+    border-radius: var(--radius-full);
+    font-size: 12px;
+    font-weight: 500;
+    transition: all var(--transition);
+    line-height: 1.4;
+}
+
+.tag.owner {
+    background: rgba(239,68,68,0.15);
+    color: var(--danger);
+    border: 1px solid rgba(239,68,68,0.3);
+}
+
+.tag.admin {
+    background: rgba(245,158,11,0.15);
+    color: var(--warning);
+    border: 1px solid rgba(245,158,11,0.3);
+}
+
+.tag .remove {
+    color: var(--text-muted);
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 1;
+    padding: 0 2px;
+    transition: color var(--transition);
+}
+
+.tag .remove:hover {
+    color: var(--danger);
+}
+
+/* ─── Toolbar (جستجو + فیلتر) ─── */
+.toolbar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.toolbar .input {
+    flex: 1;
+    min-width: 200px;
+}
+
+.toolbar select.input {
+    flex: 0 0 auto;
+    min-width: 150px;
+    max-width: 200px;
+}
+
+/* ─── Empty state ─── */
+.empty-state {
+    text-align: center;
+    padding: 50px 20px;
+    color: var(--text-secondary);
+}
+
+.empty-state-icon {
+    font-size: 56px;
+    opacity: 0.4;
+    display: block;
+    margin-bottom: 12px;
+    line-height: 1;
+}
+
+.empty-state-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+}
+
+.empty-state-text {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.6;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Toast
+   ═══════════════════════════════════════════════════════════════ */
+#toastContainer {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 99999;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
+    pointer-events: none;
+    max-width: calc(100vw - 32px);
+    width: fit-content;
+}
+
+.toast {
+    background: var(--bg-2);
+    color: var(--text);
+    padding: 12px 20px;
+    border-radius: var(--radius-full);
+    box-shadow: var(--shadow-lg);
+    font-size: 14px;
+    font-weight: 500;
+    border-right: 4px solid var(--accent);
+    pointer-events: auto;
+    max-width: 100%;
+    word-break: break-word;
+    animation: toastIn 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    line-height: 1.4;
+}
+
+.toast.success { border-right-color: var(--success); }
+.toast.error { border-right-color: var(--danger); }
+.toast.warning { border-right-color: var(--warning); }
+.toast.info { border-right-color: var(--info); }
+
+.toast.removing {
+    animation: toastOut 0.3s ease forwards;
+}
+
+@keyframes toastIn {
+    from { opacity: 0; transform: translateY(20px) scale(0.95); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes toastOut {
+    to { opacity: 0; transform: translateY(20px) scale(0.95); }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Modal
+   ═══════════════════════════════════════════════════════════════ */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 5000;
+    padding: 20px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--transition);
+}
+
+.modal-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.modal-box {
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    padding: 24px;
+    width: 100%;
+    max-width: 560px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: var(--shadow-lg);
+    transform: scale(0.95);
+    transition: transform var(--transition);
+}
+
+.modal-overlay.active .modal-box {
+    transform: scale(1);
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border);
+    gap: 12px;
+}
+
+.modal-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.modal-close {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--surface-2);
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    line-height: 1;
+    flex-shrink: 0;
+    transition: all var(--transition);
+}
+
+.modal-close:hover {
+    background: var(--surface-3);
+    color: var(--text);
+    transform: none;
+    box-shadow: none;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+}
+
+.modal-actions .btn {
+    flex: 1;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Loading Overlay و Spinner
+   ═══════════════════════════════════════════════════════════════ */
+#loadingOverlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15,20,25,0.85);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 16px;
+    z-index: 99000;
+    color: var(--text);
+    font-size: 14px;
+    font-weight: 600;
+    transition: opacity 0.2s;
+}
+
+#loadingOverlay.hidden {
+    display: none !important;
+}
+
+.spinner {
+    width: 48px;
+    height: 48px;
+    border: 4px solid var(--surface-2);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Skeleton Loading
+   ═══════════════════════════════════════════════════════════════ */
+.skeleton {
+    background: linear-gradient(
+        90deg,
+        var(--surface) 25%,
+        var(--surface-2) 50%,
+        var(--surface) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.4s infinite;
+    border-radius: var(--radius-md);
+    height: 60px;
+    margin-bottom: 8px;
+}
+
+@keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   دیالوگ تأیید
+   ═══════════════════════════════════════════════════════════════ */
+.confirm-text {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin-bottom: 16px;
+}
+
+.confirm-danger {
+    background: rgba(239,68,68,0.08);
+    border: 1px solid rgba(239,68,68,0.25);
+    border-radius: var(--radius-md);
+    padding: 12px;
+    font-size: 13px;
+    color: var(--danger);
+    margin-bottom: 16px;
+    line-height: 1.6;
+}
+
+.confirm-warning {
+    background: rgba(245,158,11,0.08);
+    border: 1px solid rgba(245,158,11,0.25);
+    border-radius: var(--radius-md);
+    padding: 12px;
+    font-size: 13px;
+    color: var(--warning);
+    margin-bottom: 16px;
+    line-height: 1.6;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   گزارش‌ها — استایل اختصاصی
+   ═══════════════════════════════════════════════════════════════ */
+.report-card {
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 16px;
+    margin-bottom: 10px;
+    transition: all var(--transition);
+}
+
+.report-card:hover {
+    border-color: var(--border-2);
+}
+
+.report-card.status-resolved {
+    opacity: 0.6;
+}
+
+.report-card.status-dismissed {
+    opacity: 0.5;
+}
+
+.report-reason {
+    color: var(--danger);
+    font-weight: 700;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 8px;
+}
+
+.report-meta {
+    font-size: 12px;
+    color: var(--text-secondary);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 10px;
+    line-height: 1.6;
+}
+
+.report-meta strong {
+    color: var(--text);
+    font-weight: 600;
+}
+
+.report-content {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 10px 12px;
+    font-size: 13px;
+    color: var(--text);
+    margin-bottom: 10px;
+    word-break: break-word;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.report-actions {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Audit log
+   ═══════════════════════════════════════════════════════════════ */
+.audit-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: var(--radius-md);
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    font-size: 13px;
+    margin-bottom: 6px;
+}
+
+.audit-icon {
+    font-size: 18px;
+    flex-shrink: 0;
+    line-height: 1.2;
+}
+
+.audit-body {
+    flex: 1;
+    min-width: 0;
+}
+
+.audit-action {
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 2px;
+}
+
+.audit-target {
+    color: var(--accent);
+    font-size: 12px;
+    font-family: 'Courier New', monospace;
+}
+
+.audit-time {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 3px;
+}
+
+.audit-meta {
+    font-size: 11px;
+    color: var(--text-secondary);
+    margin-top: 3px;
+    font-family: 'Courier New', monospace;
+    word-break: break-all;
+    opacity: 0.8;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ساخت گروه — Form
+   ═══════════════════════════════════════════════════════════════ */
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px;
+}
+
+@media (max-width: 480px) {
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   پیشرفت‌ها و اطلاعات
+   ═══════════════════════════════════════════════════════════════ */
+.info-box {
+    background: var(--accent-light);
+    border: 1px solid var(--accent);
+    border-radius: var(--radius-md);
+    padding: 12px;
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.7;
+    margin-bottom: 14px;
+}
+
+.info-box strong {
+    color: var(--accent);
+}
+
+.danger-zone {
+    border: 1px solid rgba(239,68,68,0.3);
+    background: rgba(239,68,68,0.05);
+    border-radius: var(--radius-lg);
+    padding: 18px;
+}
+
+.danger-zone .card-title {
+    color: var(--danger);
+}
+
+.invite-link-box {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 8px 12px;
+    font-size: 12px;
+    color: var(--accent);
+    word-break: break-all;
+    font-family: 'Courier New', monospace;
+    direction: ltr;
+    text-align: left;
+    margin-top: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.invite-link-box code {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Auto-refresh toggle
+   ═══════════════════════════════════════════════════════════════ */
+.toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 14px;
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    margin-bottom: 8px;
+}
+
+.toggle-row label {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    cursor: pointer;
+    flex: 1;
+}
+
+.toggle-row small {
+    display: block;
+    font-size: 12px;
+    color: var(--text-secondary);
+    font-weight: 400;
+    margin-top: 2px;
+    line-height: 1.5;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 46px;
+    height: 26px;
+    flex-shrink: 0;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    position: absolute;
+}
+
+.switch .slider {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background: var(--surface-2);
+    border-radius: var(--radius-full);
+    transition: all var(--transition);
+}
+
+.switch .slider::before {
+    content: '';
+    position: absolute;
+    height: 20px;
+    width: 20px;
+    right: 3px;
+    top: 3px;
+    background: #fff;
+    border-radius: 50%;
+    transition: all var(--transition);
+    box-shadow: var(--shadow-sm);
+}
+
+.switch input:checked + .slider {
+    background: var(--success);
+}
+
+.switch input:checked + .slider::before {
+    transform: translateX(-20px);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Responsive
+   ═══════════════════════════════════════════════════════════════ */
+@media (max-width: 640px) {
+    .content {
+        padding: 14px;
+    }
+    
+    .topbar {
+        padding: 10px 14px;
+    }
+    
+    .topbar-brand {
+        font-size: 15px;
+    }
+    
+    .topbar-brand .logo {
+        font-size: 22px;
+    }
+    
+    .tabnav {
+        padding: 0 8px;
+    }
+    
+    .tabnav-btn {
+        padding: 12px 12px;
+        font-size: 13px;
+    }
+    
+    .tabnav-btn .label-text {
+        display: none;
+    }
+    
+    .tabnav-btn .emoji {
+        font-size: 18px;
+    }
+    
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+    
+    .stat-card {
+        padding: 14px;
+    }
+    
+    .stat-value {
+        font-size: 24px;
+    }
+    
+    .stat-icon {
+        font-size: 22px;
+    }
+    
+    .auth-box {
+        padding: 30px 20px;
+    }
+    
+    .auth-logo {
+        font-size: 48px;
+    }
+    
+    .auth-title {
+        font-size: 20px;
+    }
+    
+    .modal-box {
+        padding: 20px;
+    }
+    
+    .item-actions .btn {
+        flex: 1;
+    }
+}
+
+@media (max-width: 380px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .content {
+        padding: 10px;
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   prefers-reduced-motion
+   ═══════════════════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Print
+   ═══════════════════════════════════════════════════════════════ */
+@media print {
+    .topbar, .tabnav, .item-actions, #toastContainer, #loadingOverlay {
+        display: none !important;
+    }
+}
 </style>
 </head>
 <body>
-<div class="container">
-<div class="login-box" id="loginBox">
-  <h1>🔐 پنل مدیریت</h1>
-  <input type="password" id="pwd" placeholder="رمز عبور" onkeypress="if(event.key==='Enter')login()">
-  <button onclick="login()">ورود</button>
-</div>
-<div class="hidden" id="panel">
-  <h1>🛡️ پنل مدیریت</h1>
-  <div id="alertBox"></div>
-  <h2>👤 مدیریت کاربران</h2>
-  <div class="card" id="usersList"></div>
-  <h2>➕ ساخت گروه جدید</h2>
-  <div class="card">
-    <div class="row">
-      <input type="text" id="newGroupId" placeholder="شناسه گروه (مثلاً group-fam)">
-      <input type="text" id="newGroupName" placeholder="نام گروه">
-      <input type="text" id="newGroupEmoji" placeholder="ایموجی" value="👥" maxlength="2">
+
+<!-- ═══════════════════════════════════════════════════════════════
+     Boot Overlay — لود اولیه (تشخیص setup یا login)
+     ═══════════════════════════════════════════════════════════════ -->
+<div id="bootOverlay" class="screen">
+    <div class="auth-box" style="max-width: 380px">
+        <span class="auth-logo">🛡️</span>
+        <h1 class="auth-title">پنل مدیریت</h1>
+        <p class="auth-subtitle">در حال بررسی وضعیت سیستم…</p>
+        <div class="spinner" style="margin: 20px auto 0"></div>
     </div>
-    <button class="btn success" onclick="createGroup()">ساخت گروه</button>
-  </div>
-  <h2>👥 همه گروه‌ها</h2>
-  <div id="groupsList"></div>
-  <h2>🚨 گزارش‌های تخلف</h2>
-  <div class="card" id="reportsList"></div>
-  <h2>🗑️ حذف داده‌ها</h2>
-  <div class="card">
-    <div class="row">
-      <button class="btn danger" onclick="clearOffline()">حذف پیام‌های آفلاین</button>
-      <button class="btn danger" onclick="clearGroups()">حذف پیام‌های گروه</button>
-      <button class="btn danger" onclick="clearReports()">حذف گزارش‌ها</button>
-    </div>
-  </div>
 </div>
-</div>
-<script>
-const SUPABASE_URL='https://wspvdrxsdbmpomeuczwt.supabase.co';
-const SUPABASE_ANON_KEY='sb_publishable_SDXc2OU1Sy77WPdnBrxyWw_aT3josm9';
-const ADMIN_PASSWORD='mani5955#admin';
-const sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
 
-function login(){
-  if(document.getElementById('pwd').value===ADMIN_PASSWORD){
-    document.getElementById('loginBox').classList.add('hidden');
-    document.getElementById('panel').classList.remove('hidden');
-    loadUsers();loadGroups();loadReports();
-  }else alert('رمز اشتباه');
-}
+<!-- ═══════════════════════════════════════════════════════════════
+     Setup Screen — تعیین رمز ادمین برای اولین بار
+     ═══════════════════════════════════════════════════════════════ -->
+<div id="setupScreen" class="screen hidden">
+    <div class="auth-box">
+        <span class="auth-logo">🔐</span>
+        <h1 class="auth-title">تعیین رمز ادمین</h1>
+        <p class="auth-subtitle">
+            برای اولین بار، یک رمز قوی تعیین کنید.<br>
+            این رمز فقط یک بار ذخیره می‌شود و قابل بازیابی نیست.
+        </p>
 
-function showAlert(msg,type){
-  const b=document.getElementById('alertBox');
-  b.innerHTML=`<div class="alert ${type}">${msg}</div>`;
-  setTimeout(()=>b.innerHTML='',5000);
-}
-
-async function loadUsers(){
-  const {data,error}=await sb.from('profiles').select('*').order('display_name');
-  if(error){showAlert('خطا در بارگذاری کاربران: '+error.message,'error');return}
-  const list=document.getElementById('usersList');list.innerHTML='';
-  if(!data||data.length===0){list.innerHTML='<div>کاربری نیست</div>';return}
-  data.forEach(u=>{
-    const div=document.createElement('div');div.className='item';
-    const avHtml=u.avatar_url?`<div class="avatar-sm" style="background-image:url('${u.avatar_url}')"></div>`:`<div class="avatar-sm" style="background:#5288c1">${(u.display_name||'?').slice(0,2)}</div>`;
-    div.innerHTML=`<div style="flex:1;display:flex;align-items:center">${avHtml}<div style="margin-right:10px"><b>${u.display_name}</b> <span style="color:#666">(@${u.id})</span><div style="color:${u.is_active?'#10b981':'#e74c3c'};font-size:12px;margin-top:2px">${u.is_active?'✅ فعال':'🚫 غیرفعال'}</div>${u.phone?`<div style="font-size:11px;color:#6ba0d3">📞 ${u.phone}</div>`:''}</div></div><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn ${u.is_active?'warn':'success'}" onclick="toggleUser('${u.id}',${u.is_active})">${u.is_active?'غیرفعال':'فعال'}</button><button class="btn danger" onclick="hardDeleteUser('${u.id}','${(u.display_name||'').replace(/'/g,"\\'")}')">🗑️ حذف</button></div>`;
-    list.appendChild(div);
-  });
-}
-
-async function toggleUser(userId,cur){
-  const n=!cur;
-  if(!confirm(`کاربر ${userId} ${n?'فعال':'غیرفعال'} شود؟`))return;
-  const {error}=await sb.from('profiles').update({is_active:n}).eq('id',userId);
-  if(error)return showAlert('خطا: '+error.message,'error');
-  showAlert(`کاربر ${n?'فعال':'غیرفعال'} شد`,'success');loadUsers();
-}
-
-async function hardDeleteUser(userId,name){
-  if(!confirm(`⚠️ کاربر «${name}» کاملاً حذف شود؟`))return;
-  if(!confirm('آیا مطمئنید؟'))return;
-  try{
-    await sb.from('offline_messages').delete().eq('sender_id',userId);
-    await sb.from('group_messages').delete().eq('sender_id',userId);
-    await sb.from('room_members').delete().eq('user_id',userId);
-    await sb.from('user_read_status').delete().eq('user_id',userId);
-    await sb.from('muted_rooms').delete().eq('user_id',userId);
-    await sb.from('reports').delete().eq('reporter_id',userId);
-    await sb.from('profiles').delete().eq('id',userId);
-    showAlert(`کاربر حذف شد`,'success');loadUsers();loadGroups();
-  }catch(err){showAlert('خطا: '+err.message,'error')}
-}
-
-async function loadGroups(){
-  const {data:groups,error:eg}=await sb.from('rooms').select('*').order('created_at');
-  if(eg){showAlert('خطا در بارگذاری گروه‌ها: '+eg.message,'error');return}
-  const {data:members}=await sb.from('room_members').select('*');
-  const {data:profiles}=await sb.from('profiles').select('*').order('display_name');
-  const {data:settings}=await sb.from('room_settings').select('*');
-  const {data:invites}=await sb.from('room_invites').select('*');
-  const list=document.getElementById('groupsList');list.innerHTML='';
-  if(!groups||groups.length===0){list.innerHTML='<div class="card">هنوز گروهی نیست</div>';return}
-  groups.forEach(g=>{
-    const gm=(members||[]).filter(m=>m.room_id===g.id);
-    const tags=gm.map(m=>{const p=(profiles||[]).find(x=>x.id===m.user_id);return `<span class="tag">${p?p.display_name:m.user_id} <span class="remove" onclick="removeMember('${g.id}','${m.user_id}')">×</span></span>`}).join('')||'<em style="color:#666">بدون عضو</em>';
-    const notMembers=(profiles||[]).filter(p=>!gm.find(m=>m.user_id===p.id));
-    const setting=(settings||[]).find(s=>s.room_id===g.id);
-    const isMuted=setting?.is_muted;
-    const isLocked=setting?.is_locked;
-    const inv=(invites||[]).find(i=>i.room_id===g.id);
-    const inviteLink=inv?location.origin+location.pathname.replace('admin.html','index.html')+'?invite='+inv.code:'';
-    const creator=(profiles||[]).find(p=>p.id===g.created_by);
-    const avHtml=g.avatar_url?`<div class="avatar-sm" style="background-image:url('${g.avatar_url}')"></div>`:`<div class="avatar-sm" style="background:#8b5cf6">${g.avatar_emoji||'👥'}</div>`;
-    const el=document.createElement('div');el.className='item';el.style.flexDirection='column';el.style.alignItems='stretch';
-    el.innerHTML=`
-      <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px">
-        <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:200px">
-          ${avHtml}
-          <div>
-            <div><b>${g.name}</b> <span style="color:#666;font-size:12px">(${g.id})</span></div>
-            ${isMuted?'<span style="color:#f59e0b;font-size:11px">🔕 بی‌صدا</span>':''}
-            ${isLocked?'<span style="color:#e74c3c;font-size:11px;margin-right:6px">🔒 قفل</span>':''}
-            ${creator?`<div style="font-size:11px;color:#6ba0d3">سازنده: ${creator.display_name}</div>`:''}
-          </div>
+        <div class="field-group">
+            <input
+                type="password"
+                id="setupPwd"
+                class="input"
+                placeholder="رمز جدید (حداقل ۸ کاراکتر)"
+                autocomplete="new-password"
+                dir="ltr"
+                maxlength="200">
+            <div class="password-strength" id="setupStrength" data-strength="weak">
+                <div class="password-strength-bar"></div>
+            </div>
+            <div class="password-strength-text" id="setupStrengthText">قدرت رمز: ضعیف</div>
         </div>
-      </div>
-      ${g.bio?`<div style="font-size:11px;color:#888;margin:6px 0 0 44px">${g.bio}</div>`:''}
-      <div style="margin-top:8px">${tags}</div>
-      ${inviteLink?`<div style="font-size:11px;color:#6ba0d3;margin-top:6px;word-break:break-all">🔗 ${inviteLink}</div>`:''}
-      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;padding-top:8px;border-top:1px solid #2a3542">
-        <select id="add-${g.id}" style="padding:8px;background:#1c2733;border:1px solid #2a3542;border-radius:8px;color:#fff;flex:1;min-width:140px">
-          <option value="">افزودن عضو...</option>
-          ${notMembers.map(p=>`<option value="${p.id}">${p.display_name}</option>`).join('')}
-        </select>
-        <button class="btn success" onclick="addMember('${g.id}')">افزودن</button>
-        <button class="btn ${isMuted?'success':'warn'}" onclick="toggleGroupMute('${g.id}',${isMuted})">${isMuted?'🔔':'🔕'}</button>
-        <button class="btn ${isLocked?'success':'danger'}" onclick="toggleGroupLock('${g.id}',${isLocked})">${isLocked?'🔓 باز':'🔒 بستن'}</button>
-        <button class="btn danger" onclick="deleteGroup('${g.id}')">🗑️ حذف</button>
-      </div>`;
-    list.appendChild(el);
-  });
+
+        <div class="field-group">
+            <input
+                type="password"
+                id="setupPwd2"
+                class="input"
+                placeholder="تکرار رمز"
+                autocomplete="new-password"
+                dir="ltr"
+                maxlength="200">
+        </div>
+
+        <button class="btn btn-block btn-lg" id="setupBtn" onclick="handleSetup()">
+            🔐 تعیین رمز و ورود
+        </button>
+
+        <div class="auth-error" id="setupError"></div>
+
+        <div class="auth-info">
+            <strong>نکات امنیتی:</strong><br>
+            • رمز حداقل ۸ کاراکتر باشد<br>
+            • از ترکیب حروف، اعداد و نمادها استفاده کنید<br>
+            • رمز در دیتابیس به‌صورت hash ذخیره می‌شود
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     Login Screen — ورود ادمین
+     ═══════════════════════════════════════════════════════════════ -->
+<div id="loginScreen" class="screen hidden">
+    <div class="auth-box">
+        <span class="auth-logo">🛡️</span>
+        <h1 class="auth-title">ورود ادمین</h1>
+        <p class="auth-subtitle">برای دسترسی به پنل، رمز ادمین را وارد کنید</p>
+
+        <div class="field-group">
+            <input
+                type="password"
+                id="loginPwd"
+                class="input"
+                placeholder="رمز ادمین"
+                autocomplete="current-password"
+                dir="ltr"
+                maxlength="200"
+                onkeypress="if(event.key==='Enter'){event.preventDefault();handleLogin();}">
+        </div>
+
+        <button class="btn btn-block btn-lg" id="loginBtn" onclick="handleLogin()">
+            🔓 ورود
+        </button>
+
+        <div class="auth-error" id="loginError"></div>
+
+        <div class="auth-info">
+            جلسه به مدت <strong>۲ ساعت</strong> فعال می‌ماند<br>
+            در صورت بستن مرورگر، جلسه منقضی می‌شود
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     Main Panel — پنل اصلی ادمین
+     ═══════════════════════════════════════════════════════════════ -->
+<div id="mainPanel" class="hidden">
+
+    <!-- ─── Top Bar ─── -->
+    <header class="topbar">
+        <div class="topbar-brand">
+            <span class="logo">🛡️</span>
+            <span>پنل مدیریت</span>
+        </div>
+        <div class="topbar-actions">
+            <button
+                class="btn-icon"
+                id="autoRefreshIndicator"
+                title="بروزرسانی خودکار فعال"
+                aria-label="بروزرسانی خودکار"
+                style="display:none;color:var(--success);font-size:12px;width:auto;padding:0 8px;border-radius:var(--radius-full);background:rgba(16,185,129,0.15)">🟢</button>
+            <button
+                class="btn-icon"
+                onclick="refreshCurrentTab()"
+                title="بروزرسانی"
+                aria-label="بروزرسانی">🔄</button>
+            <button
+                class="btn-icon"
+                onclick="toggleTheme()"
+                title="تغییر تم"
+                aria-label="تغییر تم">🌓</button>
+            <button
+                class="btn-icon"
+                onclick="handleLogout()"
+                title="خروج"
+                aria-label="خروج"
+                style="color:var(--danger)">🚪</button>
+        </div>
+    </header>
+
+    <!-- ─── Tab Navigation ─── -->
+    <nav class="tabnav" id="tabnav" role="tablist">
+        <button class="tabnav-btn active" data-tab="dashboard" role="tab" aria-selected="true">
+            <span class="emoji">📊</span>
+            <span class="label-text">داشبورد</span>
+        </button>
+        <button class="tabnav-btn" data-tab="users" role="tab" aria-selected="false">
+            <span class="emoji">👤</span>
+            <span class="label-text">کاربران</span>
+            <span class="badge-count hidden" id="usersBadge"></span>
+        </button>
+        <button class="tabnav-btn" data-tab="groups" role="tab" aria-selected="false">
+            <span class="emoji">👥</span>
+            <span class="label-text">گروه‌ها</span>
+        </button>
+        <button class="tabnav-btn" data-tab="reports" role="tab" aria-selected="false">
+            <span class="emoji">🚨</span>
+            <span class="label-text">گزارش‌ها</span>
+            <span class="badge-count hidden" id="reportsBadge"></span>
+        </button>
+        <button class="tabnav-btn" data-tab="cleanup" role="tab" aria-selected="false">
+            <span class="emoji">🗑️</span>
+            <span class="label-text">پاکسازی</span>
+        </button>
+        <button class="tabnav-btn" data-tab="audit" role="tab" aria-selected="false">
+            <span class="emoji">📜</span>
+            <span class="label-text">تاریخچه</span>
+        </button>
+        <button class="tabnav-btn" data-tab="settings" role="tab" aria-selected="false">
+            <span class="emoji">⚙️</span>
+            <span class="label-text">تنظیمات</span>
+        </button>
+    </nav>
+
+    <!-- ─── Content ─── -->
+    <main class="content" id="mainContent">
+
+        <!-- ═══════════ Tab: Dashboard ═══════════ -->
+        <section class="tab-content active" data-tab-content="dashboard">
+            <div class="section-title">
+                <span>📊</span>
+                <span>آمار کلی سیستم</span>
+            </div>
+
+            <div class="stats-grid" id="statsGrid">
+                <div class="stat-card">
+                    <span class="stat-icon">👥</span>
+                    <div class="stat-value" id="statTotalUsers">—</div>
+                    <div class="stat-label">کل کاربران</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-icon">✅</span>
+                    <div class="stat-value success" id="statActiveUsers">—</div>
+                    <div class="stat-label">کاربران فعال</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-icon">🟢</span>
+                    <div class="stat-value success" id="statOnlineUsers">—</div>
+                    <div class="stat-label">آنلاین (۵ دقیقه اخیر)</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-icon">👥</span>
+                    <div class="stat-value purple" id="statGroups">—</div>
+                    <div class="stat-label">کل گروه‌ها</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-icon">💬</span>
+                    <div class="stat-value" id="statMessages">—</div>
+                    <div class="stat-label">کل پیام‌ها</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-icon">📨</span>
+                    <div class="stat-value" id="statPrivateMsg">—</div>
+                    <div class="stat-label">پیام‌های خصوصی</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-icon">📢</span>
+                    <div class="stat-value" id="statGroupMsg">—</div>
+                    <div class="stat-label">پیام‌های گروهی</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-icon">🚨</span>
+                    <div class="stat-value danger" id="statPendingReports">—</div>
+                    <div class="stat-label">گزارش‌های در انتظار</div>
+                </div>
+            </div>
+
+            <div class="section-title">
+                <span>⚡</span>
+                <span>دسترسی سریع</span>
+            </div>
+
+            <div class="card">
+                <div style="display:flex;gap:8px;flex-wrap:wrap">
+                    <button class="btn btn-secondary" onclick="switchTab('users')">
+                        👤 مدیریت کاربران
+                    </button>
+                    <button class="btn btn-secondary" onclick="switchTab('groups')">
+                        👥 مدیریت گروه‌ها
+                    </button>
+                    <button class="btn btn-secondary" onclick="switchTab('reports')">
+                        🚨 گزارش‌های تخلف
+                    </button>
+                    <button class="btn btn-secondary" onclick="switchTab('audit')">
+                        📜 تاریخچه عملیات
+                    </button>
+                    <button class="btn btn-secondary" onclick="loadDashboard(true)">
+                        🔄 بروزرسانی آمار
+                    </button>
+                </div>
+            </div>
+
+            <div class="section-title">
+                <span>🕒</span>
+                <span>آخرین فعالیت‌ها</span>
+            </div>
+
+            <div class="card">
+                <div id="dashboardRecentAudit" class="list">
+                    <div class="skeleton"></div>
+                    <div class="skeleton"></div>
+                    <div class="skeleton"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══════════ Tab: Users ═══════════ -->
+        <section class="tab-content" data-tab-content="users">
+            <div class="section-title">
+                <span>👤</span>
+                <span>مدیریت کاربران</span>
+                <span class="badge badge-secondary" id="usersCount">۰</span>
+            </div>
+
+            <div class="toolbar">
+                <input
+                    type="text"
+                    id="userSearchInput"
+                    class="input"
+                    placeholder="🔍 جستجو بر اساس نام یا شناسه…"
+                    autocomplete="off"
+                    oninput="debounceUserSearch()">
+                <select id="userFilterActive" class="input" onchange="loadUsers()">
+                    <option value="all">همه کاربران</option>
+                    <option value="active">فقط فعال</option>
+                    <option value="inactive">فقط غیرفعال</option>
+                </select>
+            </div>
+
+            <div id="usersList" class="list">
+                <div class="skeleton"></div>
+                <div class="skeleton"></div>
+                <div class="skeleton"></div>
+            </div>
+        </section>
+
+        <!-- ═══════════ Tab: Groups ═══════════ -->
+        <section class="tab-content" data-tab-content="groups">
+            <div class="section-title">
+                <span>➕</span>
+                <span>ساخت گروه جدید</span>
+            </div>
+
+            <div class="card">
+                <div class="form-grid">
+                    <div class="field-group" style="margin:0">
+                        <label class="label">شناسه گروه *</label>
+                        <input
+                            type="text"
+                            id="newGroupId"
+                            class="input"
+                            placeholder="group-fam"
+                            maxlength="30"
+                            dir="ltr"
+                            autocomplete="off">
+                    </div>
+                    <div class="field-group" style="margin:0">
+                        <label class="label">نام گروه *</label>
+                        <input
+                            type="text"
+                            id="newGroupName"
+                            class="input"
+                            placeholder="خانواده"
+                            maxlength="40"
+                            autocomplete="off">
+                    </div>
+                    <div class="field-group" style="margin:0">
+                        <label class="label">ایموجی</label>
+                        <input
+                            type="text"
+                            id="newGroupEmoji"
+                            class="input"
+                            placeholder="👥"
+                            maxlength="2"
+                            value="👥">
+                    </div>
+                </div>
+                <div class="field-group" style="margin-top:10px">
+                    <label class="label">توضیحات (اختیاری)</label>
+                    <textarea
+                        id="newGroupBio"
+                        class="input"
+                        rows="2"
+                        maxlength="150"
+                        placeholder="درباره گروه…"></textarea>
+                </div>
+                <button class="btn btn-success btn-block" id="createGroupBtn" onclick="handleCreateGroup()">
+                    ➕ ساخت گروه
+                </button>
+            </div>
+
+            <div class="section-title">
+                <span>👥</span>
+                <span>همه گروه‌ها</span>
+                <span class="badge badge-secondary" id="groupsCount">۰</span>
+            </div>
+
+            <div class="toolbar">
+                <input
+                    type="text"
+                    id="groupSearchInput"
+                    class="input"
+                    placeholder="🔍 جستجو بر اساس نام یا شناسه…"
+                    autocomplete="off"
+                    oninput="debounceGroupSearch()">
+            </div>
+
+            <div id="groupsList" class="list">
+                <div class="skeleton"></div>
+                <div class="skeleton"></div>
+            </div>
+        </section>
+
+        <!-- ═══════════ Tab: Reports ═══════════ -->
+        <section class="tab-content" data-tab-content="reports">
+            <div class="section-title">
+                <span>🚨</span>
+                <span>گزارش‌های تخلف</span>
+                <span class="badge badge-danger" id="reportsCount">۰</span>
+            </div>
+
+            <div class="toolbar">
+                <select id="reportFilter" class="input" onchange="loadReports()">
+                    <option value="pending">در انتظار بررسی</option>
+                    <option value="resolved">رسیدگی شده</option>
+                    <option value="dismissed">رد شده</option>
+                    <option value="all">همه گزارش‌ها</option>
+                </select>
+            </div>
+
+            <div id="reportsList" class="list">
+                <div class="skeleton"></div>
+                <div class="skeleton"></div>
+            </div>
+        </section>
+
+        <!-- ═══════════ Tab: Cleanup ═══════════ -->
+        <section class="tab-content" data-tab-content="cleanup">
+            <div class="section-title">
+                <span>⚠️</span>
+                <span>منطقه خطر</span>
+            </div>
+
+            <div class="info-box">
+                <strong>⚠️ هشدار مهم:</strong>
+                عملیات‌های این صفحه <strong>غیرقابل بازگشت</strong> هستند.
+                قبل از اجرا مطمئن شوید که از دیتابیس بکاپ گرفته‌اید.
+                همه عملیات‌ها در تاریخچه (Audit Log) ثبت می‌شوند.
+            </div>
+
+            <div class="danger-zone">
+                <div class="card-title">🗑️ حذف پیام‌های خصوصی</div>
+                <div class="card-subtitle" style="margin-bottom:12px">
+                    تمام پیام‌های چت خصوصی (بین دو کاربر) حذف می‌شوند.
+                    گروه‌ها و کاربران دست‌نخورده باقی می‌مانند.
+                </div>
+                <button class="btn btn-danger btn-block" id="btnClearPrivate" onclick="handleClearPrivateMessages()">
+                    🗑️ حذف همه پیام‌های خصوصی
+                </button>
+            </div>
+
+            <div class="danger-zone" style="margin-top:12px">
+                <div class="card-title">🗑️ حذف پیام‌های گروهی</div>
+                <div class="card-subtitle" style="margin-bottom:12px">
+                    تمام پیام‌های ارسال‌شده در گروه‌ها حذف می‌شوند.
+                    خود گروه‌ها و اعضایشان دست‌نخورده باقی می‌مانند.
+                </div>
+                <button class="btn btn-danger btn-block" id="btnClearGroup" onclick="handleClearGroupMessages()">
+                    🗑️ حذف همه پیام‌های گروهی
+                </button>
+            </div>
+
+            <div class="danger-zone" style="margin-top:12px">
+                <div class="card-title">💥 حذف تمام پیام‌ها</div>
+                <div class="card-subtitle" style="margin-bottom:12px">
+                    <strong style="color:var(--danger)">خطرناک‌ترین عملیات!</strong>
+                    تمام پیام‌های خصوصی و گروهی حذف می‌شوند. این عملیات غیرقابل بازگشت است.
+                </div>
+                <button class="btn btn-danger btn-block" id="btnClearAll" onclick="handleClearAllMessages()">
+                    💥 حذف همه پیام‌ها (خصوصی + گروهی)
+                </button>
+            </div>
+
+            <div class="danger-zone" style="margin-top:12px">
+                <div class="card-title">🚨 حذف گزارش‌های تخلف</div>
+                <div class="card-subtitle" style="margin-bottom:12px">
+                    تمام گزارش‌های تخلف (در انتظار، رسیدگی‌شده و رد‌شده) حذف می‌شوند.
+                    پیام‌ها و کاربران دست‌نخورده باقی می‌مانند.
+                </div>
+                <button class="btn btn-danger btn-block" id="btnClearReports" onclick="handleClearReports()">
+                    🚨 حذف همه گزارش‌ها
+                </button>
+            </div>
+        </section>
+
+        <!-- ═══════════ Tab: Audit ═══════════ -->
+        <section class="tab-content" data-tab-content="audit">
+            <div class="section-title">
+                <span>📜</span>
+                <span>تاریخچه عملیات ادمین</span>
+                <span class="badge badge-secondary" id="auditCount">۰</span>
+            </div>
+
+            <div class="info-box">
+                <strong>ℹ️ درباره تاریخچه:</strong>
+                هر عملیات ادمین (ورود، حذف، تغییر وضعیت و …) با تاریخ و جزئیات در این جدول ثبت می‌شود.
+                این اطلاعات برای پیگیری و امنیت استفاده می‌شود.
+            </div>
+
+            <div class="toolbar">
+                <input
+                    type="number"
+                    id="auditLimit"
+                    class="input"
+                    value="100"
+                    min="10"
+                    max="500"
+                    step="10"
+                    style="max-width:120px"
+                    title="تعداد ردیف">
+                <button class="btn btn-secondary" onclick="loadAudit()">
+                    🔄 بروزرسانی
+                </button>
+            </div>
+
+            <div id="auditList" class="list">
+                <div class="skeleton"></div>
+                <div class="skeleton"></div>
+            </div>
+        </section>
+
+        <!-- ═══════════ Tab: Settings ═══════════ -->
+        <section class="tab-content" data-tab-content="settings">
+
+            <!-- تغییر رمز -->
+            <div class="section-title">
+                <span>🔑</span>
+                <span>تغییر رمز ادمین</span>
+            </div>
+
+            <div class="card">
+                <div class="field-group">
+                    <label class="label">رمز فعلی *</label>
+                    <input
+                        type="password"
+                        id="currentPwd"
+                        class="input"
+                        placeholder="رمز فعلی"
+                        autocomplete="current-password"
+                        dir="ltr"
+                        maxlength="200">
+                </div>
+
+                <div class="field-group">
+                    <label class="label">رمز جدید *</label>
+                    <input
+                        type="password"
+                        id="newPwd"
+                        class="input"
+                        placeholder="حداقل ۸ کاراکتر"
+                        autocomplete="new-password"
+                        dir="ltr"
+                        maxlength="200">
+                    <div class="password-strength" id="newStrength" data-strength="weak">
+                        <div class="password-strength-bar"></div>
+                    </div>
+                    <div class="password-strength-text" id="newStrengthText">قدرت رمز: ضعیف</div>
+                </div>
+
+                <div class="field-group">
+                    <label class="label">تکرار رمز جدید *</label>
+                    <input
+                        type="password"
+                        id="newPwd2"
+                        class="input"
+                        placeholder="تکرار رمز جدید"
+                        autocomplete="new-password"
+                        dir="ltr"
+                        maxlength="200">
+                </div>
+
+                <div class="confirm-warning">
+                    ⚠️ با تغییر رمز، همه جلسه‌ها (از جمله جلسه فعلی) بسته می‌شوند.
+                    باید با رمز جدید دوباره وارد شوید.
+                </div>
+
+                <button class="btn btn-warning btn-block" id="changePwdBtn" onclick="handleChangePassword()">
+                    🔑 تغییر رمز
+                </button>
+            </div>
+
+            <!-- تنظیمات ظاهری -->
+            <div class="section-title">
+                <span>🎨</span>
+                <span>تنظیمات ظاهری</span>
+            </div>
+
+            <div class="card">
+                <div class="toggle-row">
+                    <label for="themeToggleSwitch">
+                        تم تاریک
+                        <small>تغییر بین تم تاریک و روشن</small>
+                    </label>
+                    <label class="switch">
+                        <input type="checkbox" id="themeToggleSwitch" onchange="toggleTheme()">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="toggle-row">
+                    <label for="autoRefreshSwitch">
+                        بروزرسانی خودکار
+                        <small>هر ۳۰ ثانیه آمار و داده‌های تب فعال بروزرسانی می‌شود</small>
+                    </label>
+                    <label class="switch">
+                        <input type="checkbox" id="autoRefreshSwitch" checked onchange="toggleAutoRefresh(this.checked)">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- اطلاعات سیستم -->
+            <div class="section-title">
+                <span>ℹ️</span>
+                <span>اطلاعات سیستم</span>
+            </div>
+
+            <div class="card">
+                <div style="display:grid;gap:10px;font-size:13px">
+                    <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)">
+                        <span class="text-muted">نسخه پنل:</span>
+                        <span class="font-bold" id="sysVersion">۲.۰.۰</span>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)">
+                        <span class="text-muted">وضعیت اتصال:</span>
+                        <span class="font-bold" id="sysConnection" style="color:var(--success)">🟢 متصل</span>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)">
+                        <span class="text-muted">مدت جلسه:</span>
+                        <span class="font-bold" id="sysSessionDuration">—</span>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;padding:8px 0">
+                        <span class="text-muted">انقضای جلسه:</span>
+                        <span class="font-bold" id="sysSessionExpiry">—</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- خروج -->
+            <div class="section-title">
+                <span>🚪</span>
+                <span>خروج</span>
+            </div>
+
+            <div class="card">
+                <button class="btn btn-danger btn-block btn-lg" onclick="handleLogout()">
+                    🚪 خروج از پنل
+                </button>
+                <div class="auth-info" style="margin-top:12px;text-align:center">
+                    با خروج، توکن جلسه در دیتابیس باطل می‌شود
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     عناصر شناور
+     ═══════════════════════════════════════════════════════════════ -->
+
+<!-- ─── Toast Container ─── -->
+<div id="toastContainer" aria-live="polite" aria-atomic="true"></div>
+
+<!-- ─── Loading Overlay ─── -->
+<div id="loadingOverlay" class="hidden">
+    <div class="spinner"></div>
+    <div id="loadingText">در حال پردازش…</div>
+</div>
+
+<!-- ─── Modal Overlay ─── -->
+<div id="modalOverlay" class="modal-overlay" onclick="closeModalOnBackdrop(event)">
+    <div class="modal-box" id="modalBox" onclick="event.stopPropagation()">
+        <!-- محتوای modal به‌صورت داینامیک از JS پر می‌شود -->
+    </div>
+</div>
+
+<script>
+'use strict';
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   admin.html — بخش ۳ از ۶: پایه‌ها (Config, State, Utils, UI, Auth, Session)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ═══════════════════════════════════════════════════════════════
+   ۱. پیکربندی Supabase
+   ═══════════════════════════════════════════════════════════════ */
+const SUPABASE_URL = 'https://wspvdrxsdbmpomeuczwt.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_SDXc2OU1Sy77WPdnBrxyWw_aT3josm9';
+
+const SESSION_KEY_TOKEN = 'admin_token';
+const SESSION_KEY_EXPIRY = 'admin_expiry';
+const SESSION_KEY_LOGIN_AT = 'admin_login_at';
+const THEME_KEY = 'admin_theme';
+const AUTO_REFRESH_KEY = 'admin_auto_refresh';
+const AUTO_REFRESH_INTERVAL = 30000; // ۳۰ ثانیه
+
+/* ═══════════════════════════════════════════════════════════════
+   ۲. اتصال Supabase (با مدیریت خطای CDN)
+   ═══════════════════════════════════════════════════════════════ */
+let sb = null;
+let SB_ERROR = null;
+
+try {
+    if (typeof supabase === 'undefined') {
+        SB_ERROR = 'کتابخانه Supabase از CDN بارگذاری نشد. اتصال اینترنت را بررسی کنید.';
+        console.error('[ADMIN]', SB_ERROR);
+    } else {
+        sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+            auth: { persistSession: false, autoRefreshToken: false },
+            global: { headers: { 'x-client-info': 'admin-panel/2.0.0' } }
+        });
+        console.log('[ADMIN] Supabase client initialized');
+    }
+} catch (err) {
+    SB_ERROR = 'خطا در اتصال به Supabase: ' + (err && err.message ? err.message : 'نامشخص');
+    console.error('[ADMIN]', SB_ERROR, err);
 }
 
-async function deleteGroup(id){
-  if(!confirm('گروه و همه پیام‌ها حذف شوند؟'))return;
-  await sb.from('group_messages').delete().eq('room_id',id);
-  await sb.from('room_members').delete().eq('room_id',id);
-  await sb.from('muted_rooms').delete().eq('room_id',id);
-  await sb.from('room_invites').delete().eq('room_id',id);
-  await sb.from('room_settings').delete().eq('room_id',id);
-  await sb.from('rooms').delete().eq('id',id);
-  showAlert('گروه حذف شد','success');loadGroups();
+/* ═══════════════════════════════════════════════════════════════
+   ۳. STATE سراسری (تنها منبع حقیقت)
+   ═══════════════════════════════════════════════════════════════ */
+const STATE = {
+    // ─── احراز هویت ───
+    token: null,
+    expiresAt: null,
+    loginAt: null,
+    sessionTimer: null,
+
+    // ─── UI ───
+    currentTab: 'dashboard',
+    pendingConfirm: null,
+    autoRefreshTimer: null,
+    autoRefreshEnabled: true,
+    isLoading: false,
+
+    // ─── داده‌ها ───
+    users: [],
+    groups: [],
+    reports: [],
+    auditEntries: [],
+    stats: null,
+
+    // ─── فیلترها ───
+    userSearchQuery: '',
+    userFilterActive: 'all',
+    groupSearchQuery: '',
+    reportFilter: 'pending',
+    auditLimit: 100,
+
+    // ─── Cache debounce timers ───
+    _timers: {
+        userSearch: null,
+        groupSearch: null
+    },
+
+    // ─── Cache DOM ids ───
+    _dom: {},
+
+    // ─── Flags ───
+    isInitialized: false,
+    isShuttingDown: false
+};
+
+/* ═══════════════════════════════════════════════════════════════
+   ۴. انتخاب‌گر DOM (با cache)
+   ═══════════════════════════════════════════════════════════════ */
+function $(id) {
+    if (!id) return null;
+    if (STATE._dom[id]) return STATE._dom[id];
+    const el = document.getElementById(id);
+    if (el) STATE._dom[id] = el;
+    return el;
 }
 
-async function toggleGroupMute(gid,cur){
-  const {data:ex}=await sb.from('room_settings').select('*').eq('room_id',gid).maybeSingle();
-  if(ex)await sb.from('room_settings').update({is_muted:!cur,updated_at:new Date().toISOString()}).eq('room_id',gid);
-  else await sb.from('room_settings').insert({room_id:gid,is_muted:!cur,is_locked:false});
-  showAlert(`گروه ${!cur?'بی‌صدا':'فعال'} شد`,'success');loadGroups();
+function $$(selector, parent) {
+    return (parent || document).querySelectorAll(selector);
 }
 
-async function toggleGroupLock(gid,cur){
-  const action=cur?'باز':'بسته';
-  if(!confirm(`ارسال پیام در گروه ${action} شود؟`))return;
-  const {data:ex}=await sb.from('room_settings').select('*').eq('room_id',gid).maybeSingle();
-  if(ex)await sb.from('room_settings').update({is_locked:!cur,locked_by:!cur?'admin':null,updated_at:new Date().toISOString()}).eq('room_id',gid);
-  else await sb.from('room_settings').insert({room_id:gid,is_locked:!cur,locked_by:!cur?'admin':null,is_muted:false});
-  showAlert(`ارسال پیام ${!cur?'بسته':'باز'} شد`,'success');loadGroups();
+function $one(selector, parent) {
+    return (parent || document).querySelector(selector);
 }
 
-async function createGroup(){
-  const id=document.getElementById('newGroupId').value.trim().toLowerCase();
-  const name=document.getElementById('newGroupName').value.trim();
-  const emoji=document.getElementById('newGroupEmoji').value.trim()||'👥';
-  if(!id||!name){showAlert('شناسه و نام الزامی','error');return}
-  if(!/^[a-z0-9_-]{2,30}$/.test(id)){showAlert('شناسه نامعتبر (فقط a-z، 0-9، - و _)','error');return}
-  try{
-    const {error:e1}=await sb.from('rooms').insert({id,name,avatar_emoji:emoji});
-    if(e1){showAlert('خطا ساخت گروه: '+e1.message,'error');return}
-    const {error:e2}=await sb.from('room_settings').insert({room_id:id,is_muted:false,is_locked:false});
-    if(e2){showAlert('هشدار: گروه ساخته شد ولی تنظیمات ذخیره نشد: '+e2.message,'error')}
-    const code=Math.random().toString(36).slice(2,10);
-    await sb.from('room_invites').insert({code,room_id:id}).catch(()=>{});
-    showAlert('گروه ساخته شد ✅','success');
-    document.getElementById('newGroupId').value='';
-    document.getElementById('newGroupName').value='';
-    loadGroups();
-  }catch(err){showAlert('خطای غیرمنتظره: '+err.message,'error')}
+/* ═══════════════════════════════════════════════════════════════
+   ۵. توابع کمکی عمومی
+   ═══════════════════════════════════════════════════════════════ */
+
+/** Escape HTML — برای جلوگیری از XSS */
+function esc(str) {
+    if (str === null || str === undefined) return '';
+    return String(str).replace(/[&<>"']/g, function (c) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
 }
 
-async function addMember(gid){
-  const sel=document.getElementById('add-'+gid);
-  if(!sel||!sel.value){showAlert('یک کاربر انتخاب کنید','error');return}
-  const uid=sel.value;
-  try{
-    const {data:ex}=await sb.from('room_members').select('*').eq('room_id',gid).eq('user_id',uid).maybeSingle();
-    if(ex){showAlert('کاربر قبلاً عضو است','error');return}
-    const {error}=await sb.from('room_members').insert({room_id:gid,user_id:uid});
-    if(error){showAlert('خطا: '+error.message,'error');return}
-    showAlert('عضو اضافه شد ✅','success');
-    loadGroups();
-  }catch(err){showAlert('خطای غیرمنتظره: '+err.message,'error')}
+/** تاریخ شمسی کوتاه */
+function formatDate(iso) {
+    if (!iso) return '—';
+    try {
+        const d = new Date(iso);
+        if (isNaN(d.getTime())) return '—';
+        return d.toLocaleDateString('fa-IR', { year: 'numeric', month: 'long', day: 'numeric' });
+    } catch (e) {
+        return '—';
+    }
 }
 
-async function removeMember(gid,uid){
-  if(!confirm('عضو حذف شود؟'))return;
-  await sb.from('room_members').delete().eq('room_id',gid).eq('user_id',uid);
-  loadGroups();
+/** ساعت */
+function formatTime(iso) {
+    if (!iso) return '—';
+    try {
+        const d = new Date(iso);
+        if (isNaN(d.getTime())) return '—';
+        return d.toLocaleTimeString('fa-IR', { hour: '2-digit', minute: '2-digit' });
+    } catch (e) {
+        return '—';
+    }
 }
 
-async function loadReports(){
-  const {data:reports}=await sb.from('reports').select('*').eq('status','pending').order('created_at',{ascending:false}).limit(100);
-  const {data:profiles}=await sb.from('profiles').select('*');
-  const list=document.getElementById('reportsList');list.innerHTML='';
-  if(!reports||reports.length===0){list.innerHTML='<div style="color:#666;text-align:center;padding:20px">هیچ گزارشی نیست</div>';return}
-  reports.forEach(r=>{
-    const reporter=(profiles||[]).find(p=>p.id===r.reporter_id);
-    const reported=(profiles||[]).find(p=>p.id===r.reported_user_id);
-    const div=document.createElement('div');div.className='item';div.style.flexDirection='column';div.style.alignItems='flex-start';
-    div.innerHTML=`<div style="width:100%;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px"><div><b style="color:#e74c3c">🚨 ${r.reason}</b><div style="font-size:12px;color:#888;margin-top:4px">گزارش‌دهنده: ${reporter?reporter.display_name:r.reporter_id} | متخلف: ${reported?reported.display_name:r.reported_user_id} | ${new Date(r.created_at).toLocaleString('fa-IR')}</div></div><div style="display:flex;gap:6px">${reported?`<button class="btn warn" onclick="toggleUser('${reported.id}',${reported.is_active})">${reported.is_active?'غیرفعال':'فعال'}</button>`:''}<button class="btn success" onclick="resolveReport(${r.id})">✓ رسیدگی</button></div></div><div style="background:#0f1419;padding:8px;border-radius:8px;width:100%;margin-top:8px;font-size:13px">${r.message_content?r.message_content.slice(0,200):'<em style="color:#666">بدون محتوا</em>'}</div>`;
-    list.appendChild(div);
-  });
+/** تاریخ + ساعت کامل */
+function formatDateTime(iso) {
+    if (!iso) return '—';
+    return formatDate(iso) + ' — ' + formatTime(iso);
 }
 
-async function resolveReport(id){
-  await sb.from('reports').update({status:'resolved'}).eq('id',id);
-  showAlert('گزارش رسیدگی شد','success');loadReports();
+/** زمان نسبی (چند دقیقه پیش) */
+function formatRelativeTime(iso) {
+    if (!iso) return '—';
+    try {
+        const d = new Date(iso);
+        if (isNaN(d.getTime())) return '—';
+        const diff = Math.floor((Date.now() - d) / 1000);
+        if (diff < 0) return 'همین الان';
+        if (diff < 60) return 'همین الان';
+        if (diff < 3600) return Math.floor(diff / 60) + ' دقیقه پیش';
+        if (diff < 86400) return Math.floor(diff / 3600) + ' ساعت پیش';
+        if (diff < 172800) return 'دیروز';
+        if (diff < 604800) return Math.floor(diff / 86400) + ' روز پیش';
+        return formatDate(iso);
+    } catch (e) {
+        return '—';
+    }
 }
 
-async function clearOffline(){if(!confirm('حذف؟'))return;await sb.from('offline_messages').delete().neq('id',0);showAlert('حذف شد','success')}
-async function clearGroups(){if(!confirm('حذف؟'))return;await sb.from('group_messages').delete().neq('id',0);showAlert('حذف شد','success')}
-async function clearReports(){if(!confirm('حذف؟'))return;await sb.from('reports').delete().neq('id',0);showAlert('حذف شد','success');loadReports()}
+/** حروف اولیه برای آواتار */
+function getInitials(name) {
+    if (!name) return '?';
+    const trimmed = String(name).trim();
+    if (!trimmed) return '?';
+    if (trimmed.length === 1) return trimmed.toUpperCase();
+    return trimmed.substring(0, 2).toUpperCase();
+}
+
+/** رنگ ثابت بر اساس ID */
+const AVATAR_COLORS = [
+    '#3b82f6', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981',
+    '#06b6d4', '#ef4444', '#6366f1', '#14b8a6', '#f97316',
+    '#84cc16', '#e11d48', '#0ea5e9', '#d946ef'
+];
+
+function colorFromId(id) {
+    if (!id) return AVATAR_COLORS[0];
+    let hash = 0;
+    for (let i = 0; i < id.length; i++) {
+        hash = ((hash << 5) - hash) + id.charCodeAt(i);
+        hash |= 0;
+    }
+    return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
+}
+
+/** تبدیل اعداد انگلیسی به فارسی */
+function toFaNum(num) {
+    if (num === null || num === undefined) return '۰';
+    return String(num).replace(/\d/g, function (d) {
+        return '۰۱۲۳۴۵۶۷۸۹'[parseInt(d, 10)];
+    });
+}
+
+/** فرمت عدد با جداکننده هزارگان */
+function formatNum(num) {
+    if (num === null || num === undefined) return '۰';
+    const n = Number(num);
+    if (isNaN(n)) return '۰';
+    return toFaNum(n.toLocaleString('en-US'));
+}
+
+/** Sleep */
+function sleep(ms) {
+    return new Promise(function (resolve) { setTimeout(resolve, ms); });
+}
+
+/** Debounce */
+function debounce(fn, wait) {
+    let timeout;
+    return function () {
+        const context = this;
+        const args = arguments;
+        clearTimeout(timeout);
+        timeout = setTimeout(function () { fn.apply(context, args); }, wait);
+    };
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ۶. سیستم Toast
+   ═══════════════════════════════════════════════════════════════ */
+const MAX_TOASTS = 5;
+
+function toast(message, type, duration) {
+    type = type || 'info';
+    duration = typeof duration === 'number' ? duration : 4000;
+
+    const container = $('toastContainer');
+    if (!container) {
+        console.log('[Toast]', message);
+        return;
+    }
+
+    // محدود کردن تعداد toastهای همزمان
+    const existing = container.querySelectorAll('.toast:not(.removing)');
+    if (existing.length >= MAX_TOASTS) {
+        existing[0].remove();
+    }
+
+    const el = document.createElement('div');
+    el.className = 'toast ' + type;
+    el.textContent = message;
+    el.setAttribute('role', 'status');
+    container.appendChild(el);
+
+    const removeTimer = setTimeout(function () {
+        el.classList.add('removing');
+        setTimeout(function () {
+            if (el.parentNode) el.parentNode.removeChild(el);
+        }, 300);
+    }, duration);
+
+    // کلیک برای بستن زودتر
+    el.addEventListener('click', function () {
+        clearTimeout(removeTimer);
+        el.classList.add('removing');
+        setTimeout(function () {
+            if (el.parentNode) el.parentNode.removeChild(el);
+        }, 300);
+    });
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ۷. Loading Overlay
+   ═══════════════════════════════════════════════════════════════ */
+function showLoading(text) {
+    const overlay = $('loadingOverlay');
+    const textEl = $('loadingText');
+    if (textEl) textEl.textContent = text || 'در حال پردازش…';
+    if (overlay) overlay.classList.remove('hidden');
+    STATE.isLoading = true;
+}
+
+function hideLoading() {
+    const overlay = $('loadingOverlay');
+    if (overlay) overlay.classList.add('hidden');
+    STATE.isLoading = false;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ۸. سیستم Modal
+   ═══════════════════════════════════════════════════════════════ */
+function openModal(html) {
+    const box = $('modalBox');
+    const overlay = $('modalOverlay');
+    if (!box || !overlay) return;
+    box.innerHTML = html;
+    overlay.classList.add('active');
+    // focus trap ساده — فوکوس روی اولین input یا button
+    setTimeout(function () {
+        const focusable = box.querySelector('input:not([type="hidden"]):not([disabled]), textarea:not([disabled]), select:not([disabled]), button:not([disabled])');
+        if (focusable) {
+            try { focusable.focus(); } catch (e) {}
+        }
+    }, 200);
+}
+
+function closeModal() {
+    const box = $('modalBox');
+    const overlay = $('modalOverlay');
+    if (!box || !overlay) return;
+    overlay.classList.remove('active');
+    setTimeout(function () {
+        if (box) box.innerHTML = '';
+    }, 250);
+}
+
+function closeModalOnBackdrop(event) {
+    if (event && event.target !== $('modalOverlay')) return;
+    // اگر dialog تأیید فعال است، آن را با false حل کن
+    if (STATE.pendingConfirm) {
+        resolveConfirm(STATE.pendingConfirm.id, false);
+        return;
+    }
+    closeModal();
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ۹. دیالوگ تأیید (Promise-based)
+   ═══════════════════════════════════════════════════════════════ */
+function confirmDialog(opts) {
+    opts = opts || {};
+    return new Promise(function (resolve) {
+        const id = 'confirm_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6);
+
+        const dangerHtml = opts.danger
+            ? '<div class="confirm-danger">' + esc(opts.danger) + '</div>'
+            : '';
+
+        const warningHtml = opts.warning
+            ? '<div class="confirm-warning">' + esc(opts.warning) + '</div>'
+            : '';
+
+        const btnClass = opts.type === 'danger'
+            ? 'btn-danger'
+            : (opts.type === 'warning' ? 'btn-warning' : 'btn-success');
+
+        const html =
+            '<div class="modal-header">' +
+            '  <h3 class="modal-title">' + esc(opts.title || 'تأیید عملیات') + '</h3>' +
+            '  <button class="modal-close" onclick="resolveConfirm(\'' + id + '\', false)">×</button>' +
+            '</div>' +
+            warningHtml +
+            dangerHtml +
+            '<p class="confirm-text">' + esc(opts.message || 'آیا مطمئن هستید؟') + '</p>' +
+            '<div class="modal-actions">' +
+            '  <button class="btn btn-secondary" onclick="resolveConfirm(\'' + id + '\', false)">' +
+            (opts.cancelText || 'انصراف') +
+            '  </button>' +
+            '  <button class="btn ' + btnClass + '" onclick="resolveConfirm(\'' + id + '\', true)">' +
+            esc(opts.confirmText || 'تأیید') +
+            '  </button>' +
+            '</div>';
+
+        STATE.pendingConfirm = { id: id, resolve: resolve };
+        openModal(html);
+    });
+}
+
+function resolveConfirm(id, value) {
+    if (!STATE.pendingConfirm) return;
+    if (STATE.pendingConfirm.id !== id) return;
+    const resolve = STATE.pendingConfirm.resolve;
+    STATE.pendingConfirm = null;
+    closeModal();
+    resolve(value === true);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ۱۰. قدرت رمز عبور
+   ═══════════════════════════════════════════════════════════════ */
+function calcPasswordStrength(pwd) {
+    if (!pwd) return 'weak';
+    if (pwd.length < 8) return 'weak';
+
+    let score = 0;
+    if (pwd.length >= 8) score++;
+    if (pwd.length >= 12) score++;
+    if (pwd.length >= 16) score++;
+    if (/[a-z]/.test(pwd)) score++;
+    if (/[A-Z]/.test(pwd)) score++;
+    if (/[0-9]/.test(pwd)) score++;
+    if (/[^a-zA-Z0-9]/.test(pwd)) score++;
+
+    if (score <= 3) return 'weak';
+    if (score <= 5) return 'medium';
+    return 'strong';
+}
+
+function bindPasswordStrength(inputId, barId, textId) {
+    const input = $(inputId);
+    const bar = $(barId);
+    const text = $(textId);
+    if (!input || !bar || !text) return;
+
+    input.addEventListener('input', function () {
+        const level = calcPasswordStrength(input.value);
+        bar.setAttribute('data-strength', level);
+        const labels = { weak: 'ضعیف', medium: 'متوسط', strong: 'قوی' };
+        text.textContent = 'قدرت رمز: ' + (labels[level] || 'ضعیف');
+    });
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ۱۱. فراخوانی RPC ادمین (با مدیریت جلسه منقضی)
+   ═══════════════════════════════════════════════════════════════ */
+async function adminCall(fn, params) {
+    params = params || {};
+
+    if (!sb) {
+        throw new Error('اتصال به سرور برقرار نیست');
+    }
+
+    if (!STATE.token) {
+        handleSessionExpired();
+        throw new Error('جلسه منقضی شده');
+    }
+
+    let result;
+    try {
+        result = await sb.rpc(fn, Object.assign({ p_token: STATE.token }, params));
+    } catch (networkErr) {
+        throw new Error('خطای شبکه: ' + (networkErr.message || 'اتصال برقرار نشد'));
+    }
+
+    if (result.error) {
+        const msg = result.error.message || result.error.details || 'خطای سرور';
+        if (msg.indexOf('جلسه') !== -1 || msg.toLowerCase().indexOf('session') !== -1) {
+            handleSessionExpired();
+        }
+        throw new Error(msg);
+    }
+
+    const data = result.data;
+    if (!data) {
+        throw new Error('پاسخ خالی از سرور');
+    }
+
+    if (data.success === false) {
+        if (data.error && (data.error.indexOf('جلسه') !== -1 || data.error.toLowerCase().indexOf('session') !== -1)) {
+            handleSessionExpired();
+        }
+        throw new Error(data.error || 'خطای نامشخص');
+    }
+
+    return data;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ۱۲. مدیریت Session
+   ═══════════════════════════════════════════════════════════════ */
+function saveSession(token, expiresAtMs) {
+    STATE.token = token;
+    STATE.expiresAt = expiresAtMs;
+    STATE.loginAt = Date.now();
+
+    try {
+        sessionStorage.setItem(SESSION_KEY_TOKEN, token);
+        sessionStorage.setItem(SESSION_KEY_EXPIRY, String(expiresAtMs));
+        sessionStorage.setItem(SESSION_KEY_LOGIN_AT, String(STATE.loginAt));
+    } catch (e) {
+        console.warn('sessionStorage در دسترس نیست:', e);
+    }
+}
+
+function loadSession() {
+    try {
+        const token = sessionStorage.getItem(SESSION_KEY_TOKEN);
+        const expiry = parseInt(sessionStorage.getItem(SESSION_KEY_EXPIRY) || '0', 10);
+        const loginAt = parseInt(sessionStorage.getItem(SESSION_KEY_LOGIN_AT) || '0', 10);
+
+        if (!token || !expiry || expiry <= Date.now()) {
+            clearSession();
+            return false;
+        }
+
+        STATE.token = token;
+        STATE.expiresAt = expiry;
+        STATE.loginAt = loginAt || Date.now();
+        return true;
+    } catch (e) {
+        return false;
+    }
+}
+
+function clearSession() {
+    STATE.token = null;
+    STATE.expiresAt = null;
+    STATE.loginAt = null;
+
+    try {
+        sessionStorage.removeItem(SESSION_KEY_TOKEN);
+        sessionStorage.removeItem(SESSION_KEY_EXPIRY);
+        sessionStorage.removeItem(SESSION_KEY_LOGIN_AT);
+    } catch (e) {}
+
+    if (STATE.sessionTimer) {
+        clearInterval(STATE.sessionTimer);
+        STATE.sessionTimer = null;
+    }
+}
+
+function startSessionTimer() {
+    if (STATE.sessionTimer) clearInterval(STATE.sessionTimer);
+    STATE.sessionTimer = setInterval(function () {
+        if (!STATE.expiresAt) return;
+        const remaining = STATE.expiresAt - Date.now();
+        if (remaining <= 0) {
+            handleSessionExpired();
+            return;
+        }
+        updateSessionInfo();
+    }, 1000);
+    updateSessionInfo();
+}
+
+function updateSessionInfo() {
+    const durationEl = $('sysSessionDuration');
+    const expiryEl = $('sysSessionExpiry');
+
+    if (durationEl && STATE.loginAt) {
+        const elapsedMs = Date.now() - STATE.loginAt;
+        const elapsedMin = Math.floor(elapsedMs / 60000);
+        const elapsedSec = Math.floor((elapsedMs % 60000) / 1000);
+        if (elapsedMin > 0) {
+            durationEl.textContent = toFaNum(elapsedMin) + ' دقیقه';
+        } else {
+            durationEl.textContent = toFaNum(elapsedSec) + ' ثانیه';
+        }
+    }
+
+    if (expiryEl && STATE.expiresAt) {
+        const d = new Date(STATE.expiresAt);
+        expiryEl.textContent = d.toLocaleTimeString('fa-IR', { hour: '2-digit', minute: '2-digit' });
+    }
+}
+
+function handleSessionExpired() {
+    if (STATE.isShuttingDown) return;
+    STATE.isShuttingDown = true;
+
+    clearSession();
+    stopAutoRefresh();
+    showScreen('login');
+    toast('⏰ جلسه منقضی شده — دوباره وارد شوید', 'warning', 6000);
+
+    setTimeout(function () { STATE.isShuttingDown = false; }, 1000);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ۱۳. تغییر بین صفحه‌ها
+   ═══════════════════════════════════════════════════════════════ */
+function showScreen(name) {
+    ['bootOverlay', 'setupScreen', 'loginScreen', 'mainPanel'].forEach(function (id) {
+        const el = $(id);
+        if (el) el.classList.add('hidden');
+    });
+
+    if (name === 'setup') {
+        const el = $('setupScreen');
+        if (el) el.classList.remove('hidden');
+        const input = $('setupPwd');
+        if (input) setTimeout(function () { input.focus(); }, 300);
+    } else if (name === 'login') {
+        const el = $('loginScreen');
+        if (el) el.classList.remove('hidden');
+        const input = $('loginPwd');
+        if (input) setTimeout(function () { input.focus(); }, 300);
+    } else if (name === 'panel') {
+        const el = $('mainPanel');
+        if (el) el.classList.remove('hidden');
+    }
+}
+
+function showPanel() {
+    showScreen('panel');
+    startSessionTimer();
+
+    // بارگذاری داده اولیه — این توابع در بخش ۴ به بعد تعریف می‌شوند
+    if (typeof loadDashboard === 'function') {
+        loadDashboard(true).catch(function (e) {
+            console.error('loadDashboard failed:', e);
+        });
+    }
+    if (typeof switchTab === 'function') {
+        switchTab(STATE.currentTab || 'dashboard', { silent: true });
+    }
+    if (typeof startAutoRefresh === 'function' && STATE.autoRefreshEnabled) {
+        startAutoRefresh();
+    }
+
+    // بروزرسانی اطلاعات سیستم
+    updateSysConnection();
+}
+
+function updateSysConnection() {
+    const el = $('sysConnection');
+    if (!el) return;
+    if (navigator.onLine && sb) {
+        el.textContent = '🟢 متصل';
+        el.style.color = 'var(--success)';
+    } else if (sb && !navigator.onLine) {
+        el.textContent = '🟡 آفلاین (داده‌های کش)';
+        el.style.color = 'var(--warning)';
+    } else {
+        el.textContent = '🔴 قطع';
+        el.style.color = 'var(--danger)';
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ۱۴. Theme Management
+   ═══════════════════════════════════════════════════════════════ */
+function loadTheme() {
+    let saved = 'dark';
+    try {
+        saved = localStorage.getItem(THEME_KEY) || 'dark';
+    } catch (e) {}
+    if (saved !== 'dark' && saved !== 'light') saved = 'dark';
+    applyTheme(saved, true);
+}
+
+function applyTheme(theme, silent) {
+    if (theme !== 'dark' && theme !== 'light') theme = 'dark';
+    document.documentElement.setAttribute('data-theme', theme);
+
+    const sw = $('themeToggleSwitch');
+    if (sw) sw.checked = (theme === 'dark');
+
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute('content', theme === 'dark' ? '#17212b' : '#ffffff');
+
+    if (!silent) {
+        try {
+            localStorage.setItem(THEME_KEY, theme);
+        } catch (e) {}
+    }
+}
+
+function toggleTheme() {
+    const current = document.documentElement.getAttribute('data-theme') || 'dark';
+    const next = current === 'dark' ? 'light' : 'dark';
+    applyTheme(next);
+    toast(next === 'dark' ? '🌙 تم تاریک' : '☀️ تم روشن', 'info', 2000);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ۱۵. Auto-Refresh
+   ═══════════════════════════════════════════════════════════════ */
+function loadAutoRefreshSetting() {
+    try {
+        const saved = localStorage.getItem(AUTO_REFRESH_KEY);
+        STATE.autoRefreshEnabled = saved === null ? true : saved === 'true';
+    } catch (e) {
+        STATE.autoRefreshEnabled = true;
+    }
+    const sw = $('autoRefreshSwitch');
+    if (sw) sw.checked = STATE.autoRefreshEnabled;
+}
+
+function startAutoRefresh() {
+    stopAutoRefresh();
+    if (!STATE.autoRefreshEnabled) return;
+
+    const indicator = $('autoRefreshIndicator');
+    if (indicator) indicator.style.display = 'inline-flex';
+
+    STATE.autoRefreshTimer = setInterval(function () {
+        if (document.visibilityState === 'hidden') return;
+        if (!STATE.token) return;
+        if (STATE.isLoading) return;
+
+        // بروزرسانی تب فعال
+        try {
+            if (STATE.currentTab === 'dashboard' && typeof loadDashboard === 'function') {
+                loadDashboard(false).catch(function () {});
+            } else if (STATE.currentTab === 'users' && typeof loadUsers === 'function') {
+                loadUsers({ silent: true }).catch(function () {});
+            } else if (STATE.currentTab === 'groups' && typeof loadGroups === 'function') {
+                loadGroups({ silent: true }).catch(function () {});
+            } else if (STATE.currentTab === 'reports' && typeof loadReports === 'function') {
+                loadReports({ silent: true }).catch(function () {});
+            }
+        } catch (e) {
+            console.warn('Auto-refresh error:', e);
+        }
+    }, AUTO_REFRESH_INTERVAL);
+}
+
+function stopAutoRefresh() {
+    if (STATE.autoRefreshTimer) {
+        clearInterval(STATE.autoRefreshTimer);
+        STATE.autoRefreshTimer = null;
+    }
+    const indicator = $('autoRefreshIndicator');
+    if (indicator) indicator.style.display = 'none';
+}
+
+function toggleAutoRefresh(enabled) {
+    STATE.autoRefreshEnabled = enabled === true;
+    try {
+        localStorage.setItem(AUTO_REFRESH_KEY, String(STATE.autoRefreshEnabled));
+    } catch (e) {}
+
+    const sw = $('autoRefreshSwitch');
+    if (sw) sw.checked = STATE.autoRefreshEnabled;
+
+    if (STATE.autoRefreshEnabled) {
+        startAutoRefresh();
+        toast('🔄 بروزرسانی خودکار فعال شد', 'success', 2500);
+    } else {
+        stopAutoRefresh();
+        toast('⏸️ بروزرسانی خودکار غیرفعال شد', 'info', 2500);
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ۱۶. احراز هویت — Setup
+   ═══════════════════════════════════════════════════════════════ */
+async function handleSetup() {
+    const pwdEl = $('setupPwd');
+    const pwd2El = $('setupPwd2');
+    const errEl = $('setupError');
+    const btn = $('setupBtn');
+
+    if (!pwdEl || !pwd2El || !errEl || !btn) return;
+
+    const pwd = pwdEl.value;
+    const pwd2 = pwd2El.value;
+
+    errEl.textContent = '';
+
+    if (!sb) {
+        errEl.textContent = 'اتصال به سرور برقرار نیست';
+        return;
+    }
+
+    if (!pwd || pwd.length < 8) {
+        errEl.textContent = 'رمز باید حداقل ۸ کاراکتر باشد';
+        pwdEl.focus();
+        return;
+    }
+
+    if (pwd.length > 200) {
+        errEl.textContent = 'رمز بیش از حد طولانی است';
+        return;
+    }
+
+    if (pwd !== pwd2) {
+        errEl.textContent = 'رمزها یکسان نیستند';
+        pwd2El.focus();
+        return;
+    }
+
+    btn.classList.add('loading');
+    btn.disabled = true;
+
+    try {
+        // ۱. تنظیم رمز
+        const setupResult = await sb.rpc('admin_setup_password', { p_password: pwd });
+        if (setupResult.error) throw new Error(setupResult.error.message || 'خطای سرور');
+        if (!setupResult.data || !setupResult.data.success) {
+            throw new Error((setupResult.data && setupResult.data.error) || 'تنظیم رمز ناموفق');
+        }
+
+        // ۲. لاگین خودکار
+        const loginResult = await sb.rpc('admin_login', { p_password: pwd });
+        if (loginResult.error) throw new Error(loginResult.error.message || 'خطای ورود');
+        if (!loginResult.data || !loginResult.data.success) {
+            throw new Error((loginResult.data && loginResult.data.error) || 'ورود ناموفق');
+        }
+
+        const expiresAt = new Date(loginResult.data.expires_at).getTime();
+        saveSession(loginResult.data.token, expiresAt);
+
+        pwdEl.value = '';
+        pwd2El.value = '';
+
+        toast('✅ رمز ادمین تعیین شد', 'success', 3000);
+        showPanel();
+
+    } catch (e) {
+        console.error('handleSetup:', e);
+        errEl.textContent = '❌ ' + (e.message || 'خطای نامشخص');
+    } finally {
+        btn.classList.remove('loading');
+        btn.disabled = false;
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ۱۷. احراز هویت — Login
+   ═══════════════════════════════════════════════════════════════ */
+async function handleLogin() {
+    const pwdEl = $('loginPwd');
+    const errEl = $('loginError');
+    const btn = $('loginBtn');
+
+    if (!pwdEl || !errEl || !btn) return;
+
+    const pwd = pwdEl.value;
+    errEl.textContent = '';
+
+    if (!sb) {
+        errEl.textContent = 'اتصال به سرور برقرار نیست';
+        return;
+    }
+
+    if (!pwd) {
+        errEl.textContent = 'رمز را وارد کنید';
+        pwdEl.focus();
+        return;
+    }
+
+    btn.classList.add('loading');
+    btn.disabled = true;
+
+    try {
+        const result = await sb.rpc('admin_login', { p_password: pwd });
+
+        if (result.error) {
+            throw new Error(result.error.message || 'خطای سرور');
+        }
+
+        if (!result.data || !result.data.success) {
+            throw new Error((result.data && result.data.error) || 'رمز اشتباه است');
+        }
+
+        const expiresAt = new Date(result.data.expires_at).getTime();
+        saveSession(result.data.token, expiresAt);
+
+        pwdEl.value = '';
+        toast('✅ خوش آمدید', 'success', 3000);
+        showPanel();
+
+    } catch (e) {
+        console.error('handleLogin:', e);
+        errEl.textContent = '❌ ' + (e.message || 'خطای نامشخص');
+        pwdEl.value = '';
+        pwdEl.focus();
+    } finally {
+        btn.classList.remove('loading');
+        btn.disabled = false;
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ۱۸. احراز هویت — Logout
+   ═══════════════════════════════════════════════════════════════ */
+async function handleLogout() {
+    const ok = await confirmDialog({
+        title: '🚪 خروج از پنل',
+        message: 'آیا می‌خواهید از پنل خارج شوید؟ برای ورود مجدد، به رمز نیاز دارید.',
+        confirmText: 'خروج',
+        cancelText: 'انصراف',
+        type: 'danger'
+    });
+
+    if (!ok) return;
+
+    if (STATE.token && sb) {
+        try {
+            await sb.rpc('admin_logout', { p_token: STATE.token });
+        } catch (e) {
+            console.warn('Logout RPC failed:', e);
+        }
+    }
+
+    clearSession();
+    stopAutoRefresh();
+    showScreen('login');
+    toast('خارج شدید', 'info', 3000);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ۱۹. Boot — بررسی وضعیت سیستم
+   ═══════════════════════════════════════════════════════════════ */
+async function bootCheck() {
+    // ۱. اگر CDN لود نشده
+    if (!sb) {
+        $('bootOverlay').classList.add('hidden');
+        showScreen('login');
+        const errEl = $('loginError');
+        if (errEl) {
+            errEl.textContent = '❌ ' + (SB_ERROR || 'اتصال به سرور برقرار نیست');
+            errEl.style.color = 'var(--danger)';
+        }
+        toast('خطا: کتابخانه Supabase بارگذاری نشد', 'error', 10000);
+        return;
+    }
+
+    // ۲. اگر آفلاین است
+    if (!navigator.onLine) {
+        $('bootOverlay').classList.add('hidden');
+        showScreen('login');
+        const errEl = $('loginError');
+        if (errEl) errEl.textContent = '📴 شما آفلاین هستید — اتصال را بررسی کنید';
+        return;
+    }
+
+    try {
+        // ۳. بررسی وجود رمز ادمین
+        const configCheck = await sb.rpc('admin_is_configured');
+
+        if (configCheck.error) {
+            throw new Error(configCheck.error.message || 'خطای اتصال');
+        }
+
+        $('bootOverlay').classList.add('hidden');
+
+        if (configCheck.data === false) {
+            // هنوز تنظیم نشده → صفحه setup
+            showScreen('setup');
+            return;
+        }
+
+        // ۴. رمز تنظیم شده — بررسی session
+        if (loadSession()) {
+            // اعتبارسنجی session با سرور
+            try {
+                const verify = await sb.rpc('admin_verify_session', { p_token: STATE.token });
+                if (verify.data === true && !verify.error) {
+                    showPanel();
+                    return;
+                }
+            } catch (e) {
+                console.warn('Session verify failed:', e);
+            }
+            // session نامعتبر
+            clearSession();
+        }
+
+        showScreen('login');
+
+    } catch (e) {
+        console.error('bootCheck:', e);
+        $('bootOverlay').classList.add('hidden');
+        showScreen('login');
+        const errEl = $('loginError');
+        if (errEl) {
+            errEl.textContent = '❌ ' + (e.message || 'خطا در اتصال به سرور');
+        }
+        toast('خطا در راه‌اندازی: ' + (e.message || 'نامشخص'), 'error', 8000);
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ۲۰. اتصال event listenerهای سراسری
+   ═══════════════════════════════════════════════════════════════ */
+function attachGlobalListeners() {
+    // Enter در فرم setup
+    const setupPwd2 = $('setupPwd2');
+    if (setupPwd2 && !setupPwd2._enterBound) {
+        setupPwd2.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                handleSetup();
+            }
+        });
+        setupPwd2._enterBound = true;
+    }
+
+    const setupPwd = $('setupPwd');
+    if (setupPwd && !setupPwd._enterBound) {
+        setupPwd.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const pwd2El = $('setupPwd2');
+                if (pwd2El) pwd2El.focus();
+            }
+        });
+        setupPwd._enterBound = true;
+    }
+
+    // Escape برای بستن modal
+    if (!document._escBound) {
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') {
+                if (STATE.pendingConfirm) {
+                    resolveConfirm(STATE.pendingConfirm.id, false);
+                } else {
+                    const overlay = $('modalOverlay');
+                    if (overlay && overlay.classList.contains('active')) {
+                        closeModal();
+                    }
+                }
+            }
+        });
+        document._escBound = true;
+    }
+
+    // آنلاین/آفلاین
+    if (!window._onlineBound) {
+        window.addEventListener('online', function () {
+            updateSysConnection();
+            toast('🌐 آنلاین شدید', 'success', 3000);
+        });
+        window.addEventListener('offline', function () {
+            updateSysConnection();
+            toast('📴 آفلاین شدید', 'warning', 3000);
+        });
+        window._onlineBound = true;
+    }
+
+    // visibility — توقف auto-refresh وقتی تب پنهان است (به‌طور خودکار در startAutoRefresh چک می‌شود)
+
+    // beforeunload — هشدار بستن در حین عملیات
+    if (!window._unloadBound) {
+        window.addEventListener('beforeunload', function (e) {
+            if (STATE.isLoading) {
+                e.preventDefault();
+                e.returnValue = '';
+                return '';
+            }
+        });
+        window._unloadBound = true;
+    }
+
+    // بایند power bar رمزها
+    bindPasswordStrength('setupPwd', 'setupStrength', 'setupStrengthText');
+    bindPasswordStrength('newPwd', 'newStrength', 'newStrengthText');
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ۲۱. راه‌اندازی اولیه
+   ═══════════════════════════════════════════════════════════════ */
+function initializeAdminApp() {
+    if (STATE.isInitialized) return;
+    STATE.isInitialized = true;
+
+    console.log('[ADMIN] Initializing…');
+
+    try {
+        loadTheme();
+        loadAutoRefreshSetting();
+        attachGlobalListeners();
+    } catch (e) {
+        console.error('Init error:', e);
+    }
+
+    // اجرای bootCheck
+    bootCheck().catch(function (e) {
+        console.error('bootCheck failed:', e);
+        $('bootOverlay').classList.add('hidden');
+        showScreen('login');
+    });
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ۲۲. اجرا هنگام آماده شدن DOM
+   ═══════════════════════════════════════════════════════════════ */
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeAdminApp);
+} else {
+    // DOM قبلاً آماده است
+    setTimeout(initializeAdminApp, 0);
+}
+
+// مدیریت خطاهای سراسری (فقط لاگ — نمایش به کاربر در حد امکان)
+window.addEventListener('error', function (e) {
+    console.error('❌ خطای Global:', e.message, '|', e.filename, ':', e.lineno);
+});
+
+window.addEventListener('unhandledrejection', function (e) {
+    console.error('❌ Promise رد شده:', e.reason);
+});
+
+// ═══════════════════════════════════════════════════════════════
+// ⚠️ پایان بخش ۳ — تگ script در بخش ۶ بسته می‌شود
+// ═══════════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════════════════════════
+   admin.html — بخش ۴ از ۶: Dashboard, Tab Management, Users Management
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ═══════════════════════════════════════════════════════════════
+   ۲۳. ثابت‌های نمایشی — آیکون و برچسب عملیات‌ها
+   ═══════════════════════════════════════════════════════════════ */
+const ACTION_ICONS = {
+    'login': '🔓',
+    'login_failed': '🚫',
+    'setup_password': '🔐',
+    'change_password': '🔑',
+    'toggle_user': '👤',
+    'delete_user': '🗑️',
+    'create_group': '➕',
+    'delete_group': '🗑️',
+    'toggle_group_mute': '🔕',
+    'toggle_group_lock': '🔒',
+    'add_group_member': '➕',
+    'remove_group_member': '➖',
+    'resolve_report': '✅',
+    'clear_private_messages': '🧹',
+    'clear_group_messages': '🧹',
+    'clear_all_messages': '💥',
+    'clear_reports': '🧹',
+    'logout': '🚪'
+};
+
+const ACTION_LABELS = {
+    'login': 'ورود موفق',
+    'login_failed': 'ورود ناموفق',
+    'setup_password': 'تعیین رمز اولیه',
+    'change_password': 'تغییر رمز',
+    'toggle_user': 'تغییر وضعیت کاربر',
+    'delete_user': 'حذف کاربر',
+    'create_group': 'ساخت گروه',
+    'delete_group': 'حذف گروه',
+    'toggle_group_mute': 'تغییر وضعیت بی‌صدا',
+    'toggle_group_lock': 'تغییر قفل گروه',
+    'add_group_member': 'افزودن عضو',
+    'remove_group_member': 'حذف عضو',
+    'resolve_report': 'رسیدگی به گزارش',
+    'clear_private_messages': 'حذف پیام‌های خصوصی',
+    'clear_group_messages': 'حذف پیام‌های گروهی',
+    'clear_all_messages': 'حذف همه پیام‌ها',
+    'clear_reports': 'حذف گزارش‌ها',
+    'logout': 'خروج'
+};
+
+function getActionIcon(action) {
+    return ACTION_ICONS[action] || '•';
+}
+
+function getActionLabel(action) {
+    return ACTION_LABELS[action] || action;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ۲۴. Helper: Empty State
+   ═══════════════════════════════════════════════════════════════ */
+function renderEmptyState(icon, title, text, actionHtml) {
+    return '<div class="empty-state">' +
+        '  <span class="empty-state-icon">' + icon + '</span>' +
+        '  <p class="empty-state-title">' + esc(title) + '</p>' +
+        (text ? '  <p class="empty-state-text">' + esc(text) + '</p>' : '') +
+        (actionHtml ? '  ' + actionHtml : '') +
+        '</div>';
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ۲۵. مدیریت تب‌ها
+   ═══════════════════════════════════════════════════════════════ */
+
+function switchTab(tabName, opts) {
+    opts = opts || {};
+
+    const validTabs = ['dashboard', 'users', 'groups', 'reports', 'cleanup', 'audit', 'settings'];
+    if (!tabName || validTabs.indexOf(tabName) === -1) return;
+
+    STATE.currentTab = tabName;
+
+    // ─── بروزرسانی دکمه‌های تب ───
+    $$('.tabnav-btn').forEach(function (btn) {
+        const isActive = btn.dataset.tab === tabName;
+        btn.classList.toggle('active', isActive);
+        btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
+    });
+
+    // ─── بروزرسانی محتوای تب ───
+    $$('.tab-content').forEach(function (section) {
+        const isActive = section.dataset.tabContent === tabName;
+        section.classList.toggle('active', isActive);
+    });
+
+    // ─── اسکرول به بالا ───
+    try {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (e) {
+        window.scrollTo(0, 0);
+    }
+
+    // ─── بارگذاری داده‌های تب (اگر silent نباشد) ───
+    if (!opts.silent) {
+        try {
+            if (tabName === 'dashboard') {
+                loadDashboard(false);
+            } else if (tabName === 'users') {
+                loadUsers({ silent: true });
+            } else if (tabName === 'groups') {
+                if (typeof loadGroups === 'function') loadGroups({ silent: true });
+            } else if (tabName === 'reports') {
+                if (typeof loadReports === 'function') loadReports({ silent: true });
+            } else if (tabName === 'audit') {
+                if (typeof loadAudit === 'function') loadAudit();
+            }
+        } catch (e) {
+            console.warn('[switchTab] Load error:', e);
+        }
+    }
+
+    // ─── اطلاعات session در تب تنظیمات ───
+    if (tabName === 'settings') {
+        updateSessionInfo();
+        const versionEl = $('sysVersion');
+        if (versionEl) versionEl.textContent = '۲.۰.۰';
+    }
+}
+
+function refreshCurrentTab() {
+    const tab = STATE.currentTab;
+
+    if (tab === 'dashboard') {
+        loadDashboard(true);
+    } else if (tab === 'users') {
+        loadUsers({ force: true });
+    } else if (tab === 'groups' && typeof loadGroups === 'function') {
+        loadGroups({ force: true });
+    } else if (tab === 'reports' && typeof loadReports === 'function') {
+        loadReports({ force: true });
+    } else if (tab === 'audit' && typeof loadAudit === 'function') {
+        loadAudit();
+    } else {
+        toast('ℹ️ این تب داده‌ای برای بروزرسانی ندارد', 'info', 2000);
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ۲۶. Dashboard
+   ═══════════════════════════════════════════════════════════════ */
+
+async function loadDashboard(force) {
+    if (!STATE.token) return;
+
+    try {
+        // ─── آمار و آخرین فعالیت‌ها به‌صورت موازی ───
+        const results = await Promise.all([
+            adminCall('admin_get_stats'),
+            adminCall('admin_get_audit_log', { p_limit: 5 })
+        ]);
+
+        const statsRes = results[0];
+        const auditRes = results[1];
+
+        STATE.stats = (statsRes && statsRes.stats) || {};
+        STATE.auditEntries = (auditRes && auditRes.entries) || [];
+
+        renderStats(STATE.stats);
+        renderRecentAudit(STATE.auditEntries);
+
+        if (force) {
+            toast('✅ داشبورد بروزرسانی شد', 'success', 2000);
+        }
+    } catch (e) {
+        console.error('[loadDashboard]', e);
+        if (force) {
+            toast('خطا در بارگذاری داشبورد: ' + e.message, 'error');
+        }
+    }
+}
+
+function renderStats(stats) {
+    if (!stats) stats = {};
+
+    const map = {
+        statTotalUsers: stats.total_users || 0,
+        statActiveUsers: stats.active_users || 0,
+        statOnlineUsers: stats.online_5min || 0,
+        statGroups: stats.total_groups || 0,
+        statMessages: stats.total_messages || 0,
+        statPrivateMsg: stats.private_messages || 0,
+        statGroupMsg: stats.group_messages || 0,
+        statPendingReports: stats.pending_reports || 0
+    };
+
+    Object.keys(map).forEach(function (id) {
+        const el = $(id);
+        if (el) el.textContent = formatNum(map[id]);
+    });
+
+    // ─── بروزرسانی badge تب گزارش‌ها ───
+    const pendingReports = stats.pending_reports || 0;
+    const reportsBadge = $('reportsBadge');
+    if (reportsBadge) {
+        if (pendingReports > 0) {
+            reportsBadge.textContent = toFaNum(pendingReports);
+            reportsBadge.classList.remove('hidden');
+        } else {
+            reportsBadge.classList.add('hidden');
+        }
+    }
+
+    // ─── بروزرسانی عنوان صفحه ───
+    if (pendingReports > 0) {
+        document.title = '(' + toFaNum(pendingReports) + ') پنل مدیریت';
+    } else {
+        document.title = 'پنل مدیریت — پیام‌رسان حرفه‌ای';
+    }
+}
+
+function renderRecentAudit(entries) {
+    const container = $('dashboardRecentAudit');
+    if (!container) return;
+
+    if (!entries || entries.length === 0) {
+        container.innerHTML = renderEmptyState('📜', 'فعالیتی ثبت نشده', 'اولین فعالیت شما اینجا نمایش داده می‌شود');
+        return;
+    }
+
+    const html = entries.map(function (e) {
+        const icon = getActionIcon(e.action);
+        const label = getActionLabel(e.action);
+        const time = formatRelativeTime(e.created_at);
+        const targetHtml = e.target ? '<div class="audit-target">' + esc(e.target) + '</div>' : '';
+
+        return '<div class="audit-item">' +
+            '  <span class="audit-icon">' + icon + '</span>' +
+            '  <div class="audit-body">' +
+            '    <div class="audit-action">' + esc(label) + '</div>' +
+            '    ' + targetHtml +
+            '    <div class="audit-time">' + esc(time) + '</div>' +
+            '  </div>' +
+            '</div>';
+    }).join('');
+
+    container.innerHTML = html;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ۲۷. Users Management — بارگذاری
+   ═══════════════════════════════════════════════════════════════ */
+
+async function loadUsers(opts) {
+    opts = opts || {};
+
+    if (!STATE.token) return;
+
+    // ─── خواندن فیلتر/جستجو از DOM ───
+    // این کار برای پشتیبانی از inline onchange="loadUsers()" در HTML است
+    const filterEl = $('userFilterActive');
+    const searchEl = $('userSearchInput');
+
+    const prevFilter = STATE.userFilterActive;
+    const prevSearch = STATE.userSearchQuery;
+
+    if (filterEl) {
+        STATE.userFilterActive = filterEl.value || 'all';
+    }
+    if (searchEl) {
+        STATE.userSearchQuery = searchEl.value || '';
+    }
+
+    // ─── تشخیص حالت "فقط تغییر فیلتر/جستجو" ───
+    const onlyFilterChanged =
+        !opts.force &&
+        !opts.silent &&
+        !opts.retry &&
+        STATE.users.length > 0 &&
+        (prevFilter !== STATE.userFilterActive || prevSearch !== STATE.userSearchQuery);
+
+    if (onlyFilterChanged) {
+        renderUsersList();
+        return;
+    }
+
+    // ─── آیا loading overlay لازم است؟ ───
+    const showLoadingOverlay = !opts.silent;
+
+    if (showLoadingOverlay) {
+        showLoading('در حال بارگذاری کاربران…');
+    }
+
+    try {
+        const result = await adminCall('admin_list_users');
+        STATE.users = (result && result.users) || [];
+        renderUsersList();
+
+        if (opts.force) {
+            toast('✅ بروزرسانی شد', 'success', 2000);
+        }
+    } catch (e) {
+        console.error('[loadUsers]', e);
+
+        if (!opts.silent) {
+            const container = $('usersList');
+            if (container) {
+                container.innerHTML = renderEmptyState(
+                    '⚠️',
+                    'خطا در بارگذاری',
+                    e.message || 'اتصال به سرور برقرار نشد',
+                    '<button class="btn btn-secondary btn-sm" style="margin-top:12px" onclick="loadUsers({retry:true})">🔄 تلاش دوباره</button>'
+                );
+            }
+            toast('خطا: ' + e.message, 'error');
+        }
+    } finally {
+        if (showLoadingOverlay) {
+            hideLoading();
+        }
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ۲۸. Users Management — رندر
+   ═══════════════════════════════════════════════════════════════ */
+
+function renderUsersList() {
+    const container = $('usersList');
+    const countEl = $('usersCount');
+    if (!container) return;
+
+    const users = STATE.users || [];
+    const query = (STATE.userSearchQuery || '').toLowerCase().trim();
+    const filterActive = STATE.userFilterActive || 'all';
+
+    // ─── فیلتر ───
+    let filtered = users.slice();
+
+    if (filterActive === 'active') {
+        filtered = filtered.filter(function (u) { return u.is_active === true; });
+    } else if (filterActive === 'inactive') {
+        filtered = filtered.filter(function (u) { return u.is_active === false; });
+    }
+
+    if (query) {
+        filtered = filtered.filter(function (u) {
+            const name = (u.display_name || '').toLowerCase();
+            const id = (u.id || '').toLowerCase();
+            return name.indexOf(query) !== -1 || id.indexOf(query) !== -1;
+        });
+    }
+
+    // ─── بروزرسانی شمارنده ───
+    if (countEl) {
+        if (filtered.length === users.length) {
+            countEl.textContent = toFaNum(users.length);
+        } else {
+            countEl.textContent = toFaNum(filtered.length) + ' / ' + toFaNum(users.length);
+        }
+    }
+
+    // ─── بروزرسانی badge تب کاربران (تعداد غیرفعال‌ها) ───
+    const badge = $('usersBadge');
+    if (badge) {
+        const inactiveCount = users.filter(function (u) { return !u.is_active; }).length;
+        if (inactiveCount > 0) {
+            badge.textContent = toFaNum(inactiveCount);
+            badge.classList.remove('hidden');
+        } else {
+            badge.classList.add('hidden');
+        }
+    }
+
+    // ─── Empty state ───
+    if (filtered.length === 0) {
+        if (users.length === 0) {
+            container.innerHTML = renderEmptyState(
+                '👥',
+                'کاربری وجود ندارد',
+                'هنوز هیچ کاربری در سیستم ثبت‌نام نکرده است'
+            );
+        } else {
+            container.innerHTML = renderEmptyState(
+                '🔍',
+                'نتیجه‌ای یافت نشد',
+                'فیلتر یا عبارت جستجو را تغییر دهید'
+            );
+        }
+        return;
+    }
+
+    // ─── رندر آیتم‌ها ───
+    const html = filtered.map(function (u) {
+        return renderUserItem(u);
+    }).join('');
+
+    container.innerHTML = html;
+}
+
+function renderUserItem(u) {
+    if (!u || !u.id) return '';
+
+    const isActive = u.is_active === true;
+    const isAdmin = u.role === 'admin';
+
+    const avatarStyle = u.avatar_url
+        ? 'background-image:url(\'' + esc(u.avatar_url) + '\');background-size:cover;background-position:center;color:transparent'
+        : 'background:' + colorFromId(u.id);
+
+    const avatarContent = u.avatar_url ? '' : esc(getInitials(u.display_name));
+
+    const roleBadge = isAdmin
+        ? '<span class="badge badge-warning">👑 ادمین</span>'
+        : '';
+
+    const statusBadge = isActive
+        ? '<span class="badge badge-success">✅ فعال</span>'
+        : '<span class="badge badge-danger">🚫 غیرفعال</span>';
+
+    const lastSeenText = u.last_seen ? formatRelativeTime(u.last_seen) : '—';
+
+    const phoneHtml = u.phone
+        ? '<span>📞 ' + esc(u.phone) + '</span>'
+        : '';
+
+    const lastSeenHtml = '<span>🕒 ' + esc(lastSeenText) + '</span>';
+
+    const toggleLabel = isActive ? '🚫 غیرفعال' : '✅ فعال';
+    const toggleClass = isActive ? 'btn-warning' : 'btn-success';
+    const toggleTitle = isActive ? 'غیرفعال کردن کاربر' : 'فعال کردن کاربر';
+
+    return '<div class="item" data-user-id="' + esc(u.id) + '">' +
+        '  <div class="item-avatar" style="' + avatarStyle + '">' + avatarContent + '</div>' +
+        '  <div class="item-info">' +
+        '    <div class="item-title">' +
+        esc(u.display_name || 'بدون نام') +
+        '      <span style="color:var(--text-muted);font-weight:400;font-size:12px">@' + esc(u.id) + '</span>' +
+        roleBadge +
+        statusBadge +
+        '    </div>' +
+        '    <div class="item-meta">' +
+        lastSeenHtml +
+        phoneHtml +
+        '    </div>' +
+        '  </div>' +
+        '  <div class="item-actions">' +
+        '    <button class="btn btn-sm ' + toggleClass + '" ' +
+        '      onclick="handleToggleUser(\'' + esc(u.id) + '\', ' + isActive + ')" ' +
+        '      title="' + toggleTitle + '">' +
+        toggleLabel +
+        '    </button>' +
+        '    <button class="btn btn-sm btn-danger" ' +
+        '      onclick="handleDeleteUser(\'' + esc(u.id) + '\', \'' + esc(u.display_name || u.id) + '\')" ' +
+        '      title="حذف کامل کاربر">' +
+        '      🗑️' +
+        '    </button>' +
+        '  </div>' +
+        '</div>';
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ۲۹. Users Management — جستجو
+   ═══════════════════════════════════════════════════════════════ */
+
+function debounceUserSearch() {
+    if (STATE._timers.userSearch) {
+        clearTimeout(STATE._timers.userSearch);
+    }
+
+    STATE._timers.userSearch = setTimeout(function () {
+        const input = $('userSearchInput');
+        STATE.userSearchQuery = input ? input.value : '';
+        renderUsersList();
+    }, 250);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ۳۰. Users Management — فعال/غیرفعال کردن کاربر
+   ═══════════════════════════════════════════════════════════════ */
+
+async function handleToggleUser(userId, currentActive) {
+    if (!userId) return;
+
+    const newActive = !currentActive;
+    const actionLabel = newActive ? 'فعال' : 'غیرفعال';
+
+    // ─── پیدا کردن نام کاربر ───
+    const user = STATE.users.find(function (u) { return u.id === userId; });
+    const displayName = user ? (user.display_name || user.id) : userId;
+
+    const ok = await confirmDialog({
+        title: newActive ? '✅ فعال کردن کاربر' : '🚫 غیرفعال کردن کاربر',
+        message: 'کاربر «' + displayName + '» ' + actionLabel + ' شود؟',
+        warning: newActive
+            ? 'کاربر می‌تواند دوباره وارد سیستم شود و پیام بفرستد.'
+            : 'کاربر نمی‌تواند وارد شود یا پیام بفرستد. اطلاعاتش حفظ می‌شود و در صورت نیاز می‌توانید دوباره فعالش کنید.',
+        confirmText: actionLabel + ' کن',
+        cancelText: 'انصراف',
+        type: newActive ? 'success' : 'warning'
+    });
+
+    if (!ok) return;
+
+    showLoading('در حال ذخیره تغییرات…');
+
+    try {
+        await adminCall('admin_toggle_user', {
+            p_user_id: userId,
+            p_active: newActive
+        });
+
+        // ─── بروزرسانی local state ───
+        if (user) {
+            user.is_active = newActive;
+        }
+
+        renderUsersList();
+        toast('✅ کاربر ' + actionLabel + ' شد', 'success');
+
+        // ─── بروزرسانی آمار در پس‌زمینه ───
+        try {
+            const statsRes = await adminCall('admin_get_stats');
+            STATE.stats = (statsRes && statsRes.stats) || {};
+            renderStats(STATE.stats);
+        } catch (e) {
+            // خطای آمار بحرانی نیست
+            console.warn('[handleToggleUser] stats refresh failed:', e);
+        }
+    } catch (e) {
+        console.error('[handleToggleUser]', e);
+        toast('خطا: ' + e.message, 'error');
+    } finally {
+        hideLoading();
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ۳۱. Users Management — حذف کامل کاربر
+   ═══════════════════════════════════════════════════════════════ */
+
+async function handleDeleteUser(userId, name) {
+    if (!userId) return;
+
+    const user = STATE.users.find(function (u) { return u.id === userId; });
+    const isTargetAdmin = user && user.role === 'admin';
+    const displayName = name || userId;
+
+    // ─── تأییدیه اول ───
+    const ok1 = await confirmDialog({
+        title: '🗑️ حذف کامل کاربر',
+        message: 'کاربر «' + displayName + '» به‌طور کامل حذف شود؟',
+        danger: isTargetAdmin
+            ? '⚠️ هشدار: این کاربر یک ادمین است! با حذف او، دسترسی ادمین از بین می‌رود. این عملیات غیرقابل بازگشت است.'
+            : 'این عملیات غیرقابل بازگشت است! همه پیام‌های این کاربر، عضویت‌های گروهی، گزارش‌ها و اطلاعاتش حذف می‌شوند.',
+        confirmText: 'ادامه',
+        cancelText: 'انصراف',
+        type: 'danger'
+    });
+
+    if (!ok1) return;
+
+    // ─── تأییدیه دوم (برای اطمینان بیشتر) ───
+    const ok2 = await confirmDialog({
+        title: '⚠️ تأیید نهایی',
+        message: 'آیا کاملاً مطمئن هستید که می‌خواهید «' + displayName + '» را حذف کنید؟',
+        danger: 'پس از حذف، هیچ راهی برای بازگردانی وجود ندارد.',
+        confirmText: 'بله، حذف کن',
+        cancelText: 'انصراف',
+        type: 'danger'
+    });
+
+    if (!ok2) return;
+
+    showLoading('در حال حذف کاربر…');
+
+    try {
+        await adminCall('admin_delete_user', {
+            p_user_id: userId
+        });
+
+        // ─── حذف از local state ───
+        STATE.users = STATE.users.filter(function (u) { return u.id !== userId; });
+        renderUsersList();
+
+        toast('✅ کاربر «' + displayName + '» حذف شد', 'success', 4000);
+
+        // ─── بروزرسانی آمار ───
+        try {
+            const statsRes = await adminCall('admin_get_stats');
+            STATE.stats = (statsRes && statsRes.stats) || {};
+            renderStats(STATE.stats);
+        } catch (e) {
+            console.warn('[handleDeleteUser] stats refresh failed:', e);
+        }
+    } catch (e) {
+        console.error('[handleDeleteUser]', e);
+        toast('خطا در حذف: ' + e.message, 'error');
+    } finally {
+        hideLoading();
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ۳۲. اتصال event listenerهای بخش ۴
+   ═══════════════════════════════════════════════════════════════ */
+
+function attachPart4Listeners() {
+    // ─── Tab navigation ───
+    const tabnav = $('tabnav');
+    if (tabnav && !tabnav._part4Bound) {
+        tabnav.addEventListener('click', function (e) {
+            const btn = e.target.closest('.tabnav-btn');
+            if (!btn) return;
+            const tab = btn.dataset.tab;
+            if (tab) switchTab(tab);
+        });
+        tabnav._part4Bound = true;
+    }
+
+    // ─── filter select کاربران ───
+    // (inline onchange="loadUsers()" از HTML نیز فعال است — هماهنگ با
+    //  منطق onlyFilterChanged در loadUsers)
+    // نیازی به listener اضافی نیست، ولی برای اطمینان:
+    const filterEl = $('userFilterActive');
+    if (filterEl && !filterEl._part4Bound) {
+        // بروزرسانی STATE حتی اگر inline handler خطا بدهد
+        filterEl.addEventListener('change', function () {
+            STATE.userFilterActive = this.value || 'all';
+        });
+        filterEl._part4Bound = true;
+    }
+}
+
+// ─── اجرا ───
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', attachPart4Listeners);
+} else {
+    setTimeout(attachPart4Listeners, 0);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// ⚠️ پایان بخش ۴ — بخش ۵ ادامه دارد
+// ═══════════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════════════════════════
+   admin.html — بخش ۵ از ۶: Groups Management + Reports Management
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ═══════════════════════════════════════════════════════════════
+   ۳۳. Helper — ساخت لینک دعوت
+   ═══════════════════════════════════════════════════════════════ */
+function resolveInviteLink(code) {
+    if (!code) return '';
+    try {
+        const baseUrl = new URL(window.location.href);
+        let pathname = baseUrl.pathname;
+
+        // حذف admin.html از انتهای مسیر
+        if (/\/admin(\.html)?$/i.test(pathname)) {
+            pathname = pathname.replace(/\/admin(\.html)?$/i, '/');
+        } else {
+            // اگر اسم فایل چیز دیگری است، به ریشه برگرد
+            pathname = pathname.substring(0, pathname.lastIndexOf('/') + 1);
+        }
+
+        return baseUrl.origin + pathname + 'index.html?invite=' + encodeURIComponent(code);
+    } catch (e) {
+        return 'index.html?invite=' + encodeURIComponent(code);
+    }
+}
+
+async function copyInviteLink(code) {
+    const link = resolveInviteLink(code);
+    if (!link) {
+        toast('لینک موجود نیست', 'error');
+        return;
+    }
+
+    try {
+        if (navigator.clipboard && window.isSecureContext) {
+            await navigator.clipboard.writeText(link);
+        } else {
+            // fallback
+            const ta = document.createElement('textarea');
+            ta.value = link;
+            ta.style.position = 'fixed';
+            ta.style.left = '-9999px';
+            ta.style.top = '0';
+            document.body.appendChild(ta);
+            ta.focus();
+            ta.select();
+            const ok = document.execCommand('copy');
+            document.body.removeChild(ta);
+            if (!ok) throw new Error('execCommand failed');
+        }
+
+        toast('✅ لینک دعوت کپی شد', 'success');
+    } catch (e) {
+        console.error('[copyInviteLink]', e);
+        // نمایش لینک در modal به‌عنوان fallback
+        openModal(
+            '<div class="modal-header">' +
+            '  <h3 class="modal-title">🔗 لینک دعوت</h3>' +
+            '  <button class="modal-close" onclick="closeModal()">×</button>' +
+            '</div>' +
+            '<p class="confirm-text">کپی خودکار ممکن نشد. لینک را دستی کپی کنید:</p>' +
+            '<div class="invite-link-box"><code>' + esc(link) + '</code></div>' +
+            '<div class="modal-actions">' +
+            '  <button class="btn btn-secondary" onclick="closeModal()">بستن</button>' +
+            '</div>'
+        );
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ۳۴. Groups — بارگذاری
+   ═══════════════════════════════════════════════════════════════ */
+async function loadGroups(opts) {
+    opts = opts || {};
+    if (!STATE.token) return;
+
+    // خواندن جستجو از DOM (پشتیبانی از inline oninput)
+    const searchEl = $('groupSearchInput');
+    if (searchEl) STATE.groupSearchQuery = searchEl.value || '';
+
+    // اگر فقط جستجو تغییر کرده و داده موجود است → فقط رندر
+    if (!opts.silent && !opts.force && STATE.groups.length > 0) {
+        // اگر از oninput فراخوانی شده (inline)، فقط رندر
+        // تشخیص از این طریق که opts خالی است
+        if (Object.keys(opts).length === 0 || opts.fromSearch) {
+            renderGroupsList();
+            return;
+        }
+    }
+
+    if (!opts.silent) showLoading('در حال بارگذاری گروه‌ها…');
+
+    try {
+        const result = await adminCall('admin_list_groups');
+        STATE.groups = (result && result.groups) || [];
+        renderGroupsList();
+
+        if (opts.force) {
+            toast('✅ بروزرسانی شد', 'success', 2000);
+        }
+    } catch (e) {
+        console.error('[loadGroups]', e);
+        const container = $('groupsList');
+        if (container) {
+            container.innerHTML = renderEmptyState(
+                '⚠️',
+                'خطا در بارگذاری',
+                e.message || 'اتصال به سرور برقرار نشد',
+                '<button class="btn btn-secondary btn-sm" style="margin-top:12px" onclick="loadGroups({force:true})">🔄 تلاش دوباره</button>'
+            );
+        }
+        if (!opts.silent) toast('خطا: ' + e.message, 'error');
+    } finally {
+        if (!opts.silent) hideLoading();
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ۳۵. Groups — رندر
+   ═══════════════════════════════════════════════════════════════ */
+function renderGroupsList() {
+    const container = $('groupsList');
+    const countEl = $('groupsCount');
+    if (!container) return;
+
+    const groups = STATE.groups || [];
+    const query = (STATE.groupSearchQuery || '').toLowerCase().trim();
+
+    let filtered = groups;
+    if (query) {
+        filtered = groups.filter(function (g) {
+            const name = (g.name || '').toLowerCase();
+            const id = (g.id || '').toLowerCase();
+            const creator = (g.creator_name || '').toLowerCase();
+            return name.indexOf(query) !== -1 ||
+                   id.indexOf(query) !== -1 ||
+                   creator.indexOf(query) !== -1;
+        });
+    }
+
+    if (countEl) {
+        if (filtered.length === groups.length) {
+            countEl.textContent = toFaNum(groups.length);
+        } else {
+            countEl.textContent = toFaNum(filtered.length) + ' / ' + toFaNum(groups.length);
+        }
+    }
+
+    if (filtered.length === 0) {
+        if (groups.length === 0) {
+            container.innerHTML = renderEmptyState(
+                '👥',
+                'هیچ گروهی وجود ندارد',
+                'اولین گروه را از فرم بالا بسازید'
+            );
+        } else {
+            container.innerHTML = renderEmptyState(
+                '🔍',
+                'نتیجه‌ای یافت نشد',
+                'عبارت جستجو را تغییر دهید'
+            );
+        }
+        return;
+    }
+
+    container.innerHTML = filtered.map(renderGroupItem).join('');
+}
+
+function renderGroupItem(g) {
+    if (!g || !g.id) return '';
+
+    const isLocked = g.is_locked === true;
+    const isMuted = g.is_muted === true;
+    const emoji = g.avatar_emoji || '👥';
+    const memberCount = g.member_count || 0;
+
+    const avatarStyle = g.avatar_url
+        ? 'background-image:url(\'' + esc(g.avatar_url) + '\');background-size:cover;background-position:center;color:transparent'
+        : '';
+    const avatarContent = g.avatar_url ? '' : esc(emoji);
+
+    // ─── Badges ───
+    const badges = [];
+    if (isLocked) badges.push('<span class="badge badge-danger">🔒 قفل</span>');
+    if (isMuted) badges.push('<span class="badge badge-warning">🔕 بی‌صدا</span>');
+    if (g.is_group === false) badges.push('<span class="badge badge-secondary">غیرگروه</span>');
+
+    const badgeHtml = badges.length > 0 ? badges.join(' ') : '';
+
+    // ─── Creator ───
+    const creatorName = g.creator_name || '—';
+
+    // ─── Bio ───
+    const bioHtml = g.bio
+        ? '<div class="item-subtitle">' + esc(g.bio) + '</div>'
+        : '';
+
+    // ─── Invite button ───
+    const inviteBtnHtml = g.invite_code
+        ? '<button class="btn btn-sm btn-secondary" onclick="copyInviteLink(\'' + esc(g.invite_code) + '\')" title="کپی لینک دعوت">🔗</button>'
+        : '';
+
+    // ─── Mute/Lock buttons ───
+    const muteBtnClass = isMuted ? 'btn-success' : 'btn-warning';
+    const muteBtnLabel = isMuted ? '🔔' : '🔕';
+    const muteBtnTitle = isMuted ? 'فعال کردن اعلان' : 'بی‌صدا کردن گروه';
+
+    const lockBtnClass = isLocked ? 'btn-success' : 'btn-danger';
+    const lockBtnLabel = isLocked ? '🔓' : '🔒';
+    const lockBtnTitle = isLocked ? 'باز کردن ارسال' : 'قفل کردن ارسال';
+
+    return '<div class="item col" data-group-id="' + esc(g.id) + '">' +
+        '  <div style="display:flex;gap:12px;align-items:flex-start">' +
+        '    <div class="item-avatar group" style="' + avatarStyle + '">' + avatarContent + '</div>' +
+        '    <div class="item-info">' +
+        '      <div class="item-title">' +
+        esc(g.name || 'بدون نام') +
+        '        <span style="color:var(--text-muted);font-weight:400;font-size:12px">(' + esc(g.id) + ')</span>' +
+        badgeHtml +
+        '      </div>' +
+        bioHtml +
+        '      <div class="item-meta">' +
+        '        <span>👤 سازنده: ' + esc(creatorName) + '</span>' +
+        '        <span>👥 ' + toFaNum(memberCount) + ' عضو</span>' +
+        '        <span>📅 ' + esc(formatDate(g.created_at)) + '</span>' +
+        '      </div>' +
+        '    </div>' +
+        '  </div>' +
+        '  <div class="item-actions" style="justify-content:flex-end;border-top:1px solid var(--border);padding-top:10px;margin-top:4px">' +
+        '    <button class="btn btn-sm btn-secondary" onclick="openGroupMembersModal(\'' + esc(g.id) + '\')" title="مدیریت اعضا">' +
+        '      👥 اعضا' +
+        '    </button>' +
+        '    <button class="btn btn-sm ' + muteBtnClass + '" onclick="handleToggleGroupMute(\'' + esc(g.id) + '\', ' + isMuted + ')" title="' + muteBtnTitle + '">' +
+        muteBtnLabel +
+        '    </button>' +
+        '    <button class="btn btn-sm ' + lockBtnClass + '" onclick="handleToggleGroupLock(\'' + esc(g.id) + '\', ' + isLocked + ')" title="' + lockBtnTitle + '">' +
+        lockBtnLabel +
+        '    </button>' +
+        inviteBtnHtml +
+        '    <button class="btn btn-sm btn-danger" onclick="handleDeleteGroup(\'' + esc(g.id) + '\', \'' + esc((g.name || g.id).replace(/'/g, '\\\'')) + '\')" title="حذف گروه">🗑️</button>' +
+        '  </div>' +
+        '</div>';
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ۳۶. Groups — جستجو
+   ═══════════════════════════════════════════════════════════════ */
+function debounceGroupSearch() {
+    if (STATE._timers.groupSearch) {
+        clearTimeout(STATE._timers.groupSearch);
+    }
+    STATE._timers.groupSearch = setTimeout(function () {
+        const input = $('groupSearchInput');
+        STATE.groupSearchQuery = input ? input.value : '';
+        renderGroupsList();
+    }, 250);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ۳۷. Groups — ساخت گروه
+   ═══════════════════════════════════════════════════════════════ */
+async function handleCreateGroup() {
+    const idEl = $('newGroupId');
+    const nameEl = $('newGroupName');
+    const emojiEl = $('newGroupEmoji');
+    const bioEl = $('newGroupBio');
+    const btn = $('createGroupBtn');
+
+    if (!idEl || !nameEl || !btn) return;
+
+    const gid = (idEl.value || '').trim().toLowerCase();
+    const name = (nameEl.value || '').trim();
+    const emoji = (emojiEl && emojiEl.value) ? emojiEl.value.trim() : '👥';
+    const bio = (bioEl && bioEl.value) ? bioEl.value.trim() : null;
+
+    // ─── Validation ───
+    if (!gid) {
+        toast('شناسه گروه را وارد کنید', 'warning');
+        idEl.focus();
+        return;
+    }
+
+    if (!/^[a-z0-9_-]{2,30}$/.test(gid)) {
+        toast('شناسه باید ۲ تا ۳۰ کاراکتر و شامل حروف کوچک a-z، اعداد 0-9، - یا _ باشد', 'error', 5000);
+        idEl.focus();
+        return;
+    }
+
+    if (!name) {
+        toast('نام گروه را وارد کنید', 'warning');
+        nameEl.focus();
+        return;
+    }
+
+    if (name.length < 2) {
+        toast('نام گروه حداقل ۲ کاراکتر', 'warning');
+        nameEl.focus();
+        return;
+    }
+
+    if (emoji && emoji.length > 2) {
+        toast('ایموجی باید حداکثر ۲ کاراکتر باشد', 'warning');
+        if (emojiEl) emojiEl.focus();
+        return;
+    }
+
+    if (bio && bio.length > 150) {
+        toast('توضیحات حداکثر ۱۵۰ کاراکتر', 'warning');
+        if (bioEl) bioEl.focus();
+        return;
+    }
+
+    btn.classList.add('loading');
+    btn.disabled = true;
+
+    try {
+        const result = await adminCall('admin_create_group', {
+            p_group_id: gid,
+            p_name: name,
+            p_emoji: emoji || '👥',
+            p_bio: bio
+        });
+
+        // ─── پاکسازی فرم ───
+        idEl.value = '';
+        nameEl.value = '';
+        if (emojiEl) emojiEl.value = '👥';
+        if (bioEl) bioEl.value = '';
+
+        toast('✅ گروه «' + name + '» ساخته شد', 'success', 4000);
+
+        // ─── بروزرسانی لیست ───
+        await loadGroups({ silent: true });
+
+        // ─── نمایش لینک دعوت جدید ───
+        if (result && result.invite_code) {
+            const link = resolveInviteLink(result.invite_code);
+            openModal(
+                '<div class="modal-header">' +
+                '  <h3 class="modal-title">✅ گروه ساخته شد</h3>' +
+                '  <button class="modal-close" onclick="closeModal()">×</button>' +
+                '</div>' +
+                '<p class="confirm-text">گروه «<strong>' + esc(name) + '</strong>» با موفقیت ساخته شد.</p>' +
+                '<div class="section-title">🔗 لینک دعوت</div>' +
+                '<div class="invite-link-box"><code>' + esc(link) + '</code></div>' +
+                '<div class="modal-actions">' +
+                '  <button class="btn btn-secondary" onclick="closeModal()">بستن</button>' +
+                '  <button class="btn" onclick="copyInviteLink(\'' + esc(result.invite_code) + '\');closeModal()">📋 کپی لینک</button>' +
+                '</div>'
+            );
+        }
+
+        // ─── بروزرسانی آمار ───
+        try {
+            const statsRes = await adminCall('admin_get_stats');
+            STATE.stats = (statsRes && statsRes.stats) || {};
+            renderStats(STATE.stats);
+        } catch (e) {
+            console.warn('[handleCreateGroup] stats failed:', e);
+        }
+
+    } catch (e) {
+        console.error('[handleCreateGroup]', e);
+        toast('خطا: ' + e.message, 'error', 5000);
+    } finally {
+        btn.classList.remove('loading');
+        btn.disabled = false;
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ۳۸. Groups — حذف گروه
+   ═══════════════════════════════════════════════════════════════ */
+async function handleDeleteGroup(gid, name) {
+    if (!gid) return;
+
+    const group = STATE.groups.find(function (g) { return g.id === gid; });
+    const displayName = name || (group && group.name) || gid;
+    const memberCount = group ? (group.member_count || 0) : 0;
+
+    // ─── تأییدیه اول ───
+    const ok1 = await confirmDialog({
+        title: '🗑️ حذف گروه',
+        message: 'گروه «' + displayName + '» حذف شود؟',
+        danger: 'تمام ' + toFaNum(memberCount) + ' عضو، همه پیام‌های گروه، لینک دعوت و تنظیمات به‌طور کامل حذف می‌شوند. این عملیات غیرقابل بازگشت است!',
+        confirmText: 'ادامه',
+        cancelText: 'انصراف',
+        type: 'danger'
+    });
+
+    if (!ok1) return;
+
+    // ─── تأییدیه دوم ───
+    const ok2 = await confirmDialog({
+        title: '⚠️ تأیید نهایی',
+        message: 'آیا کاملاً مطمئن هستید که می‌خواهید گروه «' + displayName + '» را حذف کنید؟',
+        danger: 'پس از حذف، هیچ راهی برای بازگردانی وجود ندارد.',
+        confirmText: 'بله، حذف کن',
+        cancelText: 'انصراف',
+        type: 'danger'
+    });
+
+    if (!ok2) return;
+
+    showLoading('در حال حذف گروه…');
+
+    try {
+        await adminCall('admin_delete_group', { p_room_id: gid });
+
+        // ─── حذف از local state ───
+        STATE.groups = STATE.groups.filter(function (g) { return g.id !== gid; });
+        renderGroupsList();
+
+        // ─── بستن modal اعضا اگر باز است ───
+        if (STATE.activeGroupId === gid) {
+            STATE.activeGroupId = null;
+            closeModal();
+        }
+
+        toast('✅ گروه «' + displayName + '» حذف شد', 'success', 4000);
+
+        // ─── بروزرسانی آمار ───
+        try {
+            const statsRes = await adminCall('admin_get_stats');
+            STATE.stats = (statsRes && statsRes.stats) || {};
+            renderStats(STATE.stats);
+        } catch (e) {
+            console.warn('[handleDeleteGroup] stats failed:', e);
+        }
+    } catch (e) {
+        console.error('[handleDeleteGroup]', e);
+        toast('خطا: ' + e.message, 'error', 5000);
+    } finally {
+        hideLoading();
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ۳۹. Groups — تغییر وضعیت بی‌صدا
+   ═══════════════════════════════════════════════════════════════ */
+async function handleToggleGroupMute(gid, currentlyMuted) {
+    if (!gid) return;
+
+    const newMuted = !currentlyMuted;
+    const group = STATE.groups.find(function (g) { return g.id === gid; });
+    const displayName = group ? (group.name || gid) : gid;
+
+    const ok = await confirmDialog({
+        title: newMuted ? '🔕 بی‌صدا کردن گروه' : '🔔 فعال کردن اعلان',
+        message: 'گروه «' + displayName + '» ' + (newMuted ? 'بی‌صدا' : 'با اعلان') + ' شود؟',
+        warning: newMuted
+            ? 'اعضای گروه پیام‌های گروه را دریافت می‌کنند اما اعلانی دریافت نمی‌کنند.'
+            : 'اعضای گروه اعلان پیام‌های جدید را دریافت می‌کنند.',
+        confirmText: newMuted ? 'بی‌صدا کن' : 'فعال کن',
+        type: newMuted ? 'warning' : 'success'
+    });
+
+    if (!ok) return;
+
+    try {
+        await adminCall('admin_toggle_group_mute', {
+            p_room_id: gid,
+            p_muted: newMuted
+        });
+
+        // ─── بروزرسانی local state ───
+        if (group) group.is_muted = newMuted;
+        renderGroupsList();
+
+        toast('✅ گروه ' + (newMuted ? 'بی‌صدا' : 'با اعلان') + ' شد', 'success', 2500);
+    } catch (e) {
+        console.error('[handleToggleGroupMute]', e);
+        toast('خطا: ' + e.message, 'error');
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ۴۰. Groups — تغییر وضعیت قفل
+   ═══════════════════════════════════════════════════════════════ */
+async function handleToggleGroupLock(gid, currentlyLocked) {
+    if (!gid) return;
+
+    const newLocked = !currentlyLocked;
+    const group = STATE.groups.find(function (g) { return g.id === gid; });
+    const displayName = group ? (group.name || gid) : gid;
+
+    const ok = await confirmDialog({
+        title: newLocked ? '🔒 قفل کردن ارسال' : '🔓 باز کردن ارسال',
+        message: 'ارسال پیام در گروه «' + displayName + '» ' + (newLocked ? 'قفل' : 'باز') + ' شود؟',
+        warning: newLocked
+            ? 'اعضای گروه نمی‌توانند پیام جدید بفرستند. پیام‌های موجود حفظ می‌شوند.'
+            : 'اعضای گروه دوباره می‌توانند پیام بفرستند.',
+        confirmText: newLocked ? 'قفل کن' : 'باز کن',
+        type: newLocked ? 'warning' : 'success'
+    });
+
+    if (!ok) return;
+
+    try {
+        await adminCall('admin_toggle_group_lock', {
+            p_room_id: gid,
+            p_locked: newLocked
+        });
+
+        // ─── بروزرسانی local state ───
+        if (group) group.is_locked = newLocked;
+        renderGroupsList();
+
+        toast('✅ ارسال ' + (newLocked ? 'قفل' : 'باز') + ' شد', 'success', 2500);
+    } catch (e) {
+        console.error('[handleToggleGroupLock]', e);
+        toast('خطا: ' + e.message, 'error');
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ۴۱. Groups — مدیریت اعضا (Modal)
+   ═══════════════════════════════════════════════════════════════ */
+async function openGroupMembersModal(gid) {
+    if (!gid) return;
+
+    const group = STATE.groups.find(function (g) { return g.id === gid; });
+    if (!group) {
+        toast('گروه پیدا نشد', 'error');
+        return;
+    }
+
+    STATE.activeGroupId = gid;
+
+    const headerHtml =
+        '<div class="modal-header">' +
+        '  <h3 class="modal-title">👥 اعضای «' + esc(group.name || gid) + '»</h3>' +
+        '  <button class="modal-close" onclick="closeMembersModal()">×</button>' +
+        '</div>';
+
+    openModal(
+        headerHtml +
+        '<div id="membersModalContent">' +
+        '  <div class="skeleton"></div>' +
+        '  <div class="skeleton"></div>' +
+        '</div>'
+    );
+
+    await refreshMembersModal();
+}
+
+function closeMembersModal() {
+    STATE.activeGroupId = null;
+    closeModal();
+}
+
+async function refreshMembersModal() {
+    const gid = STATE.activeGroupId;
+    if (!gid) return;
+
+    const container = $('membersModalContent');
+    if (!container) return;
+
+    try {
+        const results = await Promise.all([
+            adminCall('admin_get_group_members', { p_room_id: gid }),
+            adminCall('admin_list_users')
+        ]);
+
+        const members = (results[0] && results[0].members) || [];
+        const allUsers = (results[1] && results[1].users) || [];
+
+        // cache
+        STATE.users = allUsers;
+
+        const memberIds = members.map(function (m) { return m.user_id; });
+        const availableUsers = allUsers.filter(function (u) {
+            return memberIds.indexOf(u.id) === -1 && u.is_active !== false;
+        });
+
+        let html = '';
+
+        // ─── بخش افزودن عضو ───
+        if (availableUsers.length > 0) {
+            const options = availableUsers.map(function (u) {
+                return '<option value="' + esc(u.id) + '">' + esc(u.display_name || u.id) + '</option>';
+            }).join('');
+
+            html +=
+                '<div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">' +
+                '  <select id="addMemberSelect" class="input" style="flex:1;min-width:180px">' +
+                '    <option value="">— افزودن عضو جدید —</option>' +
+                options +
+                '  </select>' +
+                '  <button class="btn btn-success" onclick="handleAddGroupMember()">➕ افزودن</button>' +
+                '</div>';
+        } else {
+            html += '<div class="info-box">ℹ️ همه کاربران فعال قبلاً عضو این گروه هستند</div>';
+        }
+
+        // ─── لیست اعضا ───
+        html += '<div class="section-title">اعضا (' + toFaNum(members.length) + ')</div>';
+        html += '<div class="list" style="max-height:320px;overflow-y:auto;padding-left:4px">';
+
+        if (members.length === 0) {
+            html += renderEmptyState('👤', 'هیچ عضوی وجود ندارد', 'از بالا اولین عضو را اضافه کنید');
+        } else {
+            html += members.map(function (m) {
+                let roleBadge = '';
+                if (m.role === 'owner') {
+                    roleBadge = '<span class="badge badge-danger">مالک</span>';
+                } else if (m.role === 'admin') {
+                    roleBadge = '<span class="badge badge-warning">مدیر</span>';
+                }
+
+                return '<div class="item" style="padding:10px">' +
+                    '  <div class="item-avatar" style="background:' + colorFromId(m.user_id) + ';width:36px;height:36px;font-size:13px">' +
+                    esc(getInitials(m.display_name || m.user_id)) +
+                    '  </div>' +
+                    '  <div class="item-info">' +
+                    '    <div class="item-title">' +
+                    esc(m.display_name || 'بدون نام') + ' ' + roleBadge +
+                    '    </div>' +
+                    '    <div class="item-subtitle">@' + esc(m.user_id) + '</div>' +
+                    '  </div>' +
+                    '  <div class="item-actions">' +
+                    '    <button class="btn btn-xs btn-danger" ' +
+                    '      onclick="handleRemoveGroupMember(\'' + esc(m.user_id) + '\', \'' + esc((m.display_name || m.user_id).replace(/'/g, '\\\'')) + '\')" ' +
+                    '      title="حذف از گروه">➖</button>' +
+                    '  </div>' +
+                    '</div>';
+            }).join('');
+        }
+
+        html += '</div>';
+
+        // ─── لینک دعوت ───
+        const group = STATE.groups.find(function (g) { return g.id === gid; });
+        if (group && group.invite_code) {
+            const link = resolveInviteLink(group.invite_code);
+            html +=
+                '<div class="section-title" style="margin-top:16px">🔗 لینک دعوت</div>' +
+                '<div class="invite-link-box">' +
+                '  <code>' + esc(link) + '</code>' +
+                '  <button class="btn btn-xs btn-secondary" onclick="copyInviteLink(\'' + esc(group.invite_code) + '\')">📋 کپی</button>' +
+                '</div>';
+        }
+
+        // ─── دکمه بستن ───
+        html +=
+            '<div class="modal-actions">' +
+            '  <button class="btn btn-secondary" onclick="closeMembersModal()">بستن</button>' +
+            '</div>';
+
+        container.innerHTML = html;
+
+    } catch (e) {
+        console.error('[refreshMembersModal]', e);
+        container.innerHTML = renderEmptyState(
+            '⚠️',
+            'خطا در بارگذاری',
+            e.message || 'اتصال به سرور برقرار نشد',
+            '<button class="btn btn-secondary btn-sm" style="margin-top:12px" onclick="refreshMembersModal()">🔄 تلاش دوباره</button>'
+        );
+    }
+}
+
+async function handleAddGroupMember() {
+    const gid = STATE.activeGroupId;
+    if (!gid) {
+        toast('گروه‌ای انتخاب نشده', 'error');
+        return;
+    }
+
+    const select = $('addMemberSelect');
+    if (!select || !select.value) {
+        toast('یک کاربر انتخاب کنید', 'warning');
+        return;
+    }
+
+    const uid = select.value;
+    const option = select.options[select.selectedIndex];
+    const displayName = option ? option.textContent : uid;
+
+    try {
+        await adminCall('admin_add_group_member', {
+            p_room_id: gid,
+            p_user_id: uid
+        });
+
+        toast('✅ «' + displayName + '» به گروه اضافه شد', 'success', 3000);
+
+        // ─── بروزرسانی modal + لیست گروه‌ها ───
+        await refreshMembersModal();
+        await loadGroups({ silent: true });
+    } catch (e) {
+        console.error('[handleAddGroupMember]', e);
+        toast('خطا: ' + e.message, 'error');
+    }
+}
+
+async function handleRemoveGroupMember(uid, name) {
+    const gid = STATE.activeGroupId;
+    if (!gid || !uid) return;
+
+    const displayName = name || uid;
+
+    const ok = await confirmDialog({
+        title: '➖ حذف عضو',
+        message: '«' + displayName + '» از گروه حذف شود؟',
+        warning: 'کاربر دیگر پیام‌های این گروه را دریافت نمی‌کند و به محتوای آن دسترسی ندارد.',
+        confirmText: 'حذف کن',
+        type: 'warning'
+    });
+
+    if (!ok) return;
+
+    try {
+        await adminCall('admin_remove_group_member', {
+            p_room_id: gid,
+            p_user_id: uid
+        });
+
+        toast('✅ «' + displayName + '» از گروه حذف شد', 'success', 3000);
+
+        // ─── بروزرسانی ───
+        await refreshMembersModal();
+        await loadGroups({ silent: true });
+    } catch (e) {
+        console.error('[handleRemoveGroupMember]', e);
+        toast('خطا: ' + e.message, 'error');
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ۴۲. Reports — بارگذاری
+   ═══════════════════════════════════════════════════════════════ */
+async function loadReports(opts) {
+    opts = opts || {};
+    if (!STATE.token) return;
+
+    // خواندن فیلتر از DOM
+    const filterEl = $('reportFilter');
+    if (filterEl) STATE.reportFilter = filterEl.value || 'pending';
+
+    if (!opts.silent) showLoading('در حال بارگذاری گزارش‌ها…');
+
+    try {
+        const status = STATE.reportFilter === 'all' ? null : STATE.reportFilter;
+        const result = await adminCall('admin_list_reports', { p_status: status });
+        STATE.reports = (result && result.reports) || [];
+        renderReportsList();
+
+        if (opts.force) {
+            toast('✅ بروزرسانی شد', 'success', 2000);
+        }
+    } catch (e) {
+        console.error('[loadReports]', e);
+        const container = $('reportsList');
+        if (container) {
+            container.innerHTML = renderEmptyState(
+                '⚠️',
+                'خطا در بارگذاری',
+                e.message || 'اتصال به سرور برقرار نشد',
+                '<button class="btn btn-secondary btn-sm" style="margin-top:12px" onclick="loadReports({force:true})">🔄 تلاش دوباره</button>'
+            );
+        }
+        if (!opts.silent) toast('خطا: ' + e.message, 'error');
+    } finally {
+        if (!opts.silent) hideLoading();
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ۴۳. Reports — رندر
+   ═══════════════════════════════════════════════════════════════ */
+function renderReportsList() {
+    const container = $('reportsList');
+    const countEl = $('reportsCount');
+    if (!container) return;
+
+    const reports = STATE.reports || [];
+
+    if (countEl) countEl.textContent = formatNum(reports.length);
+
+    if (reports.length === 0) {
+        container.innerHTML = renderEmptyState(
+            '🎉',
+            'گزارشی وجود ندارد',
+            STATE.reportFilter === 'pending'
+                ? 'هیچ گزارش تخلفی در انتظار بررسی نیست'
+                : 'با این فیلتر، گزارشی یافت نشد'
+        );
+        return;
+    }
+
+    container.innerHTML = reports.map(renderReportItem).join('');
+}
+
+function renderReportItem(r) {
+    if (!r || !r.id) return '';
+
+    // ─── Status ───
+    let statusBadge = '';
+    let statusClass = '';
+    if (r.status === 'pending') {
+        statusBadge = '<span class="badge badge-danger">⏳ در انتظار</span>';
+        statusClass = '';
+    } else if (r.status === 'resolved') {
+        statusBadge = '<span class="badge badge-success">✅ رسیدگی شده</span>';
+        statusClass = 'status-resolved';
+    } else if (r.status === 'dismissed') {
+        statusBadge = '<span class="badge badge-secondary">🚫 رد شده</span>';
+        statusClass = 'status-dismissed';
+    }
+
+    // ─── Names ───
+    const reporterName = r.reporter_name || r.reporter_id || 'ناشناس';
+    const reportedName = r.reported_user_name || r.reported_user_id || 'ناشناس';
+
+    // ─── Message content ───
+    let contentHtml;
+    if (r.message_content) {
+        const trimmed = String(r.message_content);
+        const displayed = trimmed.length > 500 ? trimmed.substring(0, 500) + '…' : trimmed;
+        contentHtml = '<div class="report-content">' + esc(displayed) + '</div>';
+    } else {
+        contentHtml = '<div class="report-content" style="font-style:italic;opacity:0.6">بدون محتوای پیام</div>';
+    }
+
+    // ─── Ban/Unban button (اگر reported_user_id موجود است) ───
+    let banBtnHtml = '';
+    if (r.reported_user_id) {
+        const isActive = r.reported_user_active !== false;
+        banBtnHtml =
+            '<button class="btn btn-sm ' + (isActive ? 'btn-warning' : 'btn-success') + '" ' +
+            '  onclick="handleBanFromReport(\'' + esc(r.reported_user_id) + '\', ' + isActive + ')" ' +
+            '  title="' + (isActive ? 'غیرفعال کردن کاربر' : 'فعال کردن مجدد') + '">' +
+            (isActive ? '🚫 بن کاربر' : '✅ آنبن') +
+            '</button>';
+    }
+
+    // ─── Action buttons بر اساس status ───
+    let actionButtons;
+    if (r.status === 'pending') {
+        actionButtons =
+            '<button class="btn btn-sm btn-success" onclick="handleResolveReport(' + r.id + ', \'resolved\')">✅ رسیدگی</button>' +
+            '<button class="btn btn-sm btn-secondary" onclick="handleResolveReport(' + r.id + ', \'dismissed\')">🚫 رد</button>' +
+            banBtnHtml;
+    } else {
+        actionButtons =
+            '<button class="btn btn-sm btn-ghost" onclick="handleResolveReport(' + r.id + ', \'pending\')">↩️ بازگردانی به «در انتظار»</button>' +
+            banBtnHtml;
+    }
+
+    return '<div class="report-card ' + statusClass + '" data-report-id="' + r.id + '">' +
+        '  <div class="report-reason">' +
+        '    🚨 ' + esc(r.reason) +
+        '    ' + statusBadge +
+        '  </div>' +
+        '  <div class="report-meta">' +
+        '    <span><strong>گزارش‌دهنده:</strong> ' + esc(reporterName) + '</span>' +
+        '    <span><strong>متخلف:</strong> ' + esc(reportedName) + '</span>' +
+        '    <span><strong>تاریخ:</strong> ' + esc(formatDateTime(r.created_at)) + '</span>' +
+        '  </div>' +
+        contentHtml +
+        '  <div class="report-actions">' +
+        actionButtons +
+        '  </div>' +
+        '</div>';
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ۴۴. Reports — رسیدگی / رد / بازگردانی
+   ═══════════════════════════════════════════════════════════════ */
+async function handleResolveReport(reportId, newStatus) {
+    if (!reportId) return;
+
+    newStatus = newStatus || 'resolved';
+
+    const actionLabels = {
+        'resolved': { title: '✅ رسیدگی به گزارش', verb: 'رسیدگی شده' },
+        'dismissed': { title: '🚫 رد گزارش', verb: 'رد شده' },
+        'pending': { title: '↩️ بازگردانی گزارش', verb: 'در انتظار بررسی' }
+    };
+
+    const labels = actionLabels[newStatus] || actionLabels.resolved;
+    const type = newStatus === 'resolved' ? 'success' : (newStatus === 'dismissed' ? 'warning' : 'info');
+
+    const ok = await confirmDialog({
+        title: labels.title,
+        message: 'این گزارش به وضعیت «' + labels.verb + '» تغییر کند؟',
+        confirmText: 'تأیید',
+        cancelText: 'انصراف',
+        type: type
+    });
+
+    if (!ok) return;
+
+    try {
+        await adminCall('admin_resolve_report', {
+            p_report_id: reportId,
+            p_status: newStatus
+        });
+
+        toast('✅ انجام شد', 'success', 2500);
+
+        // ─── بروزرسانی گزارش‌ها + آمار ───
+        await loadReports({ silent: true });
+        loadDashboard(false).catch(function () {});
+    } catch (e) {
+        console.error('[handleResolveReport]', e);
+        toast('خطا: ' + e.message, 'error');
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ۴۵. Reports — بن/آنبن کاربر متخلف
+   ═══════════════════════════════════════════════════════════════ */
+async function handleBanFromReport(userId, currentlyActive) {
+    if (!userId) return;
+
+    // ─── استفاده از handleToggleUser بخش ۴ ───
+    // این تابع خودش تأییدیه می‌گیرد، RPC می‌زند، toast می‌دهد
+    await handleToggleUser(userId, currentlyActive);
+
+    // ─── پس از اتمام، گزارش‌ها را بروزرسانی کن ───
+    // (چون ممکن است وضعیت is_active در گزارش‌ها تغییر کرده باشد)
+    await loadReports({ silent: true });
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ۴۶. اتصال listenerهای بخش ۵
+   ═══════════════════════════════════════════════════════════════ */
+function attachPart5Listeners() {
+    // ─── fallback برای search group (اگر inline oninput کار نکند) ───
+    const groupSearchEl = $('groupSearchInput');
+    if (groupSearchEl && !groupSearchEl._part5Bound) {
+        groupSearchEl.addEventListener('input', debounceGroupSearch);
+        groupSearchEl._part5Bound = true;
+    }
+
+    // ─── report filter (inline onchange هم فعال است) ───
+    const reportFilterEl = $('reportFilter');
+    if (reportFilterEl && !reportFilterEl._part5Bound) {
+        reportFilterEl.addEventListener('change', function () {
+            STATE.reportFilter = this.value || 'pending';
+        });
+        reportFilterEl._part5Bound = true;
+    }
+
+    // ─── create group button fallback ───
+    const createBtn = $('createGroupBtn');
+    if (createBtn && !createBtn._part5Bound) {
+        // inline onclick هم هست، این فقط برای اطمینان
+        createBtn._part5Bound = true;
+    }
+}
+
+// ─── اجرا ───
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', attachPart5Listeners);
+} else {
+    setTimeout(attachPart5Listeners, 0);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// ⚠️ پایان بخش ۵ — بخش ۶ (Cleanup + Audit + Final) ادامه دارد
+// ═══════════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════════════════════════
+   admin.html — بخش ۶ از ۶: Cleanup + Audit + Settings + Final Init
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ═══════════════════════════════════════════════════════════════
+   ۴۷. Cleanup — حذف پیام‌های خصوصی
+   ═══════════════════════════════════════════════════════════════ */
+async function handleClearPrivateMessages() {
+    if (!STATE.token) return;
+
+    // ─── تأییدیه اول ───
+    const ok1 = await confirmDialog({
+        title: '🗑️ حذف پیام‌های خصوصی',
+        message: 'آیا همه پیام‌های چت‌های خصوصی حذف شوند؟',
+        danger: 'تمام پیام‌های بین دو کاربر (چت خصوصی) از دیتابیس حذف می‌شوند. این عملیات غیرقابل بازگشت است!',
+        confirmText: 'ادامه',
+        cancelText: 'انصراف',
+        type: 'danger'
+    });
+
+    if (!ok1) return;
+
+    // ─── تأییدیه دوم ───
+    const ok2 = await confirmDialog({
+        title: '⚠️ تأیید نهایی',
+        message: 'آیا کاملاً مطمئن هستید که می‌خواهید همه پیام‌های خصوصی را حذف کنید؟',
+        danger: 'پس از حذف، هیچ راهی برای بازگردانی وجود ندارد. توصیه می‌شود قبل از این کار از دیتابیس بکاپ بگیرید.',
+        confirmText: 'بله، حذف کن',
+        cancelText: 'انصراف',
+        type: 'danger'
+    });
+
+    if (!ok2) return;
+
+    const btn = $('btnClearPrivate');
+    if (btn) {
+        btn.classList.add('loading');
+        btn.disabled = true;
+    }
+    showLoading('در حال حذف پیام‌های خصوصی…');
+
+    try {
+        const result = await adminCall('admin_clear_private_messages');
+        const deleted = (result && result.deleted) || 0;
+
+        toast('✅ ' + toFaNum(deleted) + ' پیام خصوصی حذف شد', 'success', 5000);
+
+        // ─── بروزرسانی آمار ───
+        loadDashboard(false).catch(function () {});
+    } catch (e) {
+        console.error('[handleClearPrivateMessages]', e);
+        toast('خطا: ' + e.message, 'error', 5000);
+    } finally {
+        if (btn) {
+            btn.classList.remove('loading');
+            btn.disabled = false;
+        }
+        hideLoading();
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ۴۸. Cleanup — حذف پیام‌های گروهی
+   ═══════════════════════════════════════════════════════════════ */
+async function handleClearGroupMessages() {
+    if (!STATE.token) return;
+
+    const ok1 = await confirmDialog({
+        title: '🗑️ حذف پیام‌های گروهی',
+        message: 'آیا همه پیام‌های گروه‌ها حذف شوند؟',
+        danger: 'تمام پیام‌های ارسال‌شده در گروه‌ها حذف می‌شوند. خود گروه‌ها و اعضا دست‌نخورده باقی می‌مانند. این عملیات غیرقابل بازگشت است!',
+        confirmText: 'ادامه',
+        cancelText: 'انصراف',
+        type: 'danger'
+    });
+
+    if (!ok1) return;
+
+    const ok2 = await confirmDialog({
+        title: '⚠️ تأیید نهایی',
+        message: 'آیا کاملاً مطمئن هستید که می‌خواهید همه پیام‌های گروهی را حذف کنید؟',
+        danger: 'پس از حذف، هیچ راهی برای بازگردانی وجود ندارد. توصیه می‌شود قبل از این کار از دیتابیس بکاپ بگیرید.',
+        confirmText: 'بله، حذف کن',
+        cancelText: 'انصراف',
+        type: 'danger'
+    });
+
+    if (!ok2) return;
+
+    const btn = $('btnClearGroup');
+    if (btn) {
+        btn.classList.add('loading');
+        btn.disabled = true;
+    }
+    showLoading('در حال حذف پیام‌های گروهی…');
+
+    try {
+        const result = await adminCall('admin_clear_group_messages');
+        const deleted = (result && result.deleted) || 0;
+
+        toast('✅ ' + toFaNum(deleted) + ' پیام گروهی حذف شد', 'success', 5000);
+
+        loadDashboard(false).catch(function () {});
+    } catch (e) {
+        console.error('[handleClearGroupMessages]', e);
+        toast('خطا: ' + e.message, 'error', 5000);
+    } finally {
+        if (btn) {
+            btn.classList.remove('loading');
+            btn.disabled = false;
+        }
+        hideLoading();
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ۴۹. Cleanup — حذف همه پیام‌ها (خطرناک‌ترین)
+   ═══════════════════════════════════════════════════════════════ */
+async function handleClearAllMessages() {
+    if (!STATE.token) return;
+
+    // ─── تأییدیه اول ───
+    const ok1 = await confirmDialog({
+        title: '💥 حذف همه پیام‌ها',
+        message: 'آیا همه پیام‌ها (خصوصی + گروهی) حذف شوند؟',
+        danger: '⚠️ خطرناک‌ترین عملیات! تمام پیام‌های سیستم بدون استثنا حذف می‌شوند. کاربران، گروه‌ها و اعضا دست‌نخورده می‌مانند اما همه گفتگوها پاک می‌شوند.',
+        confirmText: 'ادامه',
+        cancelText: 'انصراف',
+        type: 'danger'
+    });
+
+    if (!ok1) return;
+
+    // ─── تأییدیه دوم ───
+    const ok2 = await confirmDialog({
+        title: '⚠️ تأیید نهایی (۲ از ۲)',
+        message: 'آیا کاملاً مطمئن هستید؟ این عملیات قابل بازگشت نیست!',
+        danger: 'همه پیام‌های خصوصی و گروهی برای همیشه حذف می‌شوند. حتماً قبل از ادامه، بکاپ گرفته باشید.',
+        confirmText: 'بله، همه را حذف کن',
+        cancelText: 'انصراف',
+        type: 'danger'
+    });
+
+    if (!ok2) return;
+
+    // ─── تأییدیه سوم (فقط برای این عملیات خاص) ───
+    const ok3 = await confirmDialog({
+        title: '🛑 تأیید سوم و آخر',
+        message: 'آخرین فرصت — آیا واقعاً می‌خواهید همه پیام‌ها را حذف کنید؟',
+        danger: 'این عملیات برگشت‌پذیر نیست. اگر مطمئن نیستید، «انصراف» را بزنید.',
+        confirmText: 'بله، مطمئنم',
+        cancelText: 'انصراف',
+        type: 'danger'
+    });
+
+    if (!ok3) return;
+
+    const btn = $('btnClearAll');
+    if (btn) {
+        btn.classList.add('loading');
+        btn.disabled = true;
+    }
+    showLoading('در حال حذف همه پیام‌ها…');
+
+    try {
+        const result = await adminCall('admin_clear_all_messages');
+        const deleted = (result && result.deleted) || 0;
+
+        toast('✅ ' + toFaNum(deleted) + ' پیام حذف شد', 'success', 6000);
+
+        loadDashboard(false).catch(function () {});
+    } catch (e) {
+        console.error('[handleClearAllMessages]', e);
+        toast('خطا: ' + e.message, 'error', 5000);
+    } finally {
+        if (btn) {
+            btn.classList.remove('loading');
+            btn.disabled = false;
+        }
+        hideLoading();
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ۵۰. Cleanup — حذف گزارش‌ها
+   ═══════════════════════════════════════════════════════════════ */
+async function handleClearReports() {
+    if (!STATE.token) return;
+
+    const ok1 = await confirmDialog({
+        title: '🚨 حذف همه گزارش‌ها',
+        message: 'آیا همه گزارش‌های تخلف حذف شوند؟',
+        danger: 'تمام گزارش‌های در انتظار، رسیدگی‌شده و رد‌شده از دیتابیس حذف می‌شوند. پیام‌ها و کاربران دست‌نخورده باقی می‌مانند اما سابقه گزارش‌ها از بین می‌رود.',
+        confirmText: 'ادامه',
+        cancelText: 'انصراف',
+        type: 'danger'
+    });
+
+    if (!ok1) return;
+
+    const ok2 = await confirmDialog({
+        title: '⚠️ تأیید نهایی',
+        message: 'آیا کاملاً مطمئن هستید که می‌خواهید همه گزارش‌ها را حذف کنید؟',
+        danger: 'این عملیات غیرقابل بازگشت است.',
+        confirmText: 'بله، حذف کن',
+        cancelText: 'انصراف',
+        type: 'danger'
+    });
+
+    if (!ok2) return;
+
+    const btn = $('btnClearReports');
+    if (btn) {
+        btn.classList.add('loading');
+        btn.disabled = true;
+    }
+    showLoading('در حال حذف گزارش‌ها…');
+
+    try {
+        const result = await adminCall('admin_clear_reports');
+        const deleted = (result && result.deleted) || 0;
+
+        toast('✅ ' + toFaNum(deleted) + ' گزارش حذف شد', 'success', 5000);
+
+        // ─── بروزرسانی گزارش‌ها و آمار ───
+        STATE.reports = [];
+        renderReportsList();
+        loadDashboard(false).catch(function () {});
+    } catch (e) {
+        console.error('[handleClearReports]', e);
+        toast('خطا: ' + e.message, 'error', 5000);
+    } finally {
+        if (btn) {
+            btn.classList.remove('loading');
+            btn.disabled = false;
+        }
+        hideLoading();
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ۵۱. Audit — بارگذاری
+   ═══════════════════════════════════════════════════════════════ */
+async function loadAudit(opts) {
+    opts = opts || {};
+    if (!STATE.token) return;
+
+    // خواندن limit از DOM
+    const limitEl = $('auditLimit');
+    if (limitEl) {
+        const v = parseInt(limitEl.value, 10);
+        if (!isNaN(v) && v >= 10 && v <= 500) {
+            STATE.auditLimit = v;
+        }
+    }
+
+    if (!opts.silent) showLoading('در حال بارگذاری تاریخچه…');
+
+    try {
+        const result = await adminCall('admin_get_audit_log', { p_limit: STATE.auditLimit });
+        STATE.auditEntries = (result && result.entries) || [];
+        renderAuditList();
+
+        if (opts.force) {
+            toast('✅ تاریخچه بروزرسانی شد', 'success', 2000);
+        }
+    } catch (e) {
+        console.error('[loadAudit]', e);
+        const container = $('auditList');
+        if (container) {
+            container.innerHTML = renderEmptyState(
+                '⚠️',
+                'خطا در بارگذاری',
+                e.message || 'اتصال به سرور برقرار نشد',
+                '<button class="btn btn-secondary btn-sm" style="margin-top:12px" onclick="loadAudit({force:true})">🔄 تلاش دوباره</button>'
+            );
+        }
+        if (!opts.silent) toast('خطا: ' + e.message, 'error');
+    } finally {
+        if (!opts.silent) hideLoading();
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ۵۲. Audit — رندر
+   ═══════════════════════════════════════════════════════════════ */
+function renderAuditList() {
+    const container = $('auditList');
+    const countEl = $('auditCount');
+    if (!container) return;
+
+    const entries = STATE.auditEntries || [];
+
+    if (countEl) countEl.textContent = formatNum(entries.length);
+
+    if (entries.length === 0) {
+        container.innerHTML = renderEmptyState(
+            '📜',
+            'تاریخچه‌ای وجود ندارد',
+            'اولین عملیات ادمین شما اینجا نمایش داده می‌شود'
+        );
+        return;
+    }
+
+    container.innerHTML = entries.map(renderAuditItem).join('');
+}
+
+function renderAuditItem(e) {
+    if (!e || !e.action) return '';
+
+    const icon = getActionIcon(e.action);
+    const label = getActionLabel(e.action);
+    const dateTime = formatDateTime(e.created_at);
+    const relativeTime = formatRelativeTime(e.created_at);
+
+    // ─── target ───
+    const targetHtml = e.target
+        ? '<div class="audit-target">🎯 ' + esc(e.target) + '</div>'
+        : '';
+
+    // ─── metadata ───
+    let metaHtml = '';
+    if (e.metadata && typeof e.metadata === 'object') {
+        try {
+            const keys = Object.keys(e.metadata);
+            if (keys.length > 0) {
+                const metaStr = keys.map(function (k) {
+                    let v = e.metadata[k];
+                    if (v === null || v === undefined) v = '—';
+                    else if (typeof v === 'object') {
+                        try { v = JSON.stringify(v); } catch (er) { v = '[object]'; }
+                    }
+                    return k + ': ' + String(v);
+                }).join(' · ');
+                metaHtml = '<div class="audit-meta">' + esc(metaStr) + '</div>';
+            }
+        } catch (err) {
+            // نادیده بگیر
+        }
+    }
+
+    return '<div class="audit-item">' +
+        '  <span class="audit-icon">' + icon + '</span>' +
+        '  <div class="audit-body">' +
+        '    <div class="audit-action">' + esc(label) + '</div>' +
+        '    ' + targetHtml +
+        '    ' + metaHtml +
+        '    <div class="audit-time">🕒 ' + esc(dateTime) + ' (' + esc(relativeTime) + ')</div>' +
+        '  </div>' +
+        '</div>';
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ۵۳. Settings — تغییر رمز
+   ═══════════════════════════════════════════════════════════════ */
+async function handleChangePassword() {
+    const curEl = $('currentPwd');
+    const newEl = $('newPwd');
+    const new2El = $('newPwd2');
+    const btn = $('changePwdBtn');
+
+    if (!curEl || !newEl || !new2El || !btn) return;
+
+    const oldPwd = curEl.value;
+    const newPwd = newEl.value;
+    const newPwd2 = new2El.value;
+
+    // ─── Validation ───
+    if (!oldPwd) {
+        toast('رمز فعلی را وارد کنید', 'warning');
+        curEl.focus();
+        return;
+    }
+
+    if (!newPwd || newPwd.length < 8) {
+        toast('رمز جدید باید حداقل ۸ کاراکتر باشد', 'warning');
+        newEl.focus();
+        return;
+    }
+
+    if (newPwd.length > 200) {
+        toast('رمز جدید بیش از حد طولانی است', 'warning');
+        return;
+    }
+
+    if (newPwd !== newPwd2) {
+        toast('رمزهای جدید یکسان نیستند', 'warning');
+        new2El.focus();
+        return;
+    }
+
+    if (newPwd === oldPwd) {
+        toast('رمز جدید باید با رمز فعلی متفاوت باشد', 'warning');
+        newEl.focus();
+        return;
+    }
+
+    // ─── تأیید ───
+    const ok = await confirmDialog({
+        title: '🔑 تغییر رمز ادمین',
+        message: 'آیا رمز ادمین تغییر کند؟',
+        warning: 'با تغییر رمز، همه جلسه‌ها (از جمله جلسه فعلی) بسته می‌شوند. باید با رمز جدید دوباره وارد شوید.',
+        confirmText: 'تغییر رمز',
+        cancelText: 'انصراف',
+        type: 'warning'
+    });
+
+    if (!ok) return;
+
+    btn.classList.add('loading');
+    btn.disabled = true;
+
+    try {
+        await adminCall('admin_change_password', {
+            p_old: oldPwd,
+            p_new: newPwd
+        });
+
+        // ─── پاکسازی فرم ───
+        curEl.value = '';
+        newEl.value = '';
+        new2El.value = '';
+
+        // ─── پاک کردن power bar ───
+        const bar = $('newStrength');
+        if (bar) bar.setAttribute('data-strength', 'weak');
+        const txt = $('newStrengthText');
+        if (txt) txt.textContent = 'قدرت رمز: ضعیف';
+
+        toast('✅ رمز تغییر کرد — لطفاً دوباره وارد شوید', 'success', 5000);
+
+        // ─── پاکسازی session (چون سرور همه sessions را باطل کرد) ───
+        clearSession();
+        stopAutoRefresh();
+
+        // ─── بازگشت به صفحه ورود ───
+        setTimeout(function () {
+            showScreen('login');
+        }, 1500);
+    } catch (e) {
+        console.error('[handleChangePassword]', e);
+        toast('خطا: ' + e.message, 'error', 5000);
+    } finally {
+        btn.classList.remove('loading');
+        btn.disabled = false;
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ۵۴. اتصال listenerهای بخش ۶
+   ═══════════════════════════════════════════════════════════════ */
+function attachPart6Listeners() {
+    // ─── audit limit input: reload on change ───
+    const auditLimitEl = $('auditLimit');
+    if (auditLimitEl && !auditLimitEl._part6Bound) {
+        auditLimitEl.addEventListener('change', function () {
+            const v = parseInt(this.value, 10);
+            if (!isNaN(v) && v >= 10 && v <= 500) {
+                STATE.auditLimit = v;
+                loadAudit();
+            }
+        });
+        auditLimitEl._part6Bound = true;
+    }
+
+    // ─── reset password form on tab switch away from settings ───
+    // (این کار در switchTab انجام نمی‌شود، اینجا فقط مطمئن می‌شویم
+    //  که اگر کاربر از settings خارج شد، فرم پاک باشد)
+    if (!window._part6TabWatcher) {
+        document.addEventListener('click', function (e) {
+            const btn = e.target.closest('.tabnav-btn');
+            if (!btn) return;
+            const tab = btn.dataset.tab;
+            if (tab && tab !== 'settings') {
+                const cur = $('currentPwd');
+                const n1 = $('newPwd');
+                const n2 = $('newPwd2');
+                if (cur) cur.value = '';
+                if (n1) n1.value = '';
+                if (n2) n2.value = '';
+                const bar = $('newStrength');
+                if (bar) bar.setAttribute('data-strength', 'weak');
+                const txt = $('newStrengthText');
+                if (txt) txt.textContent = 'قدرت رمز: ضعیف';
+            }
+        });
+        window._part6TabWatcher = true;
+    }
+}
+
+// ─── اجرا ───
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', attachPart6Listeners);
+} else {
+    setTimeout(attachPart6Listeners, 0);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ۵۵. Final Init — اطمینان از صحت و آماده‌سازی
+   ═══════════════════════════════════════════════════════════════ */
+function finalVerification() {
+    // بررسی وجود توابع حیاتی (این‌ها باید همه تعریف شده باشند)
+    const requiredFunctions = [
+        // بخش ۳
+        'handleSetup', 'handleLogin', 'handleLogout',
+        'showScreen', 'showPanel', 'bootCheck',
+        'toast', 'showLoading', 'hideLoading',
+        'openModal', 'closeModal', 'confirmDialog',
+        'adminCall', 'saveSession', 'loadSession', 'clearSession',
+        'toggleTheme', 'toggleAutoRefresh', 'startAutoRefresh', 'stopAutoRefresh',
+        // بخش ۴
+        'switchTab', 'refreshCurrentTab', 'loadDashboard', 'renderStats', 'renderRecentAudit',
+        'loadUsers', 'renderUsersList', 'renderUserItem', 'debounceUserSearch',
+        'handleToggleUser', 'handleDeleteUser',
+        // بخش ۵
+        'loadGroups', 'renderGroupsList', 'renderGroupItem', 'debounceGroupSearch',
+        'handleCreateGroup', 'handleDeleteGroup',
+        'handleToggleGroupMute', 'handleToggleGroupLock',
+        'openGroupMembersModal', 'refreshMembersModal',
+        'handleAddGroupMember', 'handleRemoveGroupMember',
+        'copyInviteLink', 'resolveInviteLink',
+        'loadReports', 'renderReportsList', 'renderReportItem',
+        'handleResolveReport', 'handleBanFromReport',
+        // بخش ۶
+        'handleClearPrivateMessages', 'handleClearGroupMessages',
+        'handleClearAllMessages', 'handleClearReports',
+        'loadAudit', 'renderAuditList', 'handleChangePassword',
+        // Utility
+        'esc', 'formatDate', 'formatTime', 'formatDateTime', 'formatRelativeTime',
+        'getInitials', 'colorFromId', 'toFaNum', 'formatNum', 'debounce', 'sleep'
+    ];
+
+    const missing = [];
+    requiredFunctions.forEach(function (fn) {
+        if (typeof window[fn] !== 'function') {
+            missing.push(fn);
+        }
+    });
+
+    if (missing.length > 0) {
+        console.warn('[FINAL] ⚠️ توابع گم‌شده:', missing);
+    } else {
+        console.log('[FINAL] ✅ همه ' + requiredFunctions.length + ' تابع حیاتی موجودند');
+    }
+
+    // بررسی وجود عناصر HTML حیاتی
+    const requiredElements = [
+        'bootOverlay', 'setupScreen', 'loginScreen', 'mainPanel',
+        'tabnav', 'mainContent',
+        'usersList', 'groupsList', 'reportsList', 'auditList',
+        'statsGrid', 'modalOverlay', 'modalBox', 'toastContainer', 'loadingOverlay'
+    ];
+
+    const missingEls = [];
+    requiredElements.forEach(function (id) {
+        if (!document.getElementById(id)) {
+            missingEls.push(id);
+        }
+    });
+
+    if (missingEls.length > 0) {
+        console.warn('[FINAL] ⚠️ عناصر گم‌شده در HTML:', missingEls);
+    } else {
+        console.log('[FINAL] ✅ همه ' + requiredElements.length + ' عنصر حیاتی موجودند');
+    }
+
+    return { missingFunctions: missing, missingElements: missingEls };
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ۵۶. اجرای verification و اتصال نهایی
+   ═══════════════════════════════════════════════════════════════ */
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function () {
+        setTimeout(finalVerification, 500);
+    });
+} else {
+    setTimeout(finalVerification, 500);
+}
+
+// ─── Console banner ───
+console.log(
+    '%c🛡️  Admin Panel v2.0.0 — Loaded Successfully',
+    'background:#5288c1;color:#fff;padding:6px 12px;border-radius:4px;font-size:14px;font-weight:bold'
+);
+console.log(
+    '%c📦 Module parts: 1(head+css) + 2(body) + 3(base) + 4(dashboard+users) + 5(groups+reports) + 6(cleanup+audit+settings)',
+    'color:#94a3b8;font-size:12px'
+);
+
+/* ═══════════════════════════════════════════════════════════════
+   پایان — بستن تگ‌ها
+   ═══════════════════════════════════════════════════════════════ */
 </script>
 </body>
 </html>
