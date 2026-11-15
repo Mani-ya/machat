@@ -3535,6 +3535,626 @@ if (document.readyState === 'loading') {
 // ⚠️ پایان بخش ۳ — ادامه در بخش ۴ (Lock System + Auth + Bootstrap)
 // ═══════════════════════════════════════════════════════════════
 /* ═══════════════════════════════════════════════════════════════════════════
+   index.html — بخش ۴ از ۸: Lock System + Auth + Bootstrap
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ═══════════════════════════════════════════════════════════════
+   ۱۷. Fallback hash (برای HTTP بدون crypto.subtle)
+   ═══════════════════════════════════════════════════════════════ */
+function simpleHash(str) {
+    let h1 = 0xdeadbeef, h2 = 0x41c6ce57;
+    for (let i = 0; i < str.length; i++) {
+        const ch = str.charCodeAt(i);
+        h1 = Math.imul(h1 ^ ch, 2654435761);
+        h2 = Math.imul(h2 ^ ch, 1597334677);
+    }
+    h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507);
+    h1 ^= Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+    h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507);
+    h2 ^= Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+    return (4294967296 * (2097151 & h2) + (h1 >>> 0)).toString(16);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ۱۸. Lock System (PIN + بیومتریک + auto-lock)
+   ═══════════════════════════════════════════════════════════════ */
+const LockSystem = {
+    AUTO_LOCK_MS: 5 * 60 * 1000,
+
+    isEnabled: function () {
+        return Storage.get('lock_enabled', false) === true;
+    },
+
+    hashPin: async function (pin) {
+        const data = String(pin) + '_chat_salt_v5';
+        try {
+            if (window.crypto && window.crypto.subtle) {
+                const encoder = new TextEncoder();
+                const buf = encoder.encode(data);
+                const hash = await window.crypto.subtle.digest('SHA-256', buf);
+                return Array.from(new Uint8Array(hash))
+                    .map(function (b) { return b.toString(16).padStart(2, '0'); })
+                    .join('');
+            }
+        } catch (e) {
+            console.warn('[LockSystem.hashPin] crypto.subtle failed, using fallback:', e);
+        }
+        return simpleHash(data);
+    },
+
+    setPin: async function (pin) {
+        if (!pin || !/^\d{4}$/.test(pin)) return false;
+        try {
+            const hash = await this.hashPin(pin);
+            if (!hash) return false;
+            Storage.set('lock_hash', hash);
+            Storage.set('lock_enabled', true);
+            STATE.lockEnabled = true;
+            return true;
+        } catch (e) {
+            console.error('[LockSystem.setPin]', e);
+            return false;
+        }
+    },
+
+    verifyPin: async function (pin) {
+        if (!pin) return false;
+        try {
+            const hash = await this.hashPin(pin);
+            const stored = Storage.get('lock_hash');
+            return !!hash && hash === stored;
+        } catch (e) {
+            console.error('[LockSystem.verifyPin]', e);
+            return false;
+        }
+    },
+
+    disable: function () {
+        Storage.remove('lock_hash');
+        Storage.remove('lock_enabled');
+        Storage.remove('lock_biometric_enabled');
+        Storage.remove('lock_credential_id');
+        STATE.lockEnabled = false;
+        STATE.pinBuffer = '';
+    },
+
+    hasBiometric: function () {
+        return Storage.get('lock_biometric_enabled', false) === true &&
+               !!Storage.get('lock_credential_id');
+    },
+
+    isBiometricSupported: function () {
+        return !!(window.PublicKeyCredential && navigator.credentials);
+    },
+
+    registerBiometric: async function () {
+        if (!this.isBiometricSupported()) {
+            toast('مرورگر شما از اثر انگشت پشتیبانی نمی‌کند', 'error');
+            return false;
+        }
+        if (!STATE.currentUser) {
+            toast('ابتدا وارد شوید', 'error');
+            return false;
+        }
+        if (!window.isSecureContext) {
+            toast('برای اثر انگشت، به HTTPS نیاز است', 'warning');
+            return false;
+        }
+
+        try {
+            const challenge = new Uint8Array(32);
+            window.crypto.getRandomValues(challenge);
+            const userId = new Uint8Array(16);
+            window.crypto.getRandomValues(userId);
+
+            const credential = await navigator.credentials.create({
+                publicKey: {
+                    challenge: challenge,
+                    rp: { name: 'پیام‌رسان حرفه‌ای', id: location.hostname },
+                    user: { id: userId, name: STATE.currentUser.id, displayName: STATE.currentUser.display_name },
+                    pubKeyCredParams: [{ type: 'public-key', alg: -7 }, { type: 'public-key', alg: -257 }],
+                    authenticatorSelection: { authenticatorAttachment: 'platform', userVerification: 'required', residentKey: 'preferred' },
+                    timeout: 60000,
+                    attestation: 'none'
+                }
+            });
+
+            if (credential) {
+                const rawId = new Uint8Array(credential.rawId);
+                let credIdBase64 = '';
+                try {
+                    credIdBase64 = btoa(String.fromCharCode.apply(null, rawId));
+                } catch (e) {
+                    let binary = '';
+                    for (let i = 0; i < rawId.length; i++) binary += String.fromCharCode(rawId[i]);
+                    credIdBase64 = btoa(binary);
+                }
+                Storage.set('lock_credential_id', credIdBase64);
+                Storage.set('lock_biometric_enabled', true);
+                toast('✅ اثر انگشت ثبت شد', 'success');
+                return true;
+            }
+        } catch (e) {
+            if (e.name !== 'NotAllowedError' && e.name !== 'AbortError') {
+                toast('❌ ثبت ناموفق: ' + (e.message || 'خطا'), 'error');
+            }
+        }
+        return false;
+    },
+
+    authenticateBiometric: async function () {
+        const storedCredId = Storage.get('lock_credential_id');
+        if (!storedCredId) return false;
+
+        try {
+            const challenge = new Uint8Array(32);
+            window.crypto.getRandomValues(challenge);
+
+            let rawId;
+            try {
+                rawId = Uint8Array.from(atob(storedCredId), function (c) { return c.charCodeAt(0); });
+            } catch (e) { return false; }
+
+            const assertion = await navigator.credentials.get({
+                publicKey: {
+                    challenge: challenge,
+                    allowCredentials: [{ id: rawId, type: 'public-key', transports: ['internal'] }],
+                    userVerification: 'required',
+                    timeout: 60000
+                }
+            });
+            return !!assertion;
+        } catch (e) { return false; }
+    },
+
+    showLockScreen: function () {
+        if (!this.isEnabled()) return;
+        if (STATE.autoLockTimer) { clearTimeout(STATE.autoLockTimer); STATE.autoLockTimer = null; }
+
+        STATE.pinBuffer = '';
+        this.updatePinDisplay();
+        this.buildPinPad();
+
+        const errEl = $('lockError');
+        if (errEl) errEl.textContent = '';
+
+        const lockScreen = $('lockScreen');
+        const appContainer = $('appContainer');
+        const authScreen = $('authScreen');
+
+        if (lockScreen) lockScreen.classList.remove('hidden');
+        if (appContainer) appContainer.classList.add('hidden');
+        if (authScreen) authScreen.classList.add('hidden');
+
+        const bioBtn = $('biometricBtn');
+        if (bioBtn) bioBtn.style.display = this.hasBiometric() ? 'flex' : 'none';
+    },
+
+    buildPinPad: function () {
+        const pad = $('pinPad');
+        if (!pad) return;
+
+        pad.innerHTML = '';
+        const layout = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '', '0', '⌫'];
+        const self = this;
+
+        layout.forEach(function (key) {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'pin-btn' + (key === '' ? ' empty' : '') + (key === '⌫' ? ' delete' : '');
+            btn.textContent = key;
+            if (key !== '') {
+                btn.addEventListener('click', function () { self.handlePinInput(key); });
+            }
+            pad.appendChild(btn);
+        });
+    },
+
+    handlePinInput: function (key) {
+        if (key === '⌫') STATE.pinBuffer = STATE.pinBuffer.slice(0, -1);
+        else if (STATE.pinBuffer.length < 4) STATE.pinBuffer += key;
+
+        this.updatePinDisplay();
+        vibrate(15);
+
+        if (STATE.pinBuffer.length === 4) {
+            const self = this;
+            setTimeout(function () { self.verifyAndUnlock(); }, 200);
+        }
+    },
+
+    updatePinDisplay: function () {
+        const dots = $$('.pin-dot');
+        for (let i = 0; i < dots.length; i++) {
+            if (i < STATE.pinBuffer.length) dots[i].classList.add('filled');
+            else dots[i].classList.remove('filled');
+        }
+    },
+
+    verifyAndUnlock: async function () {
+        const valid = await this.verifyPin(STATE.pinBuffer);
+        if (valid) {
+            this.unlock();
+        } else {
+            const errEl = $('lockError');
+            if (errEl) {
+                errEl.textContent = '❌ رمز اشتباه است';
+                setTimeout(function () { if (errEl) errEl.textContent = ''; }, 2000);
+            }
+            STATE.pinBuffer = '';
+            this.updatePinDisplay();
+            vibrate([50, 50, 50]);
+        }
+    },
+
+    unlock: function () {
+        STATE.pinBuffer = '';
+        this.updatePinDisplay();
+        const lockScreen = $('lockScreen');
+        const appContainer = $('appContainer');
+        if (lockScreen) lockScreen.classList.add('hidden');
+        if (appContainer && STATE.currentUser) appContainer.classList.remove('hidden');
+        Storage.set('last_unlock', Date.now());
+        this.startAutoLock();
+    },
+
+    startAutoLock: function () {
+        if (!STATE._autoLockListenersAttached) {
+            STATE._autoLockListenersAttached = true;
+            const self = this;
+            const resetTimer = throttle(function () { self._resetAutoLockTimer(); }, 1500);
+            ['click', 'keydown', 'touchstart', 'scroll', 'mousemove', 'pointerdown'].forEach(function (evt) {
+                document.addEventListener(evt, resetTimer, { passive: true });
+            });
+        }
+        this._resetAutoLockTimer();
+    },
+
+    _resetAutoLockTimer: function () {
+        if (STATE.autoLockTimer) { clearTimeout(STATE.autoLockTimer); STATE.autoLockTimer = null; }
+        if (!this.isEnabled() || !STATE.currentUser || !STATE.isAppReady) return;
+        const self = this;
+        STATE.autoLockTimer = setTimeout(function () {
+            const lockScreen = $('lockScreen');
+            if (lockScreen && lockScreen.classList.contains('hidden')) self.showLockScreen();
+        }, self.AUTO_LOCK_MS);
+    },
+
+    stopAutoLock: function () {
+        if (STATE.autoLockTimer) { clearTimeout(STATE.autoLockTimer); STATE.autoLockTimer = null; }
+    }
+};
+
+/* ═══════════════════════════════════════════════════════════════
+   ۱۹. تنظیمات قفل
+   ═══════════════════════════════════════════════════════════════ */
+function openLockSettings() {
+    const enabled = LockSystem.isEnabled();
+    const hasBio = LockSystem.hasBiometric();
+    const bioSupported = LockSystem.isBiometricSupported();
+
+    let html = '<div class="modal-header"><h3 class="modal-title">🔒 قفل اپلیکیشن</h3><button class="modal-close" onclick="closeModalDirect()">×</button></div>' +
+        '<p style="color:var(--text-secondary);margin-bottom:16px;font-size:14px;line-height:1.6">با فعال‌سازی قفل، هر بار ورود یا پس از ۵ دقیقه بی‌کاری، باید رمز یا اثر انگشت وارد کنید.</p>';
+
+    if (enabled) {
+        html += '<button class="btn btn-block" onclick="closeModalDirect();setupChangePin()" style="margin-bottom:8px">🔄 تغییر رمز</button>';
+        if (hasBio) {
+            html += '<button class="btn btn-block btn-secondary" onclick="closeModalDirect();removeBiometric()" style="margin-bottom:8px">🗑️ حذف اثر انگشت</button>';
+        } else if (bioSupported) {
+            html += '<button class="btn btn-block btn-secondary" onclick="closeModalDirect();addBiometric()" style="margin-bottom:8px">👆 افزودن اثر انگشت</button>';
+        }
+        html += '<button class="btn btn-block btn-danger" onclick="closeModalDirect();disableLock()">🔓 غیرفعال کردن قفل</button>';
+    } else {
+        html += '<button class="btn btn-block btn-lg" onclick="closeModalDirect();setupNewPin()">🔐 فعال‌سازی قفل با رمز</button>';
+    }
+    openModal(html);
+}
+
+function setupNewPin() {
+    const html = '<div class="modal-header"><h3 class="modal-title">🔐 تعیین رمز</h3><button class="modal-close" onclick="closeModalDirect()">×</button></div>' +
+        '<div class="field-group"><label class="label">رمز ۴ رقمی</label><input type="tel" id="newPin" class="input" maxlength="4" placeholder="••••" inputmode="numeric" pattern="[0-9]*" style="text-align:center;font-size:24px;letter-spacing:12px" dir="ltr"></div>' +
+        '<div class="field-group"><label class="label">تکرار رمز</label><input type="tel" id="confirmPin" class="input" maxlength="4" placeholder="••••" inputmode="numeric" pattern="[0-9]*" style="text-align:center;font-size:24px;letter-spacing:12px" dir="ltr"></div>' +
+        '<div id="pinError" style="color:var(--danger);font-size:13px;margin-bottom:12px;min-height:20px"></div>' +
+        '<button class="btn btn-block" onclick="saveNewPin()">ذخیره</button>';
+    openModal(html, { autoFocus: true });
+}
+
+async function saveNewPin() {
+    const pin1El = $('newPin'), pin2El = $('confirmPin'), errEl = $('pinError');
+    if (!pin1El || !pin2El || !errEl) return;
+    const pin1 = pin1El.value.trim(), pin2 = pin2El.value.trim();
+    errEl.textContent = '';
+
+    if (!/^\d{4}$/.test(pin1)) { errEl.textContent = 'رمز باید ۴ رقم باشد'; pin1El.focus(); return; }
+    if (pin1 !== pin2) { errEl.textContent = 'رمزها یکسان نیستند'; pin2El.focus(); return; }
+
+    try {
+        const ok = await LockSystem.setPin(pin1);
+        if (ok) { toast('✅ قفل فعال شد', 'success'); closeModalDirect(); LockSystem.startAutoLock(); }
+        else { errEl.textContent = 'خطا در ذخیره رمز'; }
+    } catch (e) { errEl.textContent = 'خطا: ' + (e.message || 'نامشخص'); }
+}
+
+function setupChangePin() {
+    const html = '<div class="modal-header"><h3 class="modal-title">🔄 تغییر رمز</h3><button class="modal-close" onclick="closeModalDirect()">×</button></div>' +
+        '<div class="field-group"><label class="label">رمز فعلی</label><input type="tel" id="oldPin" class="input" maxlength="4" placeholder="••••" inputmode="numeric" pattern="[0-9]*" style="text-align:center;font-size:22px;letter-spacing:10px" dir="ltr"></div>' +
+        '<div class="field-group"><label class="label">رمز جدید</label><input type="tel" id="newPin" class="input" maxlength="4" placeholder="••••" inputmode="numeric" pattern="[0-9]*" style="text-align:center;font-size:22px;letter-spacing:10px" dir="ltr"></div>' +
+        '<div id="pinError" style="color:var(--danger);font-size:13px;margin-bottom:12px;min-height:20px"></div>' +
+        '<button class="btn btn-block" onclick="confirmChangePin()">تغییر</button>';
+    openModal(html, { autoFocus: true });
+}
+
+async function confirmChangePin() {
+    const oldPinEl = $('oldPin'), newPinEl = $('newPin'), errEl = $('pinError');
+    if (!oldPinEl || !newPinEl || !errEl) return;
+    const oldPin = oldPinEl.value.trim(), newPin = newPinEl.value.trim();
+    errEl.textContent = '';
+
+    if (!/^\d{4}$/.test(oldPin)) { errEl.textContent = 'رمز فعلی باید ۴ رقم باشد'; return; }
+    if (!/^\d{4}$/.test(newPin)) { errEl.textContent = 'رمز جدید باید ۴ رقم باشد'; return; }
+    if (oldPin === newPin) { errEl.textContent = 'رمز جدید باید با رمز فعلی متفاوت باشد'; return; }
+
+    const isValid = await LockSystem.verifyPin(oldPin);
+    if (!isValid) { errEl.textContent = 'رمز فعلی اشتباه است'; return; }
+
+    const ok = await LockSystem.setPin(newPin);
+    if (ok) { toast('✅ رمز تغییر کرد', 'success'); closeModalDirect(); }
+    else { errEl.textContent = 'خطا در ذخیره'; }
+}
+
+async function addBiometric() {
+    const success = await LockSystem.registerBiometric();
+    if (success) closeModalDirect();
+}
+
+function removeBiometric() {
+    if (!confirm('اثر انگشت حذف شود؟')) return;
+    Storage.remove('lock_biometric_enabled');
+    Storage.remove('lock_credential_id');
+    toast('اثر انگشت حذف شد', 'info');
+    closeModalDirect();
+}
+
+function disableLock() {
+    if (!confirm('قفل غیرفعال شود؟')) return;
+    LockSystem.disable();
+    LockSystem.stopAutoLock();
+    toast('قفل غیرفعال شد', 'info');
+    closeModalDirect();
+}
+
+async function authenticateBiometric() {
+    const errEl = $('lockError');
+    if (errEl) errEl.textContent = '';
+    try {
+        const success = await LockSystem.authenticateBiometric();
+        if (success) { LockSystem.unlock(); vibrate(30); }
+        else {
+            if (errEl) { errEl.textContent = '❌ تأیید نشد'; setTimeout(function () { if (errEl) errEl.textContent = ''; }, 2000); }
+        }
+    } catch (e) {
+        if (errEl) { errEl.textContent = '❌ خطا در احراز هویت'; setTimeout(function () { if (errEl) errEl.textContent = ''; }, 2000); }
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ۲۰. احراز هویت (Auth)
+   ═══════════════════════════════════════════════════════════════ */
+function switchAuthTab(tab, el) {
+    $$('.auth-tab').forEach(function (t) { t.classList.remove('active'); t.setAttribute('aria-selected', 'false'); });
+    if (el) { el.classList.add('active'); el.setAttribute('aria-selected', 'true'); }
+    const rf = $('registerForm'), lf = $('loginForm');
+    if (tab === 'register') { if (rf) rf.classList.remove('hidden'); if (lf) lf.classList.add('hidden'); }
+    else { if (rf) rf.classList.add('hidden'); if (lf) lf.classList.remove('hidden'); }
+    const errEl = $('authError');
+    if (errEl) errEl.textContent = '';
+}
+
+async function registerUser() {
+    const errEl = $('authError'), idEl = $('regId'), nameEl = $('regName'), btn = $('registerBtn');
+    if (!errEl || !idEl || !nameEl || !btn) return;
+    errEl.textContent = '';
+
+    if (!sb) { errEl.textContent = 'اتصال به سرور برقرار نیست'; return; }
+    const id = idEl.value.trim().toLowerCase(), name = nameEl.value.trim();
+
+    if (!id || !name) { errEl.textContent = 'لطفاً همه فیلدها را پر کنید'; return; }
+    if (!/^[a-z0-9_]{3,20}$/.test(id)) { errEl.textContent = 'شناسه باید ۳-۲۰ کاراکتر انگلیسی، عدد یا _ باشد'; idEl.focus(); return; }
+    if (name.length < 2) { errEl.textContent = 'نام نمایشی حداقل ۲ کاراکتر باشد'; nameEl.focus(); return; }
+    if (name.length > 30) { errEl.textContent = 'نام نمایشی حداکثر ۳۰ کاراکتر باشد'; return; }
+
+    btn.classList.add('loading'); btn.disabled = true;
+
+    try {
+        const role = (id === 'admin') ? 'admin' : 'user';
+        const result = await sb.from('profiles').insert({
+            id: id, display_name: name, role: role, is_active: true, last_seen: new Date().toISOString()
+        }).select().single();
+
+        if (result.error) {
+            if (result.error.code === '23505') errEl.textContent = 'این شناسه قبلاً استفاده شده';
+            else errEl.textContent = 'خطا: ' + result.error.message;
+            btn.classList.remove('loading'); btn.disabled = false; return;
+        }
+
+        Storage.set('user_id', id);
+        STATE.currentUser = result.data;
+        STATE.isAuthenticated = true;
+
+        toast('✅ ثبت‌نام موفق', 'success');
+        await enterApp();
+    } catch (e) {
+        errEl.textContent = 'خطای غیرمنتظره: ' + (e.message || 'نامشخص');
+        btn.classList.remove('loading'); btn.disabled = false;
+    }
+}
+
+async function loginUser() {
+    const errEl = $('authError'), idEl = $('loginId'), btn = $('loginBtn');
+    if (!errEl || !idEl || !btn) return;
+    errEl.textContent = '';
+
+    if (!sb) { errEl.textContent = 'اتصال به سرور برقرار نیست'; return; }
+    const id = idEl.value.trim().toLowerCase();
+
+    if (!id) { errEl.textContent = 'شناسه را وارد کنید'; idEl.focus(); return; }
+
+    btn.classList.add('loading'); btn.disabled = true;
+
+    try {
+        const result = await sb.from('profiles').select('*').eq('id', id).maybeSingle();
+        if (result.error) { errEl.textContent = 'خطا: ' + result.error.message; btn.classList.remove('loading'); btn.disabled = false; return; }
+        if (!result.data) { errEl.textContent = 'کاربری با این شناسه وجود ندارد'; btn.classList.remove('loading'); btn.disabled = false; return; }
+        if (!result.data.is_active) { errEl.textContent = 'حساب شما مسدود شده است'; btn.classList.remove('loading'); btn.disabled = false; return; }
+
+        Storage.set('user_id', id);
+        STATE.currentUser = result.data;
+        STATE.isAuthenticated = true;
+
+        toast('✅ خوش آمدید', 'success');
+        await enterApp();
+    } catch (e) {
+        errEl.textContent = 'خطای غیرمنتظره: ' + (e.message || 'نامشخص');
+        btn.classList.remove('loading'); btn.disabled = false;
+    }
+}
+
+async function enterApp() {
+    try {
+        if (LockSystem.isEnabled()) {
+            STATE.isAppReady = false;
+            LockSystem.showLockScreen();
+            return;
+        }
+        showAppScreen();
+        if (typeof loadAppData === 'function') await loadAppData();
+        STATE.isAppReady = true;
+        if (LockSystem.isEnabled()) LockSystem.startAutoLock();
+    } catch (e) {
+        toast('خطا در بارگذاری: ' + e.message, 'error', 5000);
+    }
+}
+
+async function logout() {
+    if (!confirm('آیا می‌خواهید خارج شوید؟')) return;
+    try {
+        LockSystem.stopAutoLock();
+        if (STATE.activeChannel) { try { sb.removeChannel(STATE.activeChannel); } catch (e) {} STATE.activeChannel = null; }
+        if (STATE.globalPresence) { try { sb.removeChannel(STATE.globalPresence); } catch (e) {} STATE.globalPresence = null; }
+        if (STATE.presenceInterval) { clearInterval(STATE.presenceInterval); STATE.presenceInterval = null; }
+        STATE.drafts = {};
+        Storage.remove('user_id');
+        Storage.clear();
+    } catch (e) { console.warn('[logout]', e); }
+    location.reload();
+}
+
+function showAuthScreen() {
+    const authScreen = $('authScreen'), appContainer = $('appContainer'), lockScreen = $('lockScreen');
+    if (authScreen) authScreen.classList.remove('hidden');
+    if (appContainer) appContainer.classList.add('hidden');
+    if (lockScreen) lockScreen.classList.add('hidden');
+}
+
+function showAppScreen() {
+    const authScreen = $('authScreen'), appContainer = $('appContainer'), lockScreen = $('lockScreen');
+    if (authScreen) authScreen.classList.add('hidden');
+    if (appContainer) appContainer.classList.remove('hidden');
+    if (lockScreen) lockScreen.classList.add('hidden');
+    if (!STATE.currentUser) return;
+
+    const myName = $('myName'), myId = $('myId'), myAvatar = $('myAvatar'), adminBtn = $('adminBtn');
+    if (myName) myName.textContent = STATE.currentUser.display_name || 'کاربر';
+    if (myId) myId.textContent = '@' + STATE.currentUser.id;
+
+    if (myAvatar) {
+        if (STATE.currentUser.avatar_url) {
+            myAvatar.style.backgroundImage = 'url(' + STATE.currentUser.avatar_url + ')';
+            myAvatar.style.background = 'transparent';
+            myAvatar.textContent = '';
+        } else {
+            myAvatar.style.background = colorFromId(STATE.currentUser.id);
+            myAvatar.textContent = getInitials(STATE.currentUser.display_name);
+        }
+    }
+    if (adminBtn) adminBtn.style.display = (STATE.currentUser.role === 'admin') ? 'inline-flex' : 'none';
+}
+
+function openAdminPanel() {
+    if (!STATE.currentUser) { toast('ابتدا وارد شوید', 'error'); return; }
+    if (STATE.currentUser.role !== 'admin') { toast('دسترسی ندارید — فقط ادمین‌ها می‌توانند وارد شوند', 'error'); return; }
+
+    if (!confirm('پنل مدیریت در تب جدید باز خواهد شد.\n\nبرای ورود به پنل، رمز ادمین را وارد کنید.')) return;
+    try { window.open('./admin.html', '_blank', 'noopener,noreferrer'); }
+    catch (e) { location.href = './admin.html'; }
+}
+
+function setupEventListeners() {
+    try {
+        const avatarInput = $('avatarInput');
+        if (avatarInput && !avatarInput._bound) {
+            avatarInput.addEventListener('change', function () {
+                if (this.files && this.files[0] && typeof uploadAvatar === 'function') uploadAvatar(this.files[0]);
+                this.value = '';
+            });
+            avatarInput._bound = true;
+        }
+    } catch (e) { console.error('[setupEventListeners]', e); }
+}
+
+let _bootstrapStarted = false;
+async function bootstrap() {
+    if (_bootstrapStarted) return;
+    _bootstrapStarted = true;
+
+    if (!sb) {
+        showAuthScreen();
+        const errEl = $('authError');
+        if (errEl) errEl.textContent = '❌ ' + (SB_ERROR || 'اتصال به سرور برقرار نیست');
+        toast('⚠️ اتصال به سرور ممکن نیست', 'error', 8000);
+        return;
+    }
+
+    try { await ChatDB.init(); } catch (e) { console.warn('[bootstrap] ChatDB init failed:', e); }
+
+    const savedId = Storage.get('user_id');
+    if (!savedId) { showAuthScreen(); return; }
+
+    try {
+        const result = await sb.from('profiles').select('*').eq('id', savedId).maybeSingle();
+        if (result.error || !result.data) {
+            Storage.remove('user_id');
+            showAuthScreen();
+            return;
+        }
+        if (!result.data.is_active) {
+            alert('حساب شما مسدود شده است');
+            Storage.remove('user_id');
+            showAuthScreen();
+            return;
+        }
+
+        STATE.currentUser = result.data;
+        STATE.isAuthenticated = true;
+
+        if (LockSystem.isEnabled()) {
+            LockSystem.showLockScreen();
+        } else {
+            showAppScreen();
+            if (typeof loadAppData === 'function') await loadAppData();
+            STATE.isAppReady = true;
+            if (LockSystem.isEnabled()) LockSystem.startAutoLock();
+            if (typeof processJoinInvite === 'function') {
+                setTimeout(function () { try { processJoinInvite(); } catch (e) { console.warn(e); } }, 1000);
+            }
+        }
+        setupEventListeners();
+    } catch (e) {
+        toast('خطا در بارگذاری: ' + (e.message || 'نامشخص'), 'error', 5000);
+        showAuthScreen();
+    }
+}
+/* ═══════════════════════════════════════════════════════════════════════════
    index.html — بخش ۵ از ۸: Data Loading + Presence + Reconnect + Sidebar + Chat
    ═══════════════════════════════════════════════════════════════════════════ */
 
