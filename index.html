@@ -3131,6 +3131,12 @@ function openModal(html, options) {
     const overlay = $('modalOverlay');
     if (!content || !overlay) return;
 
+    // ✅ مهم: اگر مودال قبلی در حال بسته شدن است، تایمر پاک‌سازی آن را لغو کن
+    if (STATE._modalCloseTimer) {
+        clearTimeout(STATE._modalCloseTimer);
+        STATE._modalCloseTimer = null;
+    }
+
     content.innerHTML = html;
     content.style.maxWidth = options.maxWidth || '';
 
@@ -3163,8 +3169,11 @@ function closeModalDirect() {
     overlay.classList.remove('active');
     STATE.isModalOpen = false;
 
-    setTimeout(function () {
+    // ✅ مهم: پاک‌سازی محتوا را با تایمر مدیریت می‌کنیم تا اگر مودال جدید باز شد، لغو شود
+    if (STATE._modalCloseTimer) clearTimeout(STATE._modalCloseTimer);
+    STATE._modalCloseTimer = setTimeout(function () {
         if (content) content.innerHTML = '';
+        STATE._modalCloseTimer = null;
     }, 300);
 }
 
