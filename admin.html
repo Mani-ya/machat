@@ -2460,41 +2460,60 @@ function hideLoading() {
 /* ═══════════════════════════════════════════════════════════════
    ۸. سیستم Modal
    ═══════════════════════════════════════════════════════════════ */
-function openModal(html) {
+/* ═══════════════════════════════════════════════════════════════
+   سیستم Modal اصلاح‌شده برای پنل ادمین
+   ═══════════════════════════════════════════════════════════════ */
+function openModal(html, options) {
+    options = options || {};
     const box = $('modalBox');
     const overlay = $('modalOverlay');
     if (!box || !overlay) return;
+
+    // ✅ اگر منوی قبلی در حال بسته شدن بود، تایمر پاک‌سازی آن را متوقف کن
+    if (window._adminModalCloseTimer) {
+        clearTimeout(window._adminModalCloseTimer);
+        window._adminModalCloseTimer = null;
+    }
+
     box.innerHTML = html;
     overlay.classList.add('active');
-    // focus trap ساده — فوکوس روی اولین input یا button
-    setTimeout(function () {
-        const focusable = box.querySelector('input:not([type="hidden"]):not([disabled]), textarea:not([disabled]), select:not([disabled]), button:not([disabled])');
-        if (focusable) {
-            try { focusable.focus(); } catch (e) {}
-        }
-    }, 200);
+
+    if (options.autoFocus !== false) {
+        setTimeout(function () {
+            const focusable = box.querySelector('input:not([type="hidden"]):not([disabled]), textarea:not([disabled]), select:not([disabled]), button:not([disabled])');
+            if (focusable) {
+                try { focusable.focus(); } catch (e) {}
+            }
+        }, 300);
+    }
 }
 
-function closeModal() {
-    const box = $('modalBox');
-    const overlay = $('modalOverlay');
-    if (!box || !overlay) return;
-    overlay.classList.remove('active');
-    setTimeout(function () {
-        if (box) box.innerHTML = '';
-    }, 250);
-}
-
-function closeModalOnBackdrop(event) {
+function closeModal(event) {
     if (event && event.target !== $('modalOverlay')) return;
-    // اگر dialog تأیید فعال است، آن را با false حل کن
+    
+    // اگر دیالوگ تایید باز بود، آن را ببند
     if (STATE.pendingConfirm) {
         resolveConfirm(STATE.pendingConfirm.id, false);
         return;
     }
-    closeModal();
+    closeModalDirect();
 }
 
+function closeModalDirect() {
+    const box = $('modalBox');
+    const overlay = $('modalOverlay');
+    if (!box || !overlay) return;
+
+    overlay.classList.remove('active');
+
+    // ✅ پاک‌سازی محتوا را با تایمر انجام بده تا اگر منوی جدید باز شد، لغو شود
+    if (window._adminModalCloseTimer) clearTimeout(window._adminModalCloseTimer);
+    
+    window._adminModalCloseTimer = setTimeout(function () {
+        if (box) box.innerHTML = '';
+        window._adminModalCloseTimer = null;
+    }, 250);
+}
 /* ═══════════════════════════════════════════════════════════════
    ۹. دیالوگ تأیید (Promise-based)
    ═══════════════════════════════════════════════════════════════ */
