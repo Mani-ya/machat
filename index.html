@@ -2410,14 +2410,14 @@
 <div id="authScreen" role="dialog" aria-labelledby="authTitle">
     <div class="auth-box">
         <span class="auth-logo" aria-hidden="true">💬</span>
-        <h1 class="auth-title" id="authTitle">پیام‌رسان حرفه‌ای</h1>
+        <h1 class="auth-title" id="authTitle">هاید گرام</h1>
         <p class="auth-subtitle">ارتباط امن، سریع و رایگان با دوستان</p>
 
         <div class="auth-tabs" role="tablist">
             <div class="auth-tab active" data-tab="register" role="tab" aria-selected="true"
                  onclick="switchAuthTab('register', this)">ثبت‌نام</div>
-            <div class="auth-tab" data-tab="login" role="tab" aria-selected="false"
-                 onclick="switchAuthTab('login', this)">ورود</div>
+            <!-- <div class="auth-tab" data-tab="login" role="tab" aria-selected="false"
+                 onclick="switchAuthTab('login', this)">ورود</div> -->
         </div>
 
         <!-- ─── فرم ثبت‌نام ─── -->
@@ -2439,10 +2439,10 @@
             <button class="btn btn-block btn-lg" id="registerBtn" onclick="registerUser()">
                 ایجاد حساب کاربری
             </button>
-        </div>
+        <!-- </div> -->
 
         <!-- ─── فرم ورود ─── -->
-        <div id="loginForm" class="hidden">
+        <!-- <div id="loginForm" class="hidden">
             <div class="field-group">
                 <input type="text" id="loginId" class="input"
                        placeholder="شناسه شما"
@@ -2452,7 +2452,7 @@
             <button class="btn btn-block btn-lg" id="loginBtn" onclick="loginUser()">
                 ورود به حساب
             </button>
-        </div>
+        </div> -->
 
         <div id="authError" class="auth-error" role="alert"></div>
     </div>
